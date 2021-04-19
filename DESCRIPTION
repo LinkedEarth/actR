@@ -18,3 +18,5 @@ Imports:
     stats,
     dplyr,
     tibble
+Suggests: 
+    testthat
