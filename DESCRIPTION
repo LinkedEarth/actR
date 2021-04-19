@@ -1,16 +1,20 @@
 Package: actR
-Title: What the Package Does (One Line, Title Case)
+Title: Abrupt Change Toolkit in R (actR) - Detect, Quantify and Visualize Abrupt Changes
 Version: 0.0.0.9000
 Authors@R: 
-    person(given = "First",
-           family = "Last",
+    person(given = "Nicholas",
+           family = "McKay",
            role = c("aut", "cre"),
            email = "first.last@example.com",
            comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
-License: `use_mit_license()`, `use_gpl3_license()` or friends to
-    pick a license
+Description: actR simplifies the process of objectively detecting abrupt changes in paleogeoscientific timeseries. In addition to detection, actR provides tools to estimate significance, and visualize the results. This package is in active development.
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
+Imports: 
+    ggplot2,
+    stats,
+    dplyr,
+    tibble
