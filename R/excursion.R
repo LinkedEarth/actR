@@ -34,6 +34,7 @@ maxConsecutive <- function(vec,val = TRUE){
 #'
 #' @author Hannah Kolus
 #' @author Nick McKay
+#' @description Determines whether an excursion event has occurred within the specified event window. Excursion events are defined as n.consecutive values within the event window that are more extreme than the avg +/- sig.num standard deviations of the reference windows.
 #' @references Morrill
 #' @param age a year or age vector
 #' @param vals a vector of values the same length as age
@@ -56,10 +57,7 @@ detectExcursion = function(age,
                            n.consecutive = 2,
                            output.figure.path = NA,
                            sig.num = 2) {
-  ## Written by Hannah Kolus, 09/04/2018
-  ## Determines whether an excursion event has occurred within the specified event window.
-  ## Excursion events are defined as two consecutive values within the event window that
-  ## are more extreme than the avg +/- X std of the reference windows.
+
 
   # yr.start:yr.end defines boundaries of analysis (i.e. both reference windows and the event window)
   yr.start = event.yr - event.window / 2 - ref.window
@@ -73,6 +71,99 @@ detectExcursion = function(age,
 
   age = age[analysis.i]
   vals = vals[analysis.i]
+
+  out <- detectExcursionCore(age,vals,event.start,event.end,sig.num,n.consecutive)
+
+  if (!is.na(output.figure.path)) {
+
+    #plotExcursion() TBD
+  }
+
+  return(out)
+
+}
+
+#' Detect excursions in synthetic datasets that mimic a real on
+#' @inheritParams detectExcursion
+#' @param n.ens The number of ensembles to simulate (default = 100)
+#' @importFrom stats quantile
+#' @importFrom magrittr %>%
+#' @return a tibble that reports the positivity rate in the synthetics
+#' @export
+detectExcursionMcSim <- function(age,
+                                 vals,
+                                 event.yr,
+                                 event.window,
+                                 ref.window,
+                                 n.ens = 100,
+                                 n.consecutive = 2,
+                                 sig.num = 2) {
+
+
+  # yr.start:yr.end defines boundaries of analysis (i.e. both reference windows and the event window)
+  yr.start = event.yr - event.window / 2 - ref.window
+  yr.end = event.yr + event.window / 2 + ref.window
+
+  # event.start:event.end defines the boundaries of the event
+  event.start = event.yr - event.window / 2
+  event.end = event.yr + event.window / 2
+
+  analysis.i = which(age >= yr.start & age <= yr.end) # define analysis window indices
+
+  age = age[analysis.i]
+  vals = vals[analysis.i]
+
+
+
+
+  mcVals <- geoChronR::createSyntheticTimeseries(time = age,values = vals,sameTrend = TRUE,n.ens = 100) %>%
+    purrr::array_branch(margin = 2)
+
+
+
+mcOut <- purrr::map2_dfr(.x = list(age),
+                    .y = mcVals,
+                    .f = detectExcursionCore,
+                    event.start,
+                    event.end,
+                    sig.num,
+                    n.consecutive)
+
+#summarize results
+pos <- mcOut %>%
+  dplyr::filter(excursionDirection == 1) %>%
+  dplyr::summarize(fracPos = mean(excursionDetected),
+                   posExcursionLength95 = quantile(purrr::map_dbl(excursionValues,length),probs = c(.95)))
+neg <- mcOut %>%
+  dplyr::filter(excursionDirection == -1) %>%
+  dplyr::summarize(fracNeg = mean(excursionDetected),
+                   negExcursionLength95 = quantile(purrr::map_dbl(excursionValues,length),probs = c(.95)))
+
+anyExc <- matrix(mcOut$excursionDetected,ncol = 2,byrow = TRUE) %>%
+  apply(1,any) %>%
+  mean()
+
+out <- tibble::tibble(anyExcursionProb = anyExc) %>%
+  dplyr::bind_cols(pos) %>%
+  dplyr::bind_cols(neg)
+
+return(out)
+
+}
+
+#' Detect excursion - core functionality
+#' @param event.start the start of the event window
+#' @param event.end the end of the event window
+#' @inheritParams detectExcursion
+#' @ params
+#' @return a tibble of results
+#' @export
+detectExcursionCore <- function(age,
+                                vals,
+                                event.start,
+                                event.end,
+                                sig.num,
+                                n.consecutive){
 
   # Detrend over analysis window
   a = predict(lm(vals ~ age))
@@ -124,8 +215,8 @@ detectExcursion = function(age,
     valuesEX = age[mctAbove$index]
 
     outRowAbove <- tibble::tibble(excursionDetected = TRUE,
-                             excursionDirection = 1,
-                             excursionValues = list(valuesEX))
+                                  excursionDirection = 1,
+                                  excursionValues = list(valuesEX))
   }else{
     outRowAbove <- tibble::tibble(excursionDetected = FALSE,
                                   excursionDirection = 1,
@@ -138,7 +229,7 @@ detectExcursion = function(age,
   # Determine whether there are any consecutive extreme points - this qualifies an event
   if (mctBelow$max >= n.consecutive) {
     # find event onset and termination
-    valuesEX = age[mctAbove$index]
+    valuesEX = age[mctBelow$index]
 
     outRowBelow <- tibble::tibble(excursionDetected = TRUE,
                                   excursionDirection = -1,
@@ -149,15 +240,7 @@ detectExcursion = function(age,
                                   excursionValues = NA)
   }
 
-
-  if (!is.na(output.figure.path)) {
-
-    #plotExcursion() TBD
-  }
-
-  #prepare output tibblee
   out <- dplyr::bind_rows(outRowAbove,outRowBelow)
 
   return(out)
-
 }

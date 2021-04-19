@@ -33,10 +33,10 @@ detectExcursion(
 \item{sig.num}{how many standard deviations required outside the reference windows must be exceeded for this to be considered an excursion? (default = 2)}
 }
 \value{
-
+a tibble that describes the positive and negative excursion results
 }
 \description{
-Detect an excursion in a timeseries
+Determines whether an excursion event has occurred within the specified event window. Excursion events are defined as n.consecutive values within the event window that are more extreme than the avg +/- sig.num standard deviations of the reference windows.
 }
 \references{
 Morrill

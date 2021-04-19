@@ -17,6 +17,9 @@ Imports:
     ggplot2,
     stats,
     dplyr,
-    tibble
+    tibble,
+    magrittr,
+    geoChronR,
+    purrr
 Suggests: 
     testthat
