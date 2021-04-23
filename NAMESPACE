@@ -2,8 +2,10 @@
 
 export(detectExcursion)
 export(detectExcursionCore)
-export(detectExcursionMcSim)
 export(maxConsecutive)
+export(plotExcursionCore)
+export(propagateUncertainty)
+export(testNullHypothesis)
 importFrom(magrittr,"%>%")
 importFrom(stats,lm)
 importFrom(stats,predict)

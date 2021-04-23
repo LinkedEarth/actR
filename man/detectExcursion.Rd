@@ -10,9 +10,9 @@ detectExcursion(
   event.yr,
   event.window,
   ref.window,
-  n.consecutive = 2,
+  n.ens = 100,
   output.figure.path = NA,
-  sig.num = 2
+  ...
 )
 }
 \arguments{
@@ -26,9 +26,9 @@ detectExcursion(
 
 \item{ref.window}{how many years to use as a reference before and after the event window}
 
-\item{n.consecutive}{how many consecutive points are required for this to be considered an excursion? (default = 2)}
-
 \item{output.figure.path}{path pointing to where should the output figure be saved? An NA will not produce a figure (default = NA)}
+
+\item{n.consecutive}{how many consecutive points are required for this to be considered an excursion? (default = 2)}
 
 \item{sig.num}{how many standard deviations required outside the reference windows must be exceeded for this to be considered an excursion? (default = 2)}
 }

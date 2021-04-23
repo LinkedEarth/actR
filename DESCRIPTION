@@ -19,7 +19,13 @@ Imports:
     dplyr,
     tibble,
     magrittr,
-    geoChronR,
-    purrr
+    geoChronR (>= 1.0.6),
+    purrr,
+    glue,
+    tidyr,
+    lipdR (>= 0.2.3)
 Suggests: 
     testthat
+Remotes:  
+    github::nickmckay/geoChronR,
+    github::nickmckay/lidpR

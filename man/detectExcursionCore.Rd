@@ -4,12 +4,22 @@
 \alias{detectExcursionCore}
 \title{Detect excursion - core functionality}
 \usage{
-detectExcursionCore(age, vals, event.start, event.end, sig.num, n.consecutive)
+detectExcursionCore(
+  age,
+  vals,
+  event.start,
+  event.end,
+  sig.num = 2,
+  n.consecutive = 2,
+  exc.type = "either",
+  min.vals = 8,
+  na.rm = TRUE
+)
 }
 \arguments{
-\item{age}{a year or age vector}
+\item{age}{age vector of only the points in the window}
 
-\item{vals}{a vector of values the same length as age}
+\item{vals}{value vector of only the points in the window}
 
 \item{event.start}{the start of the event window}
 
