@@ -28,4 +28,4 @@ Suggests:
     testthat
 Remotes:  
     github::nickmckay/geoChronR,
-    github::nickmckay/lidpR
+    github::nickmckay/lipdR
