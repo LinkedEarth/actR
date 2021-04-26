@@ -2,6 +2,12 @@ actR_ggtheme <- ggplot2::theme_bw
 
 
 
+#' Plot an excursion with uncertainties
+#'
+#' @param exc.out The output of detectExcursion()
+#'
+#' @return a ggplot2 object
+#' @export
 plotExcursion <- function(exc.out){
 
   #determine what is ensemble
@@ -39,15 +45,13 @@ plotExcursion <- function(exc.out){
 
 
 
-#' Plot a basic excursion without uncertainty
+#' Plot a basic excursion without propagated uncertainty
 #'
-#' @param exc.out A 1 row tibble describing the excursion - this the output of detectExcursionCore, or part of the output of detectExcursion
+#' @param exc.out.core the output of detectExcursionCore()
 #' @param add.to.plot a ggplot object upon which to add this plot
 #'
-#' @return
+#' @return a ggplot object
 #' @export
-#'
-#' @examples
 plotExcursionCore <- function(exc.out.core,
                               add.to.plot = ggplot2::ggplot()){
 

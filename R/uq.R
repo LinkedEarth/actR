@@ -1,15 +1,21 @@
 
 #' Detect a changepoint while propagating proxy and/or age uncertainty
 #'
-#' @param age
-#' @param vals
-#' @param changeFun
-#' @param ...
+#' @param age a time vector, or matrix of time ensemble members (ensembles in columns)
+#' @param vals a values vector, or matrix of values ensemble members (ensembles in columns)
+#' @param changeFun the change function to across which to propagate
+#' @param simulateAgeUncertainty TRUE or FALSE. If an ensemble is not included, do you want to simulate age ensembles (default = TRUE)
+#' @param simulatePaleoUncertainty TRUE or FALSE. If an ensemble is not included, do you want to simulate paleo ensembles (default = TRUE)
+#' @param n.ens How many ensembles to propagate through? (default = 100)
+#' @param bam.model BAM Model parameters to use if simulating age uncertainty (default = list(ns = n.ens, name = "bernoulli", param = 0.05), paleo.uncertainty = sd(vals,na.rm = TRUE)))
+#' @param paleo.uncertainty Uncertainty to use if modelling uncertainty for paleo values. (default = sd(vals,na.rm = TRUE)/2)
+#' @param paleo.ar1 Autocorrelation coefficient to use for modelling uncertainty on paleoData, what fraction of the uncertainties are autocorrelated? (default = sqrt(0.5); or 50% autocorrelated uncertainty)
+#' @param paleo.arima.order Order to use for ARIMA model used in modelling uncertainty on paleoDat (default = c(1,0,0))
+#' @param summarize Boolean. Summarize the output? Or return all the ensembles?
+#' @param ... arguments to pass to pass to changeFun
 #'
-#' @return
+#' @return a propagated uncertainty tibbble
 #' @export
-#'
-#' @examples
 propagateUncertainty <- function(age,
                                  vals,
                                  changeFun,
@@ -17,7 +23,7 @@ propagateUncertainty <- function(age,
                                  simulatePaleoUncertainty = TRUE,
                                  n.ens = 100,
                                  bam.model = list(ns = n.ens, name = "bernoulli", param = 0.05),
-                                 paleo.uncertainty = sd(vals,na.rm = TRUE),
+                                 paleo.uncertainty = sd(vals,na.rm = TRUE)/2,
                                  paleo.ar1 = sqrt(0.5),
                                  paleo.arima.order = c(1,0,0),
                                  summarize = FALSE,
@@ -101,8 +107,9 @@ propagateUncertainty <- function(age,
 
 
 #' Detect excursions in synthetic datasets that mimic a real on
-#' @inheritParams detectExcursion
-#' @param n.ens The number of ensembles to simulate (default = 100)
+#' @inheritParams propagateUncertainty
+#' @param method Method to use for hypothesis testing, either "isospectral" or "isopersistent" (default = "isospectral")
+#' @inheritDotParams propagateUncertainty
 #' @importFrom stats quantile
 #' @importFrom magrittr %>%
 #' @return a tibble that reports the positivity rate in the synthetics

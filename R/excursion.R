@@ -34,14 +34,13 @@ detectExcursionSlidingWindow <- function(age,
 #' @author Nick McKay
 #' @description Determines whether an excursion event has occurred within the specified event window. Excursion events are defined as n.consecutive values within the event window that are more extreme than the avg +/- sig.num standard deviations of the reference windows.
 #' @references Morrill
-#' @param age a year or age vector
-#' @param vals a vector of values the same length as age
+#'
+#' @inheritParams propagateUncertainty
 #' @param event.yr the center of the proposed excursion window
 #' @param event.window the width of the proposed excursion window
 #' @param ref.window how many years to use as a reference before and after the event window
-#' @param n.consecutive how many consecutive points are required for this to be considered an excursion? (default = 2)
+#' @inheritDotParams propagateUncertainty
 #' @param output.figure.path path pointing to where should the output figure be saved? An NA will not produce a figure (default = NA)
-#' @param sig.num how many standard deviations required outside the reference windows must be exceeded for this to be considered an excursion? (default = 2)
 #'
 #' @importFrom stats lm predict sd
 #'
@@ -121,7 +120,11 @@ detectExcursion = function(age,
 #' @param event.end the end of the event window
 #' @param event.start the start of the event window
 #' @param n.consecutive how many consecutive points are required for this to be considered an excursion? (default = 2)
+#' @param exc.type Type of excursion to look for. "positive", "negativee", "either" or "both" (default = "either")
+#' @param min.vals Minimum number of values required in reference and event windows (default = 8)
+#' @param na.rm Remove NAs? (default = TRUE)
 #' @param sig.num how many standard deviations required outside the reference windows must be exceeded for this to be considered an excursion? (default = 2)
+#'
 #' @return a tibble of results
 #' @export
 detectExcursionCore <- function(age,

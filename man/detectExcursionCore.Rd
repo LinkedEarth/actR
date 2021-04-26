@@ -28,6 +28,12 @@ detectExcursionCore(
 \item{sig.num}{how many standard deviations required outside the reference windows must be exceeded for this to be considered an excursion? (default = 2)}
 
 \item{n.consecutive}{how many consecutive points are required for this to be considered an excursion? (default = 2)}
+
+\item{exc.type}{Type of excursion to look for. "positive", "negativee", "either" or "both" (default = "either")}
+
+\item{min.vals}{Minimum number of values required in reference and event windows (default = 8)}
+
+\item{na.rm}{Remove NAs? (default = TRUE)}
 }
 \value{
 a tibble of results

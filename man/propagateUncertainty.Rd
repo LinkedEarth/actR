@@ -12,7 +12,7 @@ propagateUncertainty(
   simulatePaleoUncertainty = TRUE,
   n.ens = 100,
   bam.model = list(ns = n.ens, name = "bernoulli", param = 0.05),
-  paleo.uncertainty = sd(vals, na.rm = TRUE),
+  paleo.uncertainty = sd(vals, na.rm = TRUE)/2,
   paleo.ar1 = sqrt(0.5),
   paleo.arima.order = c(1, 0, 0),
   summarize = FALSE,
@@ -20,10 +20,32 @@ propagateUncertainty(
 )
 }
 \arguments{
-\item{...}{}
+\item{age}{a time vector, or matrix of time ensemble members (ensembles in columns)}
+
+\item{vals}{a values vector, or matrix of values ensemble members (ensembles in columns)}
+
+\item{changeFun}{the change function to across which to propagate}
+
+\item{simulateAgeUncertainty}{TRUE or FALSE. If an ensemble is not included, do you want to simulate age ensembles (default = TRUE)}
+
+\item{simulatePaleoUncertainty}{TRUE or FALSE. If an ensemble is not included, do you want to simulate paleo ensembles (default = TRUE)}
+
+\item{n.ens}{How many ensembles to propagate through? (default = 100)}
+
+\item{bam.model}{BAM Model parameters to use if simulating age uncertainty (default = list(ns = n.ens, name = "bernoulli", param = 0.05), paleo.uncertainty = sd(vals,na.rm = TRUE)))}
+
+\item{paleo.uncertainty}{Uncertainty to use if modelling uncertainty for paleo values. (default = sd(vals,na.rm = TRUE)/2)}
+
+\item{paleo.ar1}{Autocorrelation coefficient to use for modelling uncertainty on paleoData, what fraction of the uncertainties are autocorrelated? (default = sqrt(0.5); or 50\% autocorrelated uncertainty)}
+
+\item{paleo.arima.order}{Order to use for ARIMA model used in modelling uncertainty on paleoDat (default = c(1,0,0))}
+
+\item{summarize}{Boolean. Summarize the output? Or return all the ensembles?}
+
+\item{...}{arguments to pass to pass to changeFun}
 }
 \value{
-
+a propagated uncertainty tibbble
 }
 \description{
 Detect a changepoint while propagating proxy and/or age uncertainty

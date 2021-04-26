@@ -14,11 +14,27 @@ testNullHypothesis(
 )
 }
 \arguments{
-\item{age}{a year or age vector}
+\item{age}{a time vector, or matrix of time ensemble members (ensembles in columns)}
 
-\item{vals}{a vector of values the same length as age}
+\item{vals}{a values vector, or matrix of values ensemble members (ensembles in columns)}
 
-\item{n.ens}{The number of ensembles to simulate (default = 100)}
+\item{changeFun}{the change function to across which to propagate}
+
+\item{method}{Method to use for hypothesis testing, either "isospectral" or "isopersistent" (default = "isospectral")}
+
+\item{n.ens}{How many ensembles to propagate through? (default = 100)}
+
+\item{...}{
+  Arguments passed on to \code{\link[=propagateUncertainty]{propagateUncertainty}}
+  \describe{
+    \item{\code{simulateAgeUncertainty}}{TRUE or FALSE. If an ensemble is not included, do you want to simulate age ensembles (default = TRUE)}
+    \item{\code{simulatePaleoUncertainty}}{TRUE or FALSE. If an ensemble is not included, do you want to simulate paleo ensembles (default = TRUE)}
+    \item{\code{bam.model}}{BAM Model parameters to use if simulating age uncertainty (default = list(ns = n.ens, name = "bernoulli", param = 0.05), paleo.uncertainty = sd(vals,na.rm = TRUE)))}
+    \item{\code{paleo.uncertainty}}{Uncertainty to use if modelling uncertainty for paleo values. (default = sd(vals,na.rm = TRUE)/2)}
+    \item{\code{paleo.ar1}}{Autocorrelation coefficient to use for modelling uncertainty on paleoData, what fraction of the uncertainties are autocorrelated? (default = sqrt(0.5); or 50\% autocorrelated uncertainty)}
+    \item{\code{paleo.arima.order}}{Order to use for ARIMA model used in modelling uncertainty on paleoDat (default = c(1,0,0))}
+    \item{\code{summarize}}{Boolean. Summarize the output? Or return all the ensembles?}
+  }}
 }
 \value{
 a tibble that reports the positivity rate in the synthetics

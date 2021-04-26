@@ -2,18 +2,18 @@
 % Please edit documentation in R/plottings.R
 \name{plotExcursionCore}
 \alias{plotExcursionCore}
-\title{Plot a basic excursion without uncertainty}
+\title{Plot a basic excursion without propagated uncertainty}
 \usage{
 plotExcursionCore(exc.out.core, add.to.plot = ggplot2::ggplot())
 }
 \arguments{
-\item{add.to.plot}{a ggplot object upon which to add this plot}
+\item{exc.out.core}{the output of detectExcursionCore()}
 
-\item{exc.out}{A 1 row tibble describing the excursion - this the output of detectExcursionCore, or part of the output of detectExcursion}
+\item{add.to.plot}{a ggplot object upon which to add this plot}
 }
 \value{
-
+a ggplot object
 }
 \description{
-Plot a basic excursion without uncertainty
+Plot a basic excursion without propagated uncertainty
 }

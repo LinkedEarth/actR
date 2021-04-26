@@ -3,6 +3,7 @@
 export(detectExcursion)
 export(detectExcursionCore)
 export(maxConsecutive)
+export(plotExcursion)
 export(plotExcursionCore)
 export(propagateUncertainty)
 export(testNullHypothesis)
