@@ -53,6 +53,7 @@ detectExcursion = function(age,
                            ref.window,
                            n.ens = 100,
                            output.figure.path = NA,
+                           surrogate.method = "isospectral",
                            ...) {
 
 
@@ -82,7 +83,7 @@ detectExcursion = function(age,
   nullHyp <- testNullHypothesis(age,
                                 vals,
                                 n.ens = n.ens,
-                                method = "isopersistent",
+                                surrogate.method = surrogate.method,
                                 changeFun = detectExcursionCore,
                                 event.start = event.start,
                                 event.end = event.end,

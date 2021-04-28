@@ -90,6 +90,38 @@ plotExcursionCore <- function(exc.out.core,
   return(plotOut)
 }
 
+plotSectionMeans <- function(ms.core.out,time,vals,add.to.plot = ggplot2::ggplot()){
+
+  #find section means
+  cpt <- sort(c(min(time,na.rm = TRUE),ms.core.out$time_start,max(time,na.rm = TRUE)))
+
+  ind <- means <- matrix(NA,nrow = length(time))
+
+  for(i in 1:(length(cpt)-1)){
+    w <- which(dplyr::between(time,cpt[i],cpt[i+1]))
+    ind[w] <- i
+    means[w] <- mean(vals[w],na.rm = TRUE)
+  }
+
+  tp <- tibble::tibble(time,
+                       vals,
+                       cpt_section = factor(ind),
+                       cpt_mean = means)
+
+
+  #plot it. This is kinda clumsy for the moment
+  ms <- add.to.plot+
+    actR_ggtheme()
+
+
+  for(i in 1:(length(cpt)-1)){
+    td <- dplyr::filter(tp,cpt_section == i)
+    ms <- ms + geom_line(data = td,aes(time,cpt_mean),color = mean.color)
+  }
+
+  return(ms)
+}
+
 
 plotMeanShiftCore <- function(ms.core.out,line.color = "black", mean.color = "red"){
   if(nrow(ms.core.out)==0){#how to handle this?
@@ -128,45 +160,72 @@ for(i in 1:(length(cpt)-1)){
 
 return(ms)
 
+}
+
+plotMeanShift <- function(ms.out){
+
+  paramTib <- createTibbleFromParameterString(ms.out$parameters)
+
+  #plot ensemble ribbons
+  ribbons <- geoChronR::plotTimeseriesEnsRibbons(X = ms.out$ageEns,Y = ms.out$valEns) + actR_ggtheme()
+
+  ageMed <- apply(ms.out$ageEns,1,median,na.rm = TRUE)
+  valMed <- apply(ms.out$valEns,1,median,na.rm = TRUE)
+
+  #plot changepoint probabilities
+  #make step plot
+  cpp <- ms.out$shiftDetection %>%
+    tidyr::pivot_longer(c("time_start","time_end"),values_to = "time_edges")
+
+  npp <- cpp %>%
+    tidyr::pivot_longer(starts_with("q"),names_to = "cl",values_to = "nullProbs")
+
+  probPlot <- ggplot()+
+    actR_ggtheme()+
+    geom_ribbon(data = cpp,aes(x = time_edges,ymin = 0,ymax = event_probability)) +
+    geom_line(data = npp,aes(x = time_edges,y = nullProbs,color = cl))+
+    scale_color_brewer(palette = "Set1")+
+    ylab("Shift Frequency")+
+    theme(legend.position = c(0.9,0.8),
+          legend.background = element_blank(),
+          legend.title = element_blank())
+
+
+
+  ms.out$shiftDetection
+
+
+  #find significant events
+    sig.event <- ms.out$shiftDetection %>%
+      dplyr::filter(event_probability > `q0.95`) %>%
+      dplyr::mutate(exceedance = event_probability - `q0.95`) %>%
+      dplyr::arrange(dplyr::desc(exceedance))
+
+    #remove those within minimum distance
+    bm <- sig.event$time_mid
+    tr <- c()
+    for(i in 1:(length(bm) - 1)){
+      diffs <- abs(bm-bm[i])
+      close <- which(diffs < paramTib$minimum.segment.length)
+      ttr <- intersect(close,seq(i+1,length(bm)))
+      tr <- c(tr,ttr)
+    }
+
+    if(length(tr) > 0){
+      sig.event <- sig.event[-tr,]
+    }
+
+    timeSeries <- plotSectionMeans(add.to.plot = ribbons,sig.event,time = ageMed,vals = valMed)+
+      scale_x_continuous(position = "top")+scale_y_continuous(position = "right")+
+     theme(axis.ticks.x.bottom = element_blank(),
+            plot.margin=unit(c(1,1,-.2,1), "cm"))
+
+  # combine the two plots
+    out <- egg::ggarrange(plots = list(timeSeries,probPlot),ncol = 1,padding = 0)
+
+    return(out)
 
 }
 
-plotMeanShift <- function(ms.out,prob.thresh = .5){
-#plot ensemble ribbons
-  #determine what is ensemble
-  ensOut <- ms.out$eventDetection[[1]]
-  hasAgeEnsemble <- !identicalVectorsList(ensOut$age)
-  hasPaleoEnsemble <- !identicalVectorsList(ensOut$vals)
-
-  if(hasAgeEnsemble){
-    ageMat <- list2matrix(ensOut$age)
-  }else{
-    ageMat <- ensOut$age[[1]]
-  }
-
-  if(hasPaleoEnsemble){
-    paleoMat <- list2matrix(ensOut$vals)
-  }else{
-    paleoMat <- ensOut$vals[[1]]
-  }
-
-  #if age or values are ensemble, plot as ribbons, with single line over top.
-  if(hasPaleoEnsemble | hasAgeEnsemble){
-    ribbons <- geoChronR::plotTimeseriesEnsRibbons(X = ageMat,Y = paleoMat,probs = c(.025,.25,.75,.975))
-
-    #pick a representative ensemble member
-    rm <- sample(which(ensOut$nExcusionVals == median(ensOut$nExcusionVals,na.rm = TRUE)),size = 1)
-    em <- ensOut[rm,]
-
-    plotout <- plotExcursionCore(em,add.to.plot = ribbons)
-  }else{
-    plotout <- plotExcursionCore(ensOut[1,])
-  }
-  #plot change point probability
-
-#two options
-  #1. find an ensemble member with change points most similar to the median probabilities
-  #2. calculate means from ensemble, and show along ensemblee median.
 
 
-}

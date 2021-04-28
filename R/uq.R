@@ -4,8 +4,8 @@
 #' @param age a time vector, or matrix of time ensemble members (ensembles in columns)
 #' @param vals a values vector, or matrix of values ensemble members (ensembles in columns)
 #' @param changeFun the change function to across which to propagate
-#' @param simulateAgeUncertainty TRUE or FALSE. If an ensemble is not included, do you want to simulate age ensembles (default = TRUE)
-#' @param simulatePaleoUncertainty TRUE or FALSE. If an ensemble is not included, do you want to simulate paleo ensembles (default = TRUE)
+#' @param simulate.age.uncertainty TRUE or FALSE. If an ensemble is not included, do you want to simulate age ensembles (default = TRUE)
+#' @param simulate.paleo.uncertainty TRUE or FALSE. If an ensemble is not included, do you want to simulate paleo ensembles (default = TRUE)
 #' @param n.ens How many ensembles to propagate through? (default = 100)
 #' @param bam.model BAM Model parameters to use if simulating age uncertainty (default = list(ns = n.ens, name = "bernoulli", param = 0.05), paleo.uncertainty = sd(vals,na.rm = TRUE)))
 #' @param paleo.uncertainty Uncertainty to use if modelling uncertainty for paleo values. (default = sd(vals,na.rm = TRUE)/2)
@@ -19,8 +19,8 @@
 propagateUncertainty <- function(age,
                                  vals,
                                  changeFun,
-                                 simulateAgeUncertainty = TRUE,
-                                 simulatePaleoUncertainty = TRUE,
+                                 simulate.age.uncertainty = TRUE,
+                                 simulate.paleo.uncertainty = TRUE,
                                  n.ens = 100,
                                  bam.model = list(ns = n.ens, name = "bernoulli", param = 0.05),
                                  paleo.uncertainty = sd(vals,na.rm = TRUE)/2,
@@ -32,7 +32,7 @@ propagateUncertainty <- function(age,
 
 
   #check inputs
-  if(!simulateAgeUncertainty & !simulatePaleoUncertainty & NCOL(age) == 1 & NCOL(vals) == 1){
+  if(!simulate.age.uncertainty & !simulate.paleo.uncertainty & NCOL(age) == 1 & NCOL(vals) == 1){
     n.ens <- 1
   }
 
@@ -40,7 +40,7 @@ propagateUncertainty <- function(age,
   #Prepare age ensemble
   if(nca == 1){#then it's not an ensemble
     #create ensemble?
-    if(simulateAgeUncertainty){
+    if(simulate.age.uncertainty){
       ageMat <- geoChronR::simulateBam(X = matrix(1,nrow = length(age)),
                                        t = as.matrix(age),
                                        model = bam.model,
@@ -65,7 +65,7 @@ propagateUncertainty <- function(age,
 
   if(ncp == 1){#then it's not an ensemble
     #create ensemble?
-    if(simulatePaleoUncertainty){
+    if(simulate.paleo.uncertainty){
       paleoList <- purrr::rerun(vals + simulateAutoCorrelatedUncertainty(sd = paleo.unc,
                                                                          n = NROW(vals),
                                                                          ar = paleo.ar1,
@@ -89,14 +89,16 @@ propagateUncertainty <- function(age,
 
   propagated <- purrr::map2_dfr(ageList,paleoList,changeFun,...)
 
+  propagated$nEns <- n.ens
+
   #not sure I want this
   if(summarize){
     propagated <- propagated %>%
-    dplyr::group_by(time_start,time_end) %>%
-    dplyr::summarise(meanDetected = mean(eventDetected),
-                     meanProbability = mean(eventProbability),
-                     nEns = n.ens,
-                     parameters = unique(parameters))
+      dplyr::group_by(time_start,time_end) %>%
+      dplyr::summarise(meanDetected = mean(eventDetected),
+                       meanProbability = mean(eventProbability),
+                       nEns = n.ens,
+                       parameters = unique(parameters))
   }
 
   return(propagated)
@@ -115,24 +117,66 @@ propagateUncertainty <- function(age,
 #' @return a tibble that reports the positivity rate in the synthetics
 #' @export
 testNullHypothesis <- function(age,
-                                  vals,
-                                  changeFun,
-                                  method = "isospectral",
-                                  n.ens = 100,
-                                  ...) {
+                               vals,
+                               changeFun,
+                               simulate.age.uncertainty = TRUE,
+                               simulate.paleo.uncertainty = TRUE,
+                               n.ens = 100,
+                               mc.ens = 100,
+                               surrogate.method = "isospectral",
+                               how.long.prop = NA,
+                               ...) {
 
-  #create surrogate data for hypothesis testing
-  if(grepl(method,pattern = "persis",ignore.case = T)){
-    #surVals <- geoChronR::ar1Surrogates(time = age,vals = vals,detrend = TRUE,method = "redfit",n.ens = n.ens)
-    surVals <- geoChronR::createSyntheticTimeseries(time = age,values = vals,sameTrend = TRUE,n.ens = n.ens)
+  cat(crayon::green(glue::glue("Testing null hypothesis with {mc.ens} simulations, each with {n.ens} ensemble members. \n\n")))
+  if(is.na(how.long.prop)){
+  cat(crayon::blue(glue::glue("This will probably take awhile.\n\n")))
+  }else{
+    est <- ceiling(1.2*mc.ens*how.long.prop/60) #I wonder how accurate this is.
+    cat(crayon::blue(glue::glue("This will probably take about {est} minutes\n\n")))
+  }
 
+  #prep values for surrogates
 
-  }else if(grepl(method,pattern = "spectra",ignore.case = T)){
+  ncp <- NCOL(vals)
 
+  if(ncp == 1){
+    vm <- matrix(rep(vals,times = mc.ens),ncol = mc.ens,byrow = FALSE)
+    valList <- purrr::array_branch(vm,margin = 2)
+  }else{
+    valList <- purrr::array_branch(vals,margin = 2)
+    if(length(valList) >= n.ens){
+      valList <- valList[sample(seq_along(valList),size = mc.ens,replace = FALSE)]
+    }else{
+      valList <- valList[sample(seq_along(valList),size = mc.ens,replace = TRUE)]
+    }
   }
 
 
-  out <- propagateUncertainty(age,surVals,changeFun,n.ens = n.ens,...)
+  # generate some surrogates
+
+  if(grepl(surrogate.method,pattern = "persis",ignore.case = T)){
+    #surVals <- geoChronR::ar1Surrogates(time = age,vals = vals,detrend = TRUE,method = "redfit",n.ens = n.ens)
+    cstv <- function(x,...){geoChronR::createSyntheticTimeseries(values = x,...)}
+
+
+    surVals <- purrr::map(valList,
+                          cstv,
+                          time = age,
+                          sameTrend = TRUE,
+                          n.ens = ncp)
+
+  }else if(grepl(surrogate.method,pattern = "spectra",ignore.case = T)){
+
+  }
+
+  pucv <- function(x,...){propagateUncertainty(vals = x,...)}
+
+  out <- purrr::map(surVals,
+                    pucv,
+                    age = age,
+                    changeFun = changeFun,
+                    n.ens = n.ens,
+                    ...)
 
   return(out)
 
