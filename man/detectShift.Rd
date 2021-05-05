@@ -15,7 +15,7 @@ detectShift(
   surrogate.method = "isospectral",
   summary.bin.step = 100,
   null.hypothesis.n = 100,
-  null.quantiles = c,
+  null.quantiles = c(0.95, 0.9),
   ...
 )
 }

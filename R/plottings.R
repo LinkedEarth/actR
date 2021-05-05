@@ -72,7 +72,6 @@ plot.excursion <- function(x, alpha = 0.05,print.significance = FALSE,lab.mult =
 #' @param add.to.plot a ggplot object upon which to add this plot
 #'
 #' @return a ggplot object
-#' @export
 plot.excursionCore <- function(x,
                                add.to.plot = ggplot2::ggplot()){
 
@@ -119,7 +118,6 @@ plot.excursionCore <- function(x,
 #' @param add.to.plot ggplot to add this to
 #'
 #' @return A ggplot object
-#' @export
 plotSectionMeans <- function(x,time,vals,add.to.plot = ggplot2::ggplot()){
 
   #find section means
@@ -159,7 +157,6 @@ plotSectionMeans <- function(x,time,vals,add.to.plot = ggplot2::ggplot()){
 #' @param x tibble with time and vals
 #'
 #' @return A ggplot object
-#' @export
 plot.shiftCore <- function(x,line.color = "black", mean.color = "red"){
   if(nrow(x)==0){#how to handle this?
 
@@ -209,8 +206,7 @@ plot.shiftCore <- function(x,line.color = "black", mean.color = "red"){
 #' @param label.sig Label significant change points (default = TRUE)
 #' @param alpha significance level (default = 0.05)
 #'
-#' @return
-#' @export
+#' @return a ggplot object
 plot.shift <- function(x,
                        cl.color = "Reds",
                        plot.sig.vlines = TRUE,
