@@ -3,22 +3,26 @@ actR_ggtheme <- ggplot2::theme_bw
 
 
 #' Plot an excursion with uncertainties
-#'
-#' @param exc.out The output of detectExcursion()
-#'
+#' @importFrom glue glue
+#' @importFrom dplyr filter
+#' @importFrom geoChronR plotTimeseriesEnsRibbons
+#' @import ggplot2
+#' @param x The output of detectExcursion()
+#' @param alpha What significance level to use?
+#' @param print.significance Show significance on the plot?
+#' @param lab.mult When labeling significance, how much higher than the highest point to put the label
 #' @return a ggplot2 object
-#' @export
-plotExcursion <- function(exc.out){
+plot.excursion <- function(x, alpha = 0.05,print.significance = FALSE,lab.mult = 0.02){
 
   #determine what is ensemble
-  ensOut <- exc.out$eventDetection[[1]]
-  hasAgeEnsemble <- !identicalVectorsList(ensOut$age)
+  ensOut <- x$eventDetection[[1]]
+  hasTimeEnsemble <- !identicalVectorsList(ensOut$time)
   hasPaleoEnsemble <- !identicalVectorsList(ensOut$vals)
 
-  if(hasAgeEnsemble){
-    ageMat <- list2matrix(ensOut$age)
+  if(hasTimeEnsemble){
+    timeMat <- list2matrix(ensOut$time)
   }else{
-    ageMat <- ensOut$age[[1]]
+    timeMat <- ensOut$time[[1]]
   }
 
   if(hasPaleoEnsemble){
@@ -27,15 +31,31 @@ plotExcursion <- function(exc.out){
     paleoMat <- ensOut$vals[[1]]
   }
 
-  #if age or values are ensemble, plot as ribbons, with single line over top.
-  if(hasPaleoEnsemble | hasAgeEnsemble){
-    ribbons <- geoChronR::plotTimeseriesEnsRibbons(X = ageMat,Y = paleoMat,probs = c(.025,.25,.75,.975))
+  #if time or values are ensemble, plot as ribbons, with single line over top.
+  if(hasPaleoEnsemble | hasTimeEnsemble){
+    ribbons <- geoChronR::plotTimeseriesEnsRibbons(X = timeMat,Y = paleoMat,probs = c(.025,.25,.75,.975))
+
+    #check for significance
+    if(x$empirical_pvalue < alpha){
+      alpha.msg <- glue::glue("Empirical p-value {x$empirical_pvalue} is < {alpha}")
+      ts <- dplyr::filter(ensOut,eventDetected == TRUE)
+    }else{
+      alpha.msg <- glue::glue("Empirical p-value {x$empirical_pvalue} exceeds {alpha}")
+      ts <- dplyr::filter(ensOut,eventDetected == FALSE)
+    }
 
     #pick a representative ensemble member
-    rm <- sample(which(ensOut$nExcusionVals == median(ensOut$nExcusionVals,na.rm = TRUE)),size = 1)
-    em <- ensOut[rm,]
+    rm <- sample(which(ts$nExcusionVals == median(ts$nExcusionVals,na.rm = TRUE)),size = 1)
+    em <- ts[rm,]
 
     plotout <- plotExcursionCore(em,add.to.plot = ribbons)
+
+    if(print.significance){
+      l.y <- max(em$vals[[1]],na.rm = TRUE)+lab.mult*abs(diff(range(em$vals[[1]]),na.rm = TRUE))
+      l.x <- mean(em$time[[1]],na.rm = TRUE)
+      plotout <- plotout +
+        ggplot2::annotate("text",x = l.x, y = l.y,label = alpha.msg)
+    }
   }else{
     plotout <- plotExcursionCore(ensOut[1,])
   }
@@ -47,22 +67,23 @@ plotExcursion <- function(exc.out){
 
 #' Plot a basic excursion without propagated uncertainty
 #'
-#' @param exc.out.core the output of detectExcursionCore()
+#' @import ggplot2
+#' @param x the output of detectExcursionCore()
 #' @param add.to.plot a ggplot object upon which to add this plot
 #'
 #' @return a ggplot object
 #' @export
-plotExcursionCore <- function(exc.out.core,
-                              add.to.plot = ggplot2::ggplot()){
+plot.excursionCore <- function(x,
+                               add.to.plot = ggplot2::ggplot()){
 
   #spread out the list columns
-  tp <- tidyr::unchop(exc.out.core, c("age","vals","isExcursion"))
+  tp <- tidyr::unchop(x, c("time","vals","isExcursion"))
 
-  params <- createTibbleFromParameterString(exc.out.core$parameters[1])
+  params <- createTibbleFromParameterString(x$parameters[1])
 
   #Prepare some columns for plotting
-  pre_i <- which(tp$age < tp$time_start)
-  post_i <- which(tp$age > tp$time_end)
+  pre_i <- which(tp$time < tp$time_start)
+  post_i <- which(tp$time > tp$time_end)
 
   tp$refMeans <- NA
   tp$refMeans[pre_i] <- tp$preMean[pre_i]
@@ -78,11 +99,11 @@ plotExcursionCore <- function(exc.out.core,
 
   #Find the excursions
   plotOut <- add.to.plot +
-    geom_point(data = tp,aes(x = age, y = vals,color = isExcursion)) +
-    geom_line(data = tp,aes(x = age, y = vals)) +
-    geom_line(data = tp,aes(x = age, y = refMeans), color = 'red',linetype = 1)+
-    geom_line(data = tp,aes(x = age, y = refSdHi),  color = 'red', linetype = 4)+
-    geom_line(data = tp,aes(x = age, y = refSdLo),  color = 'red', linetype = 4)+
+    geom_point(data = tp,aes(x = time, y = vals,color = isExcursion)) +
+    geom_line(data = tp,aes(x = time, y = vals)) +
+    geom_line(data = tp,aes(x = time, y = refMeans), color = 'red',linetype = 1)+
+    geom_line(data = tp,aes(x = time, y = refSdHi),  color = 'red', linetype = 4)+
+    geom_line(data = tp,aes(x = time, y = refSdLo),  color = 'red', linetype = 4)+
     ylab("Detrended values")+
     scale_color_manual("Excursion Detected",values = c("black","red"))+
     actR_ggtheme()
@@ -90,10 +111,19 @@ plotExcursionCore <- function(exc.out.core,
   return(plotOut)
 }
 
-plotSectionMeans <- function(ms.core.out,time,vals,add.to.plot = ggplot2::ggplot()){
+#' Plot a shift in mean or variance
+#' @import tibble ggplot2 dplyr
+#' @param x Output of detectShiftCore()
+#' @param time Input time vector
+#' @param vals input value vector
+#' @param add.to.plot ggplot to add this to
+#'
+#' @return A ggplot object
+#' @export
+plotSectionMeans <- function(x,time,vals,add.to.plot = ggplot2::ggplot()){
 
   #find section means
-  cpt <- sort(c(min(time,na.rm = TRUE),ms.core.out$time_start,max(time,na.rm = TRUE)))
+  cpt <- sort(c(min(time,na.rm = TRUE),x$time_start,max(time,na.rm = TRUE)))
 
   ind <- means <- matrix(NA,nrow = length(time))
 
@@ -122,16 +152,23 @@ plotSectionMeans <- function(ms.core.out,time,vals,add.to.plot = ggplot2::ggplot
   return(ms)
 }
 
-
-plotMeanShiftCore <- function(ms.core.out,line.color = "black", mean.color = "red"){
-  if(nrow(ms.core.out)==0){#how to handle this?
+#' Plot a shift in mean or variance
+#' @import tibble ggplot2 dplyr
+#' @param line.color color of the line
+#' @param mean.color color of the means
+#' @param x tibble with time and vals
+#'
+#' @return A ggplot object
+#' @export
+plot.shiftCore <- function(x,line.color = "black", mean.color = "red"){
+  if(nrow(x)==0){#how to handle this?
 
   }
-  time <- ms.core.out$age[[1]]
-  vals <- ms.core.out$vals[[1]]
+  time <- x$time[[1]]
+  vals <- x$vals[[1]]
 
-#find section means
-  cpt <- sort(c(min(time,na.rm = TRUE),ms.core.out$time_start,max(time,na.rm = TRUE)))
+  #find section means
+  cpt <- sort(c(min(time,na.rm = TRUE),x$time_start,max(time,na.rm = TRUE)))
 
   ind <- means <- matrix(NA,nrow = length(time))
 
@@ -141,68 +178,100 @@ plotMeanShiftCore <- function(ms.core.out,line.color = "black", mean.color = "re
     means[w] <- mean(vals[w],na.rm = TRUE)
   }
 
-tp <- tibble::tibble(time,
-                     vals,
-                     cpt_section = factor(ind),
-                     cpt_mean = means)
+  tp <- tibble::tibble(time,
+                       vals,
+                       cpt_section = factor(ind),
+                       cpt_mean = means)
 
 
-#plot it. This is kinda clumsy for the moment
-ms <- ggplot()+
-  geom_line(data = tp,aes(time,vals),color = line.color)+
-  actR_ggtheme()
+  #plot it. This is kinda clumsy for the moment
+  ms <- ggplot()+
+    geom_line(data = tp,aes(time,vals),color = line.color)+
+    actR_ggtheme()
 
 
-for(i in 1:(length(cpt)-1)){
-  td <- dplyr::filter(tp,cpt_section == i)
-  ms <- ms + geom_line(data = td,aes(time,cpt_mean),color = mean.color)
+  for(i in 1:(length(cpt)-1)){
+    td <- dplyr::filter(tp,cpt_section == i)
+    ms <- ms + geom_line(data = td,aes(time,cpt_mean),color = mean.color)
+  }
+
+  return(ms)
+
 }
 
-return(ms)
+#' Plot mean or variance shifts, with uncertainties and null hypothesis testing
+#'
+#' @importFrom geoChronR plotTimeseriesEnsRibbons
+#' @import ggplot2 tidyr RColorBrewer purrr dplyr egg
+#' @param x Output from actR::detectShift
+#' @param cl.color Color palette, single color, or vector of colors to use for confidence intervals (default = "Reds"s)
+#' @param plot.sig.vlines Plot vertical lines at significant change points? (default = TRUE)
+#' @param label.sig Label significant change points (default = TRUE)
+#' @param alpha significance level (default = 0.05)
+#'
+#' @return
+#' @export
+plot.shift <- function(x,
+                       cl.color = "Reds",
+                       plot.sig.vlines = TRUE,
+                       label.sig = TRUE,
+                       alpha = 0.05){
 
-}
-
-plotMeanShift <- function(ms.out){
-
-  paramTib <- createTibbleFromParameterString(ms.out$parameters)
+  paramTib <- createTibbleFromParameterString(x$parameters)
 
   #plot ensemble ribbons
-  ribbons <- geoChronR::plotTimeseriesEnsRibbons(X = ms.out$ageEns,Y = ms.out$valEns) + actR_ggtheme()
+  ribbons <- geoChronR::plotTimeseriesEnsRibbons(X = x$timeEns,Y = x$valEns) + actR_ggtheme()
 
-  ageMed <- apply(ms.out$ageEns,1,median,na.rm = TRUE)
-  valMed <- apply(ms.out$valEns,1,median,na.rm = TRUE)
+  timeMed <- apply(x$timeEns,1,median,na.rm = TRUE)
+  valMed <- apply(x$valEns,1,median,na.rm = TRUE)
 
   #plot changepoint probabilities
   #make step plot
-  cpp <- ms.out$shiftDetection %>%
+  cpp <- x$shiftDetection %>%
     tidyr::pivot_longer(c("time_start","time_end"),values_to = "time_edges")
 
   npp <- cpp %>%
     tidyr::pivot_longer(starts_with("q"),names_to = "cl",values_to = "nullProbs")
 
-  probPlot <- ggplot()+
-    actR_ggtheme()+
-    geom_ribbon(data = cpp,aes(x = time_edges,ymin = 0,ymax = event_probability)) +
-    geom_line(data = npp,aes(x = time_edges,y = nullProbs,color = cl))+
-    scale_color_brewer(palette = "Set1")+
-    ylab("Shift Frequency")+
-    theme(legend.position = c(0.9,0.8),
-          legend.background = element_blank(),
-          legend.title = element_blank())
+  np <- length(unique(npp$cl))
+  #deal with line colors
+  if(cl.color %in% rownames(RColorBrewer::brewer.pal.info)){#
+    #then it's an RColorBrewer pallette
+    colorScale <- rep_len(suppressWarnings(RColorBrewer::brewer.pal(n = np,name = cl.color)),length.out = np)
+  }else{#it's not
+    if(length(cl.color) == 1){#apply one color to all
+      colorScale <- rep(cl.color,times = np)
+    }else{
+      if(length(cl.color) == np){
+        colorScale <- cl.color
+      }else{
+        stop("cl.color must be either 1) a single color to repeated, 2) an RColorBrewer palette or 3) a string the same length of the number of lines to be plotted")
+      }
+    }
+  }
 
-
-
-  ms.out$shiftDetection
 
 
   #find significant events
-    sig.event <- ms.out$shiftDetection %>%
-      dplyr::filter(event_probability > `q0.95`) %>%
-      dplyr::mutate(exceedance = event_probability - `q0.95`) %>%
-      dplyr::arrange(dplyr::desc(exceedance))
+  maxcli <- strsplit(names(x$shiftDetection),"q") %>%
+    purrr::map(pluck,2) %>%
+    purrr::map_dbl(~ ifelse(is.null(.x),0,as.numeric(.x))) %>%
+    which.max()
 
-    #remove those within minimum distance
-    bm <- sig.event$time_mid
+
+  sig.event <- x$shiftDetection %>%
+    dplyr::filter(empirical_pvalue < alpha) %>%
+    dplyr::mutate(exceedance = event_probability - .[[maxcli]]) %>%
+    dplyr::arrange(empirical_pvalue,dplyr::desc(exceedance))
+
+
+  max.y <- x$shiftDetection %>%
+    dplyr::select("event_probability",dplyr::starts_with("q")) %>%
+    max(na.rm = TRUE)
+
+  #remove those within minimum distance
+  bm <- sig.event$time_mid
+  if(length(bm) > 1){
     tr <- c()
     for(i in 1:(length(bm) - 1)){
       diffs <- abs(bm-bm[i])
@@ -215,15 +284,47 @@ plotMeanShift <- function(ms.out){
       sig.event <- sig.event[-tr,]
     }
 
-    timeSeries <- plotSectionMeans(add.to.plot = ribbons,sig.event,time = ageMed,vals = valMed)+
-      scale_x_continuous(position = "top")+scale_y_continuous(position = "right")+
-     theme(axis.ticks.x.bottom = element_blank(),
-            plot.margin=unit(c(1,1,-.2,1), "cm"))
+  }
+  minp <- x$shiftDetection %>%
+    dplyr::filter(empirical_pvalue > 0) %>%
+    dplyr::select("empirical_pvalue") %>%
+    min(na.rm = TRUE)
+
+  sig.event$pvallab <- paste("p =",sig.event$empirical_pvalue)
+  sig.event$pvallab[sig.event$empirical_pvalue == 0] <- glue::glue("p < {minp}")
+
+
+  #plot shift frequency and cls
+  probPlot <- ggplot()+
+    actR_ggtheme()+
+    geom_ribbon(data = cpp,aes(x = time_edges,ymin = 0,ymax = event_probability)) +
+    geom_line(data = npp,aes(x = time_edges,y = nullProbs,color = cl))+
+    scale_color_manual(values = colorScale)+
+    ylab("Shift Frequency")+
+    theme(legend.position = c(0.9,0.8),
+          legend.background = element_blank(),
+          legend.title = element_blank())
+
+  if(plot.sig.vlines){
+    probPlot <- probPlot +
+      geom_vline(data = sig.event,aes(xintercept = time_mid),linetype = "dashed",color = "gray50")
+  }
+  if(label.sig){
+    probPlot <- probPlot +
+      geom_label(data = sig.event,aes(x = time_mid,y = max.y,label = pvallab))
+  }
+
+
+  timeSeries <- plotSectionMeans(add.to.plot = ribbons,sig.event,time = timeMed,vals = valMed)+
+    scale_x_continuous(position = "top")+
+    scale_y_continuous(position = "right")+
+    theme(axis.ticks.x.bottom = element_blank(),
+          plot.margin=unit(c(1,1,-.2,1), "cm"))
 
   # combine the two plots
-    out <- egg::ggarrange(plots = list(timeSeries,probPlot),ncol = 1,padding = 0)
+  out <- egg::ggarrange(plots = list(timeSeries,probPlot),ncol = 1,padding = 0)
 
-    return(out)
+  return(out)
 
 }
 

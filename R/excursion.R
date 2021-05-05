@@ -1,4 +1,4 @@
-detectExcursionSlidingWindow <- function(age,
+detectExcursionSlidingWindow <- function(time,
                               vals,
                               event.window,
                               ref.window,
@@ -6,8 +6,8 @@ detectExcursionSlidingWindow <- function(age,
                               ...){
 
   #define the intervals over which to slide
-  slide.min <- (min(age,na.rm = TRUE)+ref.window)+event.window/2
-  slide.max <- (max(age,na.rm = TRUE)-ref.window)-event.window/2
+  slide.min <- (min(time,na.rm = TRUE)+ref.window)+event.window/2
+  slide.max <- (max(time,na.rm = TRUE)-ref.window)-event.window/2
 
   window.vec <- seq(slide.min,slide.max,by =slide.step)
   window.mid <- window.vec[-1]-event.window/2
@@ -15,7 +15,7 @@ detectExcursionSlidingWindow <- function(age,
   des <- function(ey,...){detectExcursion(event.yr = ey,...)}
   slid <- purrr::map_dfr(window.mid,
                          .f = des,
-                         age = age,
+                         time = time,
                          vals = vals,
                          event.window = event.window,
                          ref.window = ref.window,
@@ -35,7 +35,10 @@ detectExcursionSlidingWindow <- function(age,
 #' @description Determines whether an excursion event has occurred within the specified event window. Excursion events are defined as n.consecutive values within the event window that are more extreme than the avg +/- sig.num standard deviations of the reference windows.
 #' @references Morrill
 #'
+#' @inheritParams prepareInput
 #' @inheritParams propagateUncertainty
+#' @inheritParams testNullHypothesis
+#' @inheritParams detectShift
 #' @param event.yr the center of the proposed excursion window
 #' @param event.window the width of the proposed excursion window
 #' @param ref.window how many years to use as a reference before and after the event window
@@ -46,16 +49,37 @@ detectExcursionSlidingWindow <- function(age,
 #'
 #' @return a tibble that describes the positive and negative excursion results
 #' @export
-detectExcursion = function(age,
-                           vals,
+detectExcursion = function(ltt = NA,
+                           time = NA,
+                           vals = NA,
+                           time.variable.name = NA,
+                           vals.variable.name = NA,
+                           time.units = NA,
+                           vals.units = NA,
                            event.yr,
                            event.window,
                            ref.window,
                            n.ens = 100,
                            output.figure.path = NA,
                            surrogate.method = "isospectral",
+                           null.hypothesis.n = 100,
+                           null.quantiles = c(.9,.95),
                            ...) {
 
+  #prep inputs
+  prepped <- prepareInput(ltt = ltt,
+                          time = time,
+                          vals = vals,
+                          time.variable.name = time.variable.name,
+                          vals.variable.name = vals.variable.name,
+                          time.units = time.units,
+                          vals.units = vals.units,
+                          expecting.one.row = TRUE,
+                          sort.by.time = TRUE,
+                          remove.time.nas = TRUE)
+
+  time <- prepped$time[[1]]
+  vals <- prepped$paleoData_values[[1]]
 
   # yr.start:yr.end defines boundaries of analysis (i.e. both reference windows and the event window)
   yr.start = event.yr - event.window / 2 - ref.window
@@ -65,49 +89,63 @@ detectExcursion = function(age,
   event.start = event.yr - event.window / 2
   event.end = event.yr + event.window / 2
 
-  analysis.i = which(age >= yr.start & age <= yr.end) # define analysis window indices
+  analysis.i = which(time >= yr.start & time <= yr.end) # define analysis window indices
 
-  age = age[analysis.i]
+  time = time[analysis.i]
   vals = vals[analysis.i]
 
-  # detect excursions while propagating age and data uncertainties
-  dataEst <- propagateUncertainty(age,
+  # detect excursions while propagating time and data uncertainties
+  ptm <- proc.time()
+  dataEst <- propagateUncertainty(time,
                                   vals,
                                   n.ens = n.ens,
                                   changeFun = detectExcursionCore,
                                   event.start = event.start,
                                   event.end = event.end,
                                   ...)
+  te <- proc.time() - ptm
+  te <- te[3]
 
   # now test null hypothesis
-  nullHyp <- testNullHypothesis(age,
+  nullHyp <- testNullHypothesis(time,
                                 vals,
                                 n.ens = n.ens,
                                 surrogate.method = surrogate.method,
                                 changeFun = detectExcursionCore,
                                 event.start = event.start,
                                 event.end = event.end,
+                                how.long.prop = te,
+                                mc.ens = null.hypothesis.n,
                                 ...)
+
+  nullEvents <- purrr::map_dbl(nullHyp,~ mean(.x$eventDetected,na.rm = TRUE)) %>%
+    tibble::tibble(nulls = .)
+
+  nullEcdf <- ecdf(nullEvents$nulls)
+
+  nullEventProb <- nullEvents %>%
+    dplyr::summarize(qs = quantile(nulls,probs = null.quantiles))
+
+  nullEventProb$clLevel <- paste0("cl",null.quantiles)
+
+  nullLevels <- nullEventProb %>%
+    tidyr::pivot_wider(values_from = qs,names_from = clLevel)
 
   eventSummary <- tibble::tibble(time_start = event.start,
                                  time_end = event.end,
-                                 eventDetectionWithUncertainty = mean(dataEst$eventDetected),
-                                 nullHypothesisDetection = mean(nullHyp$eventDetected),
-                                 empiricalPvalue = nullHypothesisDetection/eventDetectionWithUncertainty,
+                                 time_mid = mean(time_start,time_end),
+                                 eventDetectionWithUncertainty = mean(dataEst$eventDetected,na.rm = TRUE),
+                                 empirical_pvalue = 1-nullEcdf(eventDetectionWithUncertainty),
                                  eventDetection = list(dataEst),
-                                 nEns = n.ens)
+                                 nEns = n.ens) %>%
+    dplyr::bind_cols(nullLevels)
 
   paramTib <- createTibbleFromParameterString(as.character(glue::glue("event.yr = {event.yr}, event.window = {event.window}, ref.window = {ref.window}, {dataEst$parameters}")))
 
-  eventSummary <- dplyr::bind_cols(eventSummary,paramTib)
+  eventSummary <- dplyr::bind_cols(eventSummary,paramTib,prepped)
 
-  eventSummary$empiricalPvalue[eventSummary$empiricalPvalue < 0] <- 0
-  eventSummary$empiricalPvalue[eventSummary$empiricalPvalue > 1] <- 1
-
-
-  if (!is.na(output.figure.path)) {
-    #plotExcursion() TBD
-  }
+# assign the appropriate class
+  eventSummary <- new_excursion(eventSummary)
 
   return(eventSummary)
 
@@ -116,7 +154,7 @@ detectExcursion = function(age,
 
 #' Detect excursion - core functionality
 #'
-#' @param age age vector of only the points in the window
+#' @param time time vector of only the points in the window
 #' @param vals value vector of only the points in the window
 #' @param event.end the end of the event window
 #' @param event.start the start of the event window
@@ -128,7 +166,7 @@ detectExcursion = function(age,
 #'
 #' @return a tibble of results
 #' @export
-detectExcursionCore <- function(age,
+detectExcursionCore <- function(time,
                                 vals,
                                 event.start,
                                 event.end,
@@ -143,18 +181,18 @@ detectExcursionCore <- function(age,
 
   #removee NAs
   if(na.rm){
-    good <- which(!is.na(age) & !is.na(vals))
-    age <- age[good]
+    good <- which(!is.na(time) & !is.na(vals))
+    time <- time[good]
     vals <- vals[good]
   }
 
   # Detrend over analysis window
-  a = predict(lm(vals ~ age))
+  a = predict(lm(vals ~ time))
   values = as.vector(vals - a)
 
-  pre.i = which(age < event.start)                        # define pre-event (ref) window indices
-  event.i = which(age >= event.start & age <= event.end)  # define event window indices
-  post.i = which(age > event.end)                         # define post-event (ref) window indices
+  pre.i = which(time < event.start)                        # define pre-event (ref) window indices
+  event.i = which(time >= event.start & time <= event.end)  # define event window indices
+  post.i = which(time > event.end)                         # define post-event (ref) window indices
 
   #test for sufficient values in each window
   if(min(length(pre.i),length(event.i), length(post.i)) < min.vals){
@@ -162,16 +200,16 @@ detectExcursionCore <- function(age,
                           time_end = event.end,
                           eventDetected = NA,
                           eventProbability = NA,
-                          age = list(age),
+                          time = list(time),
                           vals = list(values),
                           preMean = NA,
                           preSd = NA,
                           postMean = NA,
                           postSd = NA,
                           nExcusionVals = NA,
-                          excursionMeanAge = NA,
+                          excursionMeanTime = NA,
                           excursionMaxSd = NA,
-                          isExcursion = list(rep(NA,times = length(age))),
+                          isExcursion = list(rep(NA,times = length(time))),
                           parameters = as.character(params))
     return(out)
   }
@@ -235,13 +273,13 @@ detectExcursionCore <- function(age,
     belowEvent <- FALSE
   }
 
-  isExcursion <- seq_along(age) %in% event.i[exc.ind]
+  isExcursion <- seq_along(time) %in% event.i[exc.ind]
 
   if(any(isExcursion)){
-    excursionMeanAge = mean(age[isExcursion])
+    excursionMeanTime = mean(time[isExcursion])
     excursionMaxSd = max(abs(vals[isExcursion])/max(preSD,postSD))
   }else{
-    excursionMeanAge = NA
+    excursionMeanTime = NA
     excursionMaxSd = NA
   }
 
@@ -261,17 +299,18 @@ detectExcursionCore <- function(age,
                         time_end = event.end,
                         eventDetected = event,
                         eventProbability = NA,
-                        age = list(age),
+                        time = list(time),
                         vals = list(values),
                         preMean = preAVG,
                         preSd = preSD,
                         postMean = postAVG,
                         postSd = postSD,
                         nExcusionVals = sum(isExcursion),
-                        excursionMeanAge = excursionMeanAge,
+                        excursionMeanTime = excursionMeanTime,
                         excursionMaxSd = excursionMaxSd,
                         isExcursion = list(isExcursion),
-                        parameters = as.character(params))
+                        parameters = as.character(params)) %>%
+    new_excursionCore()
 
   return(out)
 }

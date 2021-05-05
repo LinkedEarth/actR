@@ -5,31 +5,45 @@
 \title{Detect excursions in synthetic datasets that mimic a real on}
 \usage{
 testNullHypothesis(
-  age,
+  time,
   vals,
   changeFun,
-  method = "isospectral",
+  simulate.time.uncertainty = TRUE,
+  simulate.paleo.uncertainty = TRUE,
   n.ens = 100,
+  mc.ens = 100,
+  surrogate.method = "isospectral",
+  how.long.prop = NA,
   ...
 )
 }
 \arguments{
-\item{age}{a time vector, or matrix of time ensemble members (ensembles in columns)}
+\item{time}{a time vector, or matrix of time ensemble members (ensembles in columns)}
 
 \item{vals}{a values vector, or matrix of values ensemble members (ensembles in columns)}
 
 \item{changeFun}{the change function to across which to propagate}
 
-\item{method}{Method to use for hypothesis testing, either "isospectral" or "isopersistent" (default = "isospectral")}
+\item{simulate.time.uncertainty}{TRUE or FALSE. If an ensemble is not included, do you want to simulate time ensembles (default = TRUE)}
+
+\item{simulate.paleo.uncertainty}{TRUE or FALSE. If an ensemble is not included, do you want to simulate paleo ensembles (default = TRUE)}
 
 \item{n.ens}{How many ensembles to propagate through? (default = 100)}
+
+\item{mc.ens}{How many Monte Carlo simulations to use for null hypothesis testing}
+
+\item{surrogate.method}{What method to use to generage surrogate data for hypothesis testing? Options include: \itemize{
+\item 'isospectral': (Default) Following Ebisuzaki (1997), generate surrogates by scrambling the phases of the data while preserving their power spectrum. This uses the To generate these “isospectral” surrogates. Uses the rEDM::make_surrogate_data() function
+\item 'isopersistent':  Generates surrogates by simulating from an autoregressive process of order 1 (AR(1)), which has been fit to the data. Uses the geoChronR::createSyntheticTimeseries() function
+\item 'shuffle': Randomly shuffles the data to create surrogates. Uses the rEDM::make_surrogate_data() function
+}}
+
+\item{how.long.prop}{Optionally input the duration to calculate a single instance to estimate how long the calculation will take}
 
 \item{...}{
   Arguments passed on to \code{\link[=propagateUncertainty]{propagateUncertainty}}
   \describe{
-    \item{\code{simulateAgeUncertainty}}{TRUE or FALSE. If an ensemble is not included, do you want to simulate age ensembles (default = TRUE)}
-    \item{\code{simulatePaleoUncertainty}}{TRUE or FALSE. If an ensemble is not included, do you want to simulate paleo ensembles (default = TRUE)}
-    \item{\code{bam.model}}{BAM Model parameters to use if simulating age uncertainty (default = list(ns = n.ens, name = "bernoulli", param = 0.05), paleo.uncertainty = sd(vals,na.rm = TRUE)))}
+    \item{\code{bam.model}}{BAM Model parameters to use if simulating time uncertainty (default = list(ns = n.ens, name = "bernoulli", param = 0.05), paleo.uncertainty = sd(vals,na.rm = TRUE)))}
     \item{\code{paleo.uncertainty}}{Uncertainty to use if modelling uncertainty for paleo values. (default = sd(vals,na.rm = TRUE)/2)}
     \item{\code{paleo.ar1}}{Autocorrelation coefficient to use for modelling uncertainty on paleoData, what fraction of the uncertainties are autocorrelated? (default = sqrt(0.5); or 50\% autocorrelated uncertainty)}
     \item{\code{paleo.arima.order}}{Order to use for ARIMA model used in modelling uncertainty on paleoDat (default = c(1,0,0))}

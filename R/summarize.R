@@ -1,23 +1,23 @@
 summarizeEventProbability <- function(exc.out,
                                       bin.step = 10,
-                                      max.age = NA,
-                                      min.age = NA){
-  if(is.na(min.age)){
-    min.age <- purrr::map_dbl(exc.out$age,min,na.rm=T) %>% median(na.rm = TRUE)
+                                      max.time = NA,
+                                      min.time = NA){
+  if(is.na(min.time)){
+    min.time <- purrr::map_dbl(exc.out$time,min,na.rm=T) %>% median(na.rm = TRUE)
   }
-  if(is.na(max.age)){
-    max.age <- purrr::map_dbl(exc.out$age,max,na.rm=T) %>% median(na.rm = TRUE)
+  if(is.na(max.time)){
+    max.time <- purrr::map_dbl(exc.out$time,max,na.rm=T) %>% median(na.rm = TRUE)
   }
-  ageBins <- seq(min.age,max.age,by = bin.step)
-  ageOut <- min.age+bin.step/2
+  timeBins <- seq(min.time,max.time,by = bin.step)
+  timeOut <- min.time+bin.step/2
   good.exc <- dplyr::filter(exc.out,eventDetected == TRUE) %>%
     dplyr::mutate(time_mid = (time_start + time_end)/2)
 
 
-  eventSums <- eventsInWindow(good.exc$time_mid,start.vec = ageBins[-length(ageBins)],end.vec = ageBins[-1])
+  eventSums <- eventsInWindow(good.exc$time_mid,start.vec = timeBins[-length(timeBins)],end.vec = timeBins[-1])
 
-  out <- tibble::tibble(time_start = ageBins[-length(ageBins)],
-                        time_end = ageBins[-1],
+  out <- tibble::tibble(time_start = timeBins[-length(timeBins)],
+                        time_end = timeBins[-1],
                         event_probability =  eventSums/exc.out$nEns[1]) %>%
           dplyr::mutate(time_mid = (time_start + time_end)/2)
 

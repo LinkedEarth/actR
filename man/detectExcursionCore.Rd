@@ -5,7 +5,7 @@
 \title{Detect excursion - core functionality}
 \usage{
 detectExcursionCore(
-  age,
+  time,
   vals,
   event.start,
   event.end,
@@ -17,7 +17,7 @@ detectExcursionCore(
 )
 }
 \arguments{
-\item{age}{age vector of only the points in the window}
+\item{time}{time vector of only the points in the window}
 
 \item{vals}{value vector of only the points in the window}
 

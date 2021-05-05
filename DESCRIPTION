@@ -23,9 +23,15 @@ Imports:
     purrr,
     glue,
     tidyr,
-    lipdR (>= 0.2.3)
+    lipdR (>= 0.2.3),
+    rEDM,
+    RColorBrewer,
+    changepoint,
+    egg,
+    digest,
+    crayon
 Suggests: 
     testthat
-Remotes:  
+Remotes: 
     github::nickmckay/geoChronR,
     github::nickmckay/lipdR

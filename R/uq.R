@@ -1,13 +1,13 @@
 
-#' Detect a changepoint while propagating proxy and/or age uncertainty
+#' Detect a changepoint while propagating proxy and/or time uncertainty
 #'
-#' @param age a time vector, or matrix of time ensemble members (ensembles in columns)
+#' @param time a time vector, or matrix of time ensemble members (ensembles in columns)
 #' @param vals a values vector, or matrix of values ensemble members (ensembles in columns)
 #' @param changeFun the change function to across which to propagate
-#' @param simulate.age.uncertainty TRUE or FALSE. If an ensemble is not included, do you want to simulate age ensembles (default = TRUE)
+#' @param simulate.time.uncertainty TRUE or FALSE. If an ensemble is not included, do you want to simulate time ensembles (default = TRUE)
 #' @param simulate.paleo.uncertainty TRUE or FALSE. If an ensemble is not included, do you want to simulate paleo ensembles (default = TRUE)
 #' @param n.ens How many ensembles to propagate through? (default = 100)
-#' @param bam.model BAM Model parameters to use if simulating age uncertainty (default = list(ns = n.ens, name = "bernoulli", param = 0.05), paleo.uncertainty = sd(vals,na.rm = TRUE)))
+#' @param bam.model BAM Model parameters to use if simulating time uncertainty (default = list(ns = n.ens, name = "bernoulli", param = 0.05), paleo.uncertainty = sd(vals,na.rm = TRUE)))
 #' @param paleo.uncertainty Uncertainty to use if modelling uncertainty for paleo values. (default = sd(vals,na.rm = TRUE)/2)
 #' @param paleo.ar1 Autocorrelation coefficient to use for modelling uncertainty on paleoData, what fraction of the uncertainties are autocorrelated? (default = sqrt(0.5); or 50% autocorrelated uncertainty)
 #' @param paleo.arima.order Order to use for ARIMA model used in modelling uncertainty on paleoDat (default = c(1,0,0))
@@ -16,10 +16,10 @@
 #'
 #' @return a propagated uncertainty tibbble
 #' @export
-propagateUncertainty <- function(age,
+propagateUncertainty <- function(time,
                                  vals,
                                  changeFun,
-                                 simulate.age.uncertainty = TRUE,
+                                 simulate.time.uncertainty = TRUE,
                                  simulate.paleo.uncertainty = TRUE,
                                  n.ens = 100,
                                  bam.model = list(ns = n.ens, name = "bernoulli", param = 0.05),
@@ -27,37 +27,38 @@ propagateUncertainty <- function(age,
                                  paleo.ar1 = sqrt(0.5),
                                  paleo.arima.order = c(1,0,0),
                                  summarize = FALSE,
-
                                  ...){
 
 
+
+
   #check inputs
-  if(!simulate.age.uncertainty & !simulate.paleo.uncertainty & NCOL(age) == 1 & NCOL(vals) == 1){
+  if(!simulate.time.uncertainty & !simulate.paleo.uncertainty & NCOL(time) == 1 & NCOL(vals) == 1){
     n.ens <- 1
   }
 
-  nca <- NCOL(age)
-  #Prepare age ensemble
+  nca <- NCOL(time)
+  #Prepare time ensemble
   if(nca == 1){#then it's not an ensemble
     #create ensemble?
-    if(simulate.age.uncertainty){
-      ageMat <- geoChronR::simulateBam(X = matrix(1,nrow = length(age)),
-                                       t = as.matrix(age),
+    if(simulate.time.uncertainty){
+      timeMat <- geoChronR::simulateBam(X = matrix(1,nrow = length(time)),
+                                       t = as.matrix(time),
                                        model = bam.model,
                                        ageEnsOut = TRUE)$ageEns
-    }else{#replicate ages up to n.ens
-      ageMat <- matrix(rep(age,n.ens),ncol = n.ens,nrow = NROW(age))
+    }else{#replicate times up to n.ens
+      timeMat <- matrix(rep(time,n.ens),ncol = n.ens,nrow = NROW(time))
     }
   }else{
     if(nca >= n.ens){
-      ageMat <- age[,sample(seq_len(nca),size = n.ens,replace = FALSE)]
-    }else if(nca > n.ens){
-      ageMat <- age[,sample(seq_len(nca),size = n.ens,replace = TRUE)]
+      timeMat <- time[,sample(seq_len(nca),size = n.ens,replace = FALSE)]
+    }else if(nca < n.ens){
+      timeMat <- time[,sample(seq_len(nca),size = n.ens,replace = TRUE)]
     }
   }
 
   #make into a list for purrr
-  ageList <- purrr::array_branch(ageMat,margin = 2)
+  timeList <- purrr::array_branch(timeMat,margin = 2)
 
 
   #Now prep paleodata
@@ -72,7 +73,7 @@ propagateUncertainty <- function(age,
                                                                          arima.order = paleo.arima.order),.n = n.ens)
 
 
-    }else{#replicate ages up to n.ens
+    }else{#replicate times up to n.ens
       paleoList <- matrix(rep(vals,n.ens),ncol = n.ens,nrow = NROW(vals)) %>%
         purrr::array_branch(margin = 2)
 
@@ -80,14 +81,14 @@ propagateUncertainty <- function(age,
   }else{
     if(ncp >= n.ens){
       paleoMat <- vals[,sample(seq_len(ncp),size = n.ens,replace = FALSE)]
-    }else if(ncp > n.ens){
+    }else if(ncp < n.ens){
       paleoMat <- vals[,sample(seq_len(ncp),size = n.ens,replace = TRUE)]
     }
     paleoList <- purrr::array_branch(paleoMat,margin = 2)
   }
 
 
-  propagated <- purrr::map2_dfr(ageList,paleoList,changeFun,...)
+  propagated <- purrr::map2_dfr(timeList,paleoList,changeFun,...)
 
   propagated$nEns <- n.ens
 
@@ -109,17 +110,24 @@ propagateUncertainty <- function(age,
 
 
 #' Detect excursions in synthetic datasets that mimic a real on
+#'
 #' @inheritParams propagateUncertainty
-#' @param method Method to use for hypothesis testing, either "isospectral" or "isopersistent" (default = "isospectral")
+#' @param mc.ens How many Monte Carlo simulations to use for null hypothesis testing
+#' @param surrogate.method What method to use to generage surrogate data for hypothesis testing? Options include: \itemize{
+#' \item 'isospectral': (Default) Following Ebisuzaki (1997), generate surrogates by scrambling the phases of the data while preserving their power spectrum. This uses the To generate these “isospectral” surrogates. Uses the rEDM::make_surrogate_data() function
+#' \item 'isopersistent':  Generates surrogates by simulating from an autoregressive process of order 1 (AR(1)), which has been fit to the data. Uses the geoChronR::createSyntheticTimeseries() function
+#' \item 'shuffle': Randomly shuffles the data to create surrogates. Uses the rEDM::make_surrogate_data() function
+#' }
+#' @param how.long.prop Optionally input the duration to calculate a single instance to estimate how long the calculation will take
 #' @inheritDotParams propagateUncertainty
 #' @importFrom stats quantile
 #' @importFrom magrittr %>%
 #' @return a tibble that reports the positivity rate in the synthetics
 #' @export
-testNullHypothesis <- function(age,
+testNullHypothesis <- function(time,
                                vals,
                                changeFun,
-                               simulate.age.uncertainty = TRUE,
+                               simulate.time.uncertainty = TRUE,
                                simulate.paleo.uncertainty = TRUE,
                                n.ens = 100,
                                mc.ens = 100,
@@ -155,25 +163,51 @@ testNullHypothesis <- function(age,
   # generate some surrogates
 
   if(grepl(surrogate.method,pattern = "persis",ignore.case = T)){
-    #surVals <- geoChronR::ar1Surrogates(time = age,vals = vals,detrend = TRUE,method = "redfit",n.ens = n.ens)
+    #surVals <- geoChronR::ar1Surrogates(time = time,vals = vals,detrend = TRUE,method = "redfit",n.ens = n.ens)
     cstv <- function(x,...){geoChronR::createSyntheticTimeseries(values = x,...)}
-
 
     surVals <- purrr::map(valList,
                           cstv,
-                          time = age,
+                          time = time,
                           sameTrend = TRUE,
                           n.ens = ncp)
 
   }else if(grepl(surrogate.method,pattern = "spectra",ignore.case = T)){
 
+    cstv <- function(x,...){
+      g <- is.finite(x)
+      out <- rEDM::make_surrogate_data(ts = x[g],...)
+      nc <- ncol(out)
+      om <- matrix(NA,nrow = NROW(g),ncol = nc)
+      om[g,] <- out
+      return(om)
+      }
+
+    surVals <- purrr::map(valList,
+                          cstv,
+                          method = 'ebisuzaki',
+                          num_surr = ncp)
+  }else if(grepl(surrogate.method,pattern = "shuffle",ignore.case = T)){
+    cstv <- function(x,...){
+      g <- is.finite(x)
+      out <- rEDM::make_surrogate_data(ts = x[g],...)
+      nc <- ncol(out)
+      om <- matrix(NA,nrow = NROW(g),ncol = nc)
+      om[g,] <- out
+      return(om)
+    }
+
+    surVals <- purrr::map(valList,
+                          cstv,
+                          method = 'random_shuffle',
+                          num_surr = ncp)
   }
 
   pucv <- function(x,...){propagateUncertainty(vals = x,...)}
 
   out <- purrr::map(surVals,
                     pucv,
-                    age = age,
+                    time = time,
                     changeFun = changeFun,
                     n.ens = n.ens,
                     ...)

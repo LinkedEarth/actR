@@ -5,20 +5,38 @@
 \title{Detect an excursion in a timeseries}
 \usage{
 detectExcursion(
-  age,
-  vals,
+  ltt = NA,
+  time = NA,
+  vals = NA,
+  time.variable.name = NA,
+  vals.variable.name = NA,
+  time.units = NA,
+  vals.units = NA,
   event.yr,
   event.window,
   ref.window,
   n.ens = 100,
   output.figure.path = NA,
+  surrogate.method = "isospectral",
+  null.hypothesis.n = 100,
+  null.quantiles = c(0.9, 0.95),
   ...
 )
 }
 \arguments{
-\item{age}{a time vector, or matrix of time ensemble members (ensembles in columns)}
+\item{ltt}{A LiPD-timeseries-tibble, a tibble or data.frame that has the variable(s) of interest, a time variable (age, year or time) along with their metadata, aranged in rows. If ltt = NA, then one in is created from other inputs}
 
-\item{vals}{a values vector, or matrix of values ensemble members (ensembles in columns)}
+\item{time}{if ltt is not provided, input a vector or matrix of time (year or age) data. If it's a multicolumn matrix, the columns are time-ensemble members}
+
+\item{vals}{if ltt is not provided, input a vector or matrix of paleoData. If it's a multicolumn matrix, the columns are value-ensemble members}
+
+\item{time.variable.name}{If ltt is not provided, specify the name of the time variable (typically 'age' or 'year')}
+
+\item{vals.variable.name}{If ltt is not provided, specify the name of the paleo variable (e.g., 'd18O' or 'temperature'). Alternatively, if ltt is provided with more rows than expected, this term is used to attempt to select the correct row.}
+
+\item{time.units}{If ltt is not provided, specify the units the time variable (typically 'yr BP' or 'CE')}
+
+\item{vals.units}{If ltt is not provided, specify the units the paleo variable (e.g. 'permil' or 'degrees C')}
 
 \item{event.yr}{the center of the proposed excursion window}
 
@@ -30,13 +48,23 @@ detectExcursion(
 
 \item{output.figure.path}{path pointing to where should the output figure be saved? An NA will not produce a figure (default = NA)}
 
+\item{surrogate.method}{What method to use to generage surrogate data for hypothesis testing? Options include: \itemize{
+\item 'isospectral': (Default) Following Ebisuzaki (1997), generate surrogates by scrambling the phases of the data while preserving their power spectrum. This uses the To generate these “isospectral” surrogates. Uses the rEDM::make_surrogate_data() function
+\item 'isopersistent':  Generates surrogates by simulating from an autoregressive process of order 1 (AR(1)), which has been fit to the data. Uses the geoChronR::createSyntheticTimeseries() function
+\item 'shuffle': Randomly shuffles the data to create surrogates. Uses the rEDM::make_surrogate_data() function
+}}
+
+\item{null.hypothesis.n}{How many simulations to run for null hypothesis testing (default = 100)}
+
+\item{null.quantiles}{What quantiles to report as output from null hypothesis testing (default = c(.95, .9))}
+
 \item{...}{
   Arguments passed on to \code{\link[=propagateUncertainty]{propagateUncertainty}}
   \describe{
     \item{\code{changeFun}}{the change function to across which to propagate}
-    \item{\code{simulateAgeUncertainty}}{TRUE or FALSE. If an ensemble is not included, do you want to simulate age ensembles (default = TRUE)}
-    \item{\code{simulatePaleoUncertainty}}{TRUE or FALSE. If an ensemble is not included, do you want to simulate paleo ensembles (default = TRUE)}
-    \item{\code{bam.model}}{BAM Model parameters to use if simulating age uncertainty (default = list(ns = n.ens, name = "bernoulli", param = 0.05), paleo.uncertainty = sd(vals,na.rm = TRUE)))}
+    \item{\code{simulate.time.uncertainty}}{TRUE or FALSE. If an ensemble is not included, do you want to simulate time ensembles (default = TRUE)}
+    \item{\code{simulate.paleo.uncertainty}}{TRUE or FALSE. If an ensemble is not included, do you want to simulate paleo ensembles (default = TRUE)}
+    \item{\code{bam.model}}{BAM Model parameters to use if simulating time uncertainty (default = list(ns = n.ens, name = "bernoulli", param = 0.05), paleo.uncertainty = sd(vals,na.rm = TRUE)))}
     \item{\code{paleo.uncertainty}}{Uncertainty to use if modelling uncertainty for paleo values. (default = sd(vals,na.rm = TRUE)/2)}
     \item{\code{paleo.ar1}}{Autocorrelation coefficient to use for modelling uncertainty on paleoData, what fraction of the uncertainties are autocorrelated? (default = sqrt(0.5); or 50\% autocorrelated uncertainty)}
     \item{\code{paleo.arima.order}}{Order to use for ARIMA model used in modelling uncertainty on paleoDat (default = c(1,0,0))}

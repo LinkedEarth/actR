@@ -2,14 +2,14 @@
 % Please edit documentation in R/uq.R
 \name{propagateUncertainty}
 \alias{propagateUncertainty}
-\title{Detect a changepoint while propagating proxy and/or age uncertainty}
+\title{Detect a changepoint while propagating proxy and/or time uncertainty}
 \usage{
 propagateUncertainty(
-  age,
+  time,
   vals,
   changeFun,
-  simulateAgeUncertainty = TRUE,
-  simulatePaleoUncertainty = TRUE,
+  simulate.time.uncertainty = TRUE,
+  simulate.paleo.uncertainty = TRUE,
   n.ens = 100,
   bam.model = list(ns = n.ens, name = "bernoulli", param = 0.05),
   paleo.uncertainty = sd(vals, na.rm = TRUE)/2,
@@ -20,19 +20,19 @@ propagateUncertainty(
 )
 }
 \arguments{
-\item{age}{a time vector, or matrix of time ensemble members (ensembles in columns)}
+\item{time}{a time vector, or matrix of time ensemble members (ensembles in columns)}
 
 \item{vals}{a values vector, or matrix of values ensemble members (ensembles in columns)}
 
 \item{changeFun}{the change function to across which to propagate}
 
-\item{simulateAgeUncertainty}{TRUE or FALSE. If an ensemble is not included, do you want to simulate age ensembles (default = TRUE)}
+\item{simulate.time.uncertainty}{TRUE or FALSE. If an ensemble is not included, do you want to simulate time ensembles (default = TRUE)}
 
-\item{simulatePaleoUncertainty}{TRUE or FALSE. If an ensemble is not included, do you want to simulate paleo ensembles (default = TRUE)}
+\item{simulate.paleo.uncertainty}{TRUE or FALSE. If an ensemble is not included, do you want to simulate paleo ensembles (default = TRUE)}
 
 \item{n.ens}{How many ensembles to propagate through? (default = 100)}
 
-\item{bam.model}{BAM Model parameters to use if simulating age uncertainty (default = list(ns = n.ens, name = "bernoulli", param = 0.05), paleo.uncertainty = sd(vals,na.rm = TRUE)))}
+\item{bam.model}{BAM Model parameters to use if simulating time uncertainty (default = list(ns = n.ens, name = "bernoulli", param = 0.05), paleo.uncertainty = sd(vals,na.rm = TRUE)))}
 
 \item{paleo.uncertainty}{Uncertainty to use if modelling uncertainty for paleo values. (default = sd(vals,na.rm = TRUE)/2)}
 
@@ -48,5 +48,5 @@ propagateUncertainty(
 a propagated uncertainty tibbble
 }
 \description{
-Detect a changepoint while propagating proxy and/or age uncertainty
+Detect a changepoint while propagating proxy and/or time uncertainty
 }
