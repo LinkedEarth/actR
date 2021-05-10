@@ -249,6 +249,7 @@ plot.shiftCore <- function(x,line.color = "black", mean.color = "red"){
 #' @param x.axis.label Label the x-axis (default = NA, which will automatically generate from input)
 #' @param y.axis.label Label the y-axis (default = NA, which will automatically generate from input)
 #' @param combine.plots Combine the probability and timeseries plots into a single plot (TRUE)? Or return a list with each plot as a separate object (FALSE)?
+#' @param x.lims 2-element vector to usee as x-axis limits (default = NA)
 #'
 #' @return a ggplot object
 plot.shift <- function(x,

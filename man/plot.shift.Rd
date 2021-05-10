@@ -11,6 +11,7 @@ plot.shift(
   label.sig = TRUE,
   alpha = 0.05,
   x.axis.label = NA,
+  x.lims = NA,
   y.axis.label = NA,
   combine.plots = TRUE
 )
@@ -27,6 +28,8 @@ plot.shift(
 \item{alpha}{significance level (default = 0.05)}
 
 \item{x.axis.label}{Label the x-axis (default = NA, which will automatically generate from input)}
+
+\item{x.lims}{2-element vector to usee as x-axis limits (default = NA)}
 
 \item{y.axis.label}{Label the y-axis (default = NA, which will automatically generate from input)}
 

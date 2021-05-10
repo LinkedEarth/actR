@@ -1,0 +1,121 @@
+Contributor\_Guide
+================
+
+## A guide to contributing methods to actR
+
+actR was designed to simplify adding new abrupt change detection
+methods, and we’re eager to work with people to add new methods into the
+toolkit\!
+
+The bulk of this guide is intended for methods that were designed to
+work with single-site, time-certain values. Furthermore, the methods
+currently implemented in actR are built around methods that return
+binary (TRUE/FALSE) results for the detection of changepoints at a
+certain time (or over a specific window). actR has extensive
+functionality designed to simplify propagating time and data
+uncertainties, and robust hypothesis testing.
+
+As you develop your method, it’s possible that the peculiarities of your
+approach either require, or would benefit, new functionality in actR.
+Keep in touch with the actR dev team to make feature request, and report
+bugs.
+
+Finally, actR is being designed following most of principles outlined in
+the excellent [r-pkg book](https://r-pkgs.org/). This isn’t required
+reading, but you’ll probably benefit from at least skimming.
+Furthermore, if you’re interested in the motivation behind a lot of what
+we’re doing, you’ll find it here.
+
+*Note: this guide is under active development and is not yet complete*
+
+## Conceptual overview of actR workflows
+
+Before digging into the details below, let’s go over the conceptual
+design of an actR workflow.
+
+An actR workflow typically starts with a user entering data into a
+detect\*() function. These are high level functions that coordinate many
+steps of the analysis process. Typically, these functions
+
+1.  Use the actR::prepareInput() function to take the LiPD or time/value
+    pairings + metadata and structure for subsequent analysis
+
+2.  Use the actR::propagateUncertainties() function to pass and/or
+    generate age and value uncertainties, and then propagate them
+    through your core method.
+
+The core method function (detect\*Core()) is the base function that
+takes time and value inputs and typically returns either a binary result
+of whether an abrupt change was detected. Probabilistic outcomes are
+also possible here, but should be based on theory (not monte carlo or
+other brute force testing). Because robust uncertainy propagation and
+null hypothesis testing is handled elsewhere in actR, it’s best to make
+the core function as simple as possible (while retaining it’s key
+functionality and features of course.)
+
+3.  Use the actR::testNullHypothesis() function to repeat the analysis
+    on surrogate datasets.
+
+4.  Combine the outputs of 2. and 3. into an output that estimates an
+    empirical p-value (potentially p-values for many time windows), and
+    return these results as a single object.
+
+After running the detect\*() function, the user can then use
+custom-built print, summary, and plot functions to see, summarize and
+visualize the outcome of the result.
+
+For a user-facing example of this process, check out the vignette for
+detectShift() (after it’s written, sorry).
+
+## Step by step guide for contributors
+
+### 1\. Make a branch of the github repo
+
+### 2\. Create a new R in actR/R file for your function’s basic code
+
+`usethis::use_r("newMethod")`
+
+### 3\. Write a \*Core() function and unit\_test
+
+As you go, document your function.
+
+Good time to try check()
+
+some useful test data for this are
+found
+
+### 4\. Write a wrapper function that uses \*your Core() function, propagateUncertainty() and testNullHypothesis() to analyze and then synthesize those results.
+
+For single dataset analyses, the input should be structured as a
+LiPD-ts-tibble
+
+The core output should be a tibble with each null hypothesis result as a
+row. It is often appropriate to return a list, with the tibble as one
+output.
+
+Define a class for this
+output.
+
+### 5\. Write a plot.yourClass() function that takes only the output from the wrapper, along with plotting arguments, and produces a ggplot object.
+
+This code should go in the plottings.R
+file
+
+### 6\. Write a summary.yourClass() function that prints out key results.
+
+This code should go in the summary.R file.
+
+Also create a print.yourClass() function in the print.R file. So far,
+all the classes just reuse their summary methods as their print methods.
+
+### 7\. That’s it\! But let’s make sure everything is working properly
+
+Make sure your R cmd-check is passing:
+
+devtools::check()
+
+devtools::test()
+
+### 8\. Now we’re set, let’s add it into to actR\!
+
+Pull request
