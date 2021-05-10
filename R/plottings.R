@@ -257,6 +257,7 @@ plot.shift <- function(x,
                        label.sig = TRUE,
                        alpha = 0.05,
                        x.axis.label = NA,
+                       x.lims = NA,
                        y.axis.label = NA,
                        combine.plots = TRUE){
 
@@ -268,10 +269,35 @@ plot.shift <- function(x,
   }
 
 
-  paramTib <- createTibbleFromParameterString(x$parameters)
+  paramTib <- createTibbleFromParameterString(x$parameters[1])
 
   #plot ensemble ribbons
   ribbons <- geoChronR::plotTimeseriesEnsRibbons(X = x$timeEns,Y = x$valEns) + actR_ggtheme()
+
+  #get shift type
+  if(grepl(pattern = "cpt.mean",paramTib$cpt.fun,ignore.case = T) & !grepl(pattern = "cpt.meanVar",paramTib$cpt.fun,ignore.case = T)){
+    shift.type <- "Shift in Mean"
+  }else if(grepl(pattern = "cpt.var",paramTib$cpt.fun,ignore.case = T)){
+    shift.type <- "Shift in Variance"
+  }else if(grepl(pattern = "cpt.meanVar",paramTib$cpt.fun,ignore.case = T)){
+    shift.type <- "Shift in Mean and Variance"
+  }else{
+    shift.type <- paramTib$cpt.fun
+  }
+  #title
+  if(!is.na(x$input$dataSetName) & !is.na(x$input$paleoData_variableName)){
+    title <- glue::glue("{x$input$dataSetName} - {x$input$paleoData_variableName}: {shift.type}")
+  }else if(is.na(x$input$dataSetName) & !is.na(x$input$paleoData_variableName)){
+    title <- glue::glue("{x$input$paleoData_variableName}: {shift.type}")
+  }else if(!is.na(x$input$dataSetName) & is.na(x$paleoData_variableName)){
+    title <- glue::glue("{x$input$dataSetName}: {shift.type}")
+  }else{
+    title <- glue::glue("{shift.type}")
+  }
+
+  #add title and labels
+
+
 
   timeMed <- apply(x$timeEns,1,median,na.rm = TRUE)
   valMed <- apply(x$valEns,1,median,na.rm = TRUE)
@@ -284,6 +310,10 @@ plot.shift <- function(x,
     tidyr::pivot_longer(c("time_start","time_end"),values_to = "time_edges") %>%
     dplyr::arrange(time_edges)
 
+  #get x.range
+  if(is.na(x.lims)){
+    x.lims <- range(cpp$time_edges)
+  }
 
   npp <- cpp %>%
     tidyr::pivot_longer(starts_with("q"),names_to = "cl",values_to = "nullProbs")
@@ -332,14 +362,19 @@ plot.shift <- function(x,
     ylab("Shift Frequency")+
     theme(legend.position = c(0.9,0.8),
           legend.background = element_blank(),
-          legend.title = element_blank())+
-    scale_x_continuous()
+          legend.title = element_blank())
 
 
-  if(grepl(x = x$input$timeUnits,, pattern = "ky",ignore.case = TRUE) | grepl(x = x$input$timeUnits,, pattern = "bp",ignore.case = TRUE)){
-    probPlot <- probPlot +
-      scale_x_reverse()
+  if(grepl(x = x$input$timeUnits,, pattern = "ky",ignore.case = TRUE) | grepl(x = x$input$timeUnits, pattern = "bp",ignore.case = TRUE)){
+    this_x_scale <- scale_x_reverse
+    x.lims <- rev(x.lims)
+  }else{
+    this_x_scale <- scale_x_continuous
   }
+
+  probPlot <- probPlot +
+    this_x_scale(limits = x.lims)
+
 
   if(plot.sig.vlines & any.sig){
     probPlot <- probPlot +
@@ -352,15 +387,14 @@ plot.shift <- function(x,
 
 
   timeSeries <- plotSectionMeans(add.to.plot = ribbons,sig.event,time = timeMed,vals = valMed)+
-    scale_x_continuous(name = x.axis.label, position = "top")+
+    this_x_scale(name = x.axis.label, position = "top")+
     scale_y_continuous(name = y.axis.label, position = "right")+
     theme(axis.ticks.x.bottom = element_blank(),
-          plot.margin=unit(c(1,1,-.2,1), "cm"))
+          plot.margin=unit(c(1,1,-.2,1), "cm"))+
+    ggtitle(title)+
+    coord_cartesian(xlim =  x.lims)
 
-  if(grepl(x = x$input$timeUnits,, pattern = "ky",ignore.case = TRUE) | grepl(x = x$input$timeUnits,, pattern = "bp",ignore.case = TRUE)){
-    timeSeries <- timeSeries +
-      scale_x_reverse()
-  }
+
 
   if(combine.plots){
     # combine the two plots

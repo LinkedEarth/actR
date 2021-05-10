@@ -27,7 +27,7 @@ prepareInput <- function(ltt = NA,
                          remove.time.nas = TRUE){
   if(!is.na(ltt)){#great, there's already a tibble ts
     #check to make sure it is.
-    if(!is.data.frame(ltt)){
+    if(!is.data.frame(ltt)){#change this to class once implemented in lipdR
       stop(glue::glue("ltt needs to be a data.frame or tibble, but appears to be a {class(ltt)}"))
     }
 
@@ -35,18 +35,25 @@ prepareInput <- function(ltt = NA,
     if(nrt == 0){stop("This data.frame is empty.")}
     if(expecting.one.row & nrt > 1){#we need to select which row
       if(is.na(vals.variable.name)){
-        stop("You entered a multirow tibble, and no vals.variable.name. If you provide vals.variable.name , we'll try to pick the right row; otherwise, supply a one-row tibble of the variable of interest.")
-      }
-      #try to pick by variableName
-      or <- dplyr::filter(ltt,paleoData_variableName == !!vals.variable.name)
-      if(nrow(or) == 1){
-        print(glue::glue("Selected {vals.variable.name}"))
-      }else if(nrow(or) > 1){
-        stop(glue::glue("Tried to select row by variable name, but multiple rows matched {vals.variable.name}. You should select the variable of interest and supply a one-row tibble."))
+        cat(crayon::blue("Which variable do you want to test? (Specify this in 'vals.variable.name' to avoid this message)\n\n"))
+        for(p in 1:nrt){
+          cat(glue::glue("{p} - {ltt$paleoData_variableName[p]} ({n = length(ltt$paleoData_values[[p]])})\n\n"))
+        }
+        n <- as.numeric(readline(prompt="Please type the number for the correct match: "))
+        ltt <- ltt[n,]
+
       }else{
-        stop(glue::glue("No rows matching {vals.variable.name}"))
+        #try to pick by variableName
+        or <- dplyr::filter(ltt,paleoData_variableName == !!vals.variable.name)
+        if(nrow(or) == 1){
+          print(glue::glue("Selected {vals.variable.name}"))
+        }else if(nrow(or) > 1){
+          stop(glue::glue("Tried to select row by variable name, but multiple rows matched {vals.variable.name}. You should select the variable of interest and supply a one-row tibble."))
+        }else{
+          stop(glue::glue("No rows matching {vals.variable.name}"))
+        }
+        ltt <- or
       }
-      ltt <- or
     }
 
     #check the contents of the lipd tibble row
