@@ -7,6 +7,7 @@
 #' @param vals.variable.name If ltt is not provided, specify the name of the paleo variable (e.g., 'd18O' or 'temperature'). Alternatively, if ltt is provided with more rows than expected, this term is used to attempt to select the correct row.
 #' @param time.units If ltt is not provided, specify the units the time variable (typically 'yr BP' or 'CE')
 #' @param vals.units If ltt is not provided, specify the units the paleo variable (e.g. 'permil' or 'degrees C')
+#' @param dataset.name If ltt is not provided, specify the dataset name
 #' @param expecting.one.row Are you expecting a one-row tibble? That is, one variable of interest? (default = TRUE)
 #' @param sort.by.time Do you want to arrange the output so that the time variable is increasing, while preserving the time-value relationship? (default = TRUE)
 #' @param remove.time.nas Do you want to remove observations that are NA, or otherwise not finite, in the time variable (default = TRUE)
@@ -20,6 +21,7 @@ prepareInput <- function(ltt = NA,
                          vals.variable.name = NA,
                          time.units = NA,
                          vals.units = NA,
+                         dataset.name = NA,
                          expecting.one.row = TRUE,
                          sort.by.time = TRUE,
                          remove.time.nas = TRUE){
@@ -52,6 +54,20 @@ prepareInput <- function(ltt = NA,
     #create time variables if needed
     if(!all(c("time", "timeUnits","timeVariableName") %in% names(ltt))){
 
+      #check age/yearEnsembles
+      if("ageensemble" %in% tolower(names(ltt))){
+        hasAgeEnsemble <- TRUE
+      }else{
+        hasAgeEnsemble <- FALSE
+      }
+
+      if("yearensemble" %in% tolower(names(ltt))){
+        hasYearEnsemble <- TRUE
+      }else{
+        hasYearEnsemble <- FALSE
+      }
+
+
       #check age/year
       if("age" %in% names(ltt)){
         hasAge <- TRUE
@@ -69,17 +85,28 @@ prepareInput <- function(ltt = NA,
       if(isTRUE(time.variable.name == "year")){
         hasAge <- FALSE
       }
+      if(isTRUE(tolower(time.variable.name) == "yearensemble")){
+        hasAgeEnsemble <- FALSE
+      }
 
-      if(hasAge){
+      if(hasAgeEnsemble){
+        ltt$time <- ltt$ageEnsemble
+        ltt$timeUnits <- ltt$ageUnits
+        ltt$timeVariableName <- "age"
+      }else if(hasYearEnsemble){
+        ltt$time <- ltt$yearEnsemble
+        ltt$timeUnits <- ltt$yearUnits
+        ltt$timeVariableName <- "year"
+      }else if(hasAge){
         ltt$time <- ltt$age
         ltt$timeUnits <- ltt$ageUnits
         ltt$timeVariableName <- "age"
       }else if(hasYear){
         ltt$time <- ltt$year
-        ltt$timeUnits <- ltt$year
+        ltt$timeUnits <- ltt$yearUnits
         ltt$timeVariableName <- "year"
       }else{
-        stop("The LiPD tibble row your provided is missing 'time', 'age', and 'year' variables. One of these three must be present.")
+        stop("The LiPD tibble row your provided is missing 'time', 'ageEnsemble', 'yearEnsemble', 'age', and 'year' variables. One of these must be present.")
       }
     }
 
@@ -93,7 +120,8 @@ prepareInput <- function(ltt = NA,
       timeVariableName = time.variable.name,
       paleoData_values = list(vals),
       paleoData_variableName = vals.variable.name,
-      paleoData_units = vals.units
+      paleoData_units = vals.units,
+      dataSetName = dataset.name
     )
     class(ltt) <- c("lipd-ts-tibble",class(ltt))
   }
@@ -172,6 +200,29 @@ prepareInput <- function(ltt = NA,
 
     }
   }
+
+  #check for missing metadata
+  if(is.na(ltt$timeUnits)){
+    if(NCOL(ltt$time) == 1){
+      ltt$timeUnits <- geoChronR::heuristicUnits(ltt$time[[1]])
+    }else{
+      ltt$timeUnits <- geoChronR::heuristicUnits(ltt$time[[1]][,1])
+    }
+  }
+
+  if(is.na(ltt$timeVariableName)){
+    ltt$timeVariableName <- "time"
+  }
+
+  if(is.na(ltt$paleoData_units)){
+    ltt$paleoData_units <- "?"
+  }
+  if(is.na(ltt$paleoData_variableName)){
+    ltt$paleoData_variableName <- "unknown"
+  }
+
+
+
 
   return(ltt)
 }

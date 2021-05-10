@@ -12,6 +12,7 @@ prepareInput(
   vals.variable.name = NA,
   time.units = NA,
   vals.units = NA,
+  dataset.name = NA,
   expecting.one.row = TRUE,
   sort.by.time = TRUE,
   remove.time.nas = TRUE
@@ -31,6 +32,8 @@ prepareInput(
 \item{time.units}{If ltt is not provided, specify the units the time variable (typically 'yr BP' or 'CE')}
 
 \item{vals.units}{If ltt is not provided, specify the units the paleo variable (e.g. 'permil' or 'degrees C')}
+
+\item{dataset.name}{If ltt is not provided, specify the dataset name}
 
 \item{expecting.one.row}{Are you expecting a one-row tibble? That is, one variable of interest? (default = TRUE)}
 

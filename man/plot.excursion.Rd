@@ -4,7 +4,14 @@
 \alias{plot.excursion}
 \title{Plot an excursion with uncertainties}
 \usage{
-plot.excursion(x, alpha = 0.05, print.significance = FALSE, lab.mult = 0.02)
+plot.excursion(
+  x,
+  alpha = 0.05,
+  print.significance = FALSE,
+  x.axis.label = NA,
+  y.axis.label = NA,
+  lab.mult = 0.02
+)
 }
 \arguments{
 \item{x}{The output of detectExcursion()}
@@ -12,6 +19,10 @@ plot.excursion(x, alpha = 0.05, print.significance = FALSE, lab.mult = 0.02)
 \item{alpha}{What significance level to use?}
 
 \item{print.significance}{Show significance on the plot?}
+
+\item{x.axis.label}{Label the x-axis (default = NA, which will automatically generate from input)}
+
+\item{y.axis.label}{Label the y-axis (default = NA, which will automatically generate from input)}
 
 \item{lab.mult}{When labeling significance, how much higher than the highest point to put the label}
 }

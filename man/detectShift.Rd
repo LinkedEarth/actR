@@ -12,6 +12,7 @@ detectShift(
   vals.variable.name = NA,
   time.units = NA,
   vals.units = NA,
+  dataset.name = NA,
   surrogate.method = "isospectral",
   summary.bin.step = 100,
   null.hypothesis.n = 100,
@@ -33,6 +34,8 @@ detectShift(
 \item{time.units}{If ltt is not provided, specify the units the time variable (typically 'yr BP' or 'CE')}
 
 \item{vals.units}{If ltt is not provided, specify the units the paleo variable (e.g. 'permil' or 'degrees C')}
+
+\item{dataset.name}{If ltt is not provided, specify the dataset name}
 
 \item{surrogate.method}{What method to use to generage surrogate data for hypothesis testing? Options include: \itemize{
 \item 'isospectral': (Default) Following Ebisuzaki (1997), generate surrogates by scrambling the phases of the data while preserving their power spectrum. This uses the To generate these “isospectral” surrogates. Uses the rEDM::make_surrogate_data() function

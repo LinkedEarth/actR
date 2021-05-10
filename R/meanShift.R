@@ -87,6 +87,7 @@ detectShift <- function(ltt = NA,
                         vals.variable.name = NA,
                         time.units = NA,
                         vals.units = NA,
+                        dataset.name = NA,
                         surrogate.method = "isospectral",
                         summary.bin.step = 100,
                         null.hypothesis.n = 100,
@@ -102,6 +103,7 @@ detectShift <- function(ltt = NA,
                           vals.variable.name = vals.variable.name,
                           time.units = time.units,
                           vals.units = vals.units,
+                          dataset.name = dataset.name,
                           expecting.one.row = TRUE,
                           sort.by.time = TRUE,
                           remove.time.nas = TRUE)
@@ -177,6 +179,9 @@ detectShift <- function(ltt = NA,
 
   out <- list(shiftDetection = dsout,
               parameters = propagated$parameters,
+              summary.bin.step = summary.bin.step,
+              surrogate.method = surrogate.method,
+              unc.prop.n = n.ens,
               null.hypothesis.n = null.hypothesis.n,
               timeEns = timeEns,
               valEns = valEns,
@@ -184,6 +189,42 @@ detectShift <- function(ltt = NA,
     new_shift()
 
 return(out)
+
+
+}
+
+
+summarizeShiftSignificance <- function(shiftDetection,alpha = 0.05){
+  #find significant events
+  maxcli <- strsplit(names(shiftDetection),"q") %>%
+    purrr::map(pluck,2) %>%
+    purrr::map_dbl(~ ifelse(is.null(.x),0,as.numeric(.x))) %>%
+    which.max()
+
+sig.event <- shiftDetection %>%
+  dplyr::filter(empirical_pvalue < alpha) %>%
+  dplyr::mutate(exceedance = event_probability - .[[maxcli]]) %>%
+  dplyr::arrange(empirical_pvalue,dplyr::desc(exceedance))
+
+
+#remove those within minimum distance
+bm <- sig.event$time_mid
+if(length(bm) > 1){
+  tr <- c()
+  for(i in 1:(length(bm) - 1)){
+    diffs <- abs(bm-bm[i])
+    close <- which(diffs < paramTib$minimum.segment.length)
+    ttr <- intersect(close,seq(i+1,length(bm)))
+    tr <- c(tr,ttr)
+  }
+
+  if(length(tr) > 0){
+    sig.event <- sig.event[-tr,]
+  }
+
+}
+
+return(sig.event)
 
 
 }

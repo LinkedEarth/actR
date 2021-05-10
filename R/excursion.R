@@ -56,6 +56,7 @@ detectExcursion = function(ltt = NA,
                            vals.variable.name = NA,
                            time.units = NA,
                            vals.units = NA,
+                           dataset.name = NA,
                            event.yr,
                            event.window,
                            ref.window,
@@ -74,6 +75,7 @@ detectExcursion = function(ltt = NA,
                           vals.variable.name = vals.variable.name,
                           time.units = time.units,
                           vals.units = vals.units,
+                          dataset.name = dataset.name,
                           expecting.one.row = TRUE,
                           sort.by.time = TRUE,
                           remove.time.nas = TRUE)
@@ -106,6 +108,11 @@ detectExcursion = function(ltt = NA,
   te <- proc.time() - ptm
   te <- te[3]
 
+  #see if we got any results
+  if(sum(!is.na(dataEst$eventDetected)) / nrow(dataEst) < 0.5){
+    stop("Excursion detection couldn't be performed, probably because there were typically fewer than 'min.vals' poins than in the defined windows. Consider changing your parameters")
+  }
+
   # now test null hypothesis
   nullHyp <- testNullHypothesis(time,
                                 vals,
@@ -121,7 +128,7 @@ detectExcursion = function(ltt = NA,
   nullEvents <- purrr::map_dbl(nullHyp,~ mean(.x$eventDetected,na.rm = TRUE)) %>%
     tibble::tibble(nulls = .)
 
-  nullEcdf <- ecdf(nullEvents$nulls)
+  nullEcdf <- stats::ecdf(nullEvents$nulls)
 
   nullEventProb <- nullEvents %>%
     dplyr::summarize(qs = quantile(nulls,probs = null.quantiles))
@@ -137,7 +144,8 @@ detectExcursion = function(ltt = NA,
                                  eventDetectionWithUncertainty = mean(dataEst$eventDetected,na.rm = TRUE),
                                  empirical_pvalue = 1-nullEcdf(eventDetectionWithUncertainty),
                                  eventDetection = list(dataEst),
-                                 nEns = n.ens) %>%
+                                 unc.prop.n = n.ens,
+                                 null.hypothesis.n = null.hypothesis.n) %>%
     dplyr::bind_cols(nullLevels)
 
   paramTib <- createTibbleFromParameterString(as.character(glue::glue("event.yr = {event.yr}, event.window = {event.window}, ref.window = {ref.window}, {dataEst$parameters}")))

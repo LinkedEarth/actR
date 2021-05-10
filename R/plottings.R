@@ -7,12 +7,28 @@ actR_ggtheme <- ggplot2::theme_bw
 #' @importFrom dplyr filter
 #' @importFrom geoChronR plotTimeseriesEnsRibbons
 #' @import ggplot2
+#'
 #' @param x The output of detectExcursion()
 #' @param alpha What significance level to use?
 #' @param print.significance Show significance on the plot?
+#' @param x.axis.label Label the x-axis (default = NA, which will automatically generate from input)
+#' @param y.axis.label Label the y-axis (default = NA, which will automatically generate from input)
 #' @param lab.mult When labeling significance, how much higher than the highest point to put the label
+#'
 #' @return a ggplot2 object
-plot.excursion <- function(x, alpha = 0.05,print.significance = FALSE,lab.mult = 0.02){
+plot.excursion <- function(x,
+                           alpha = 0.05,
+                           print.significance = FALSE,
+                           x.axis.label = NA,
+                           y.axis.label = NA,
+                           lab.mult = 0.02){
+
+  if(is.na(x.axis.label)){
+    x.axis.label <- glue::glue("{x$timeVariableName} ({x$timeUnits})")
+  }
+  if(is.na(y.axis.label)){
+    y.axis.label <- glue::glue("Detrended {x$paleoData_variableName} ({x$paleoData_units})")
+  }
 
   #determine what is ensemble
   ensOut <- x$eventDetection[[1]]
@@ -48,7 +64,7 @@ plot.excursion <- function(x, alpha = 0.05,print.significance = FALSE,lab.mult =
     rm <- sample(which(ts$nExcusionVals == median(ts$nExcusionVals,na.rm = TRUE)),size = 1)
     em <- ts[rm,]
 
-    plotout <- plotExcursionCore(em,add.to.plot = ribbons)
+    plotout <- plot.excursionCore(em,add.to.plot = ribbons)
 
     if(print.significance){
       l.y <- max(em$vals[[1]],na.rm = TRUE)+lab.mult*abs(diff(range(em$vals[[1]]),na.rm = TRUE))
@@ -58,6 +74,30 @@ plot.excursion <- function(x, alpha = 0.05,print.significance = FALSE,lab.mult =
     }
   }else{
     plotout <- plotExcursionCore(ensOut[1,])
+  }
+
+
+  #title
+  if(!is.na(x$dataSetName) & !is.na(x$paleoData_variableName)){
+    title <- glue::glue("{x$dataSetName} - {x$paleoData_variableName}: Excursion")
+  }else if(is.na(x$dataSetName) & !is.na(x$paleoData_variableName)){
+    title <- glue::glue("{x$paleoData_variableName}: Excursion")
+  }else if(!is.na(x$dataSetName) & is.na(x$paleoData_variableName)){
+    title <- glue::glue("{x$dataSetName}: Excursion")
+  }else{
+    title <- glue::glue("Excursion")
+  }
+
+  #add labels, directionality
+  plotout <- plotout +
+    xlab(x.axis.label)+
+    ylab(y.axis.label)+
+    ggtitle(title)
+
+
+  if(grepl(x = x$timeUnits,, pattern = "ky",ignore.case = TRUE) | grepl(x = x$timeUnits, pattern = "bp",ignore.case = TRUE)){
+    plotout <- plotout +
+      scale_x_reverse()
   }
 
   return(plotout)
@@ -200,18 +240,33 @@ plot.shiftCore <- function(x,line.color = "black", mean.color = "red"){
 #'
 #' @importFrom geoChronR plotTimeseriesEnsRibbons
 #' @import ggplot2 tidyr RColorBrewer purrr dplyr egg
+#'
 #' @param x Output from actR::detectShift
 #' @param cl.color Color palette, single color, or vector of colors to use for confidence intervals (default = "Reds"s)
 #' @param plot.sig.vlines Plot vertical lines at significant change points? (default = TRUE)
 #' @param label.sig Label significant change points (default = TRUE)
 #' @param alpha significance level (default = 0.05)
+#' @param x.axis.label Label the x-axis (default = NA, which will automatically generate from input)
+#' @param y.axis.label Label the y-axis (default = NA, which will automatically generate from input)
+#' @param combine.plots Combine the probability and timeseries plots into a single plot (TRUE)? Or return a list with each plot as a separate object (FALSE)?
 #'
 #' @return a ggplot object
 plot.shift <- function(x,
                        cl.color = "Reds",
                        plot.sig.vlines = TRUE,
                        label.sig = TRUE,
-                       alpha = 0.05){
+                       alpha = 0.05,
+                       x.axis.label = NA,
+                       y.axis.label = NA,
+                       combine.plots = TRUE){
+
+  if(is.na(x.axis.label)){
+    x.axis.label <- glue::glue("{x$input$timeVariableName} ({x$input$timeUnits})")
+  }
+  if(is.na(y.axis.label)){
+    y.axis.label <- glue::glue("{x$input$paleoData_variableName} ({x$input$paleoData_units})")
+  }
+
 
   paramTib <- createTibbleFromParameterString(x$parameters)
 
@@ -223,8 +278,12 @@ plot.shift <- function(x,
 
   #plot changepoint probabilities
   #make step plot
+
   cpp <- x$shiftDetection %>%
-    tidyr::pivot_longer(c("time_start","time_end"),values_to = "time_edges")
+    dplyr::mutate(time_end = time_end - .001) %>%
+    tidyr::pivot_longer(c("time_start","time_end"),values_to = "time_edges") %>%
+    dplyr::arrange(time_edges)
+
 
   npp <- cpp %>%
     tidyr::pivot_longer(starts_with("q"),names_to = "cl",values_to = "nullProbs")
@@ -246,41 +305,15 @@ plot.shift <- function(x,
     }
   }
 
+  #get significant events
+  sig.event <- summarizeShiftSignificance(x$shiftDetection, alpha = alpha)
 
-
-  #find significant events
-  maxcli <- strsplit(names(x$shiftDetection),"q") %>%
-    purrr::map(pluck,2) %>%
-    purrr::map_dbl(~ ifelse(is.null(.x),0,as.numeric(.x))) %>%
-    which.max()
-
-
-  sig.event <- x$shiftDetection %>%
-    dplyr::filter(empirical_pvalue < alpha) %>%
-    dplyr::mutate(exceedance = event_probability - .[[maxcli]]) %>%
-    dplyr::arrange(empirical_pvalue,dplyr::desc(exceedance))
-
-
-  max.y <- x$shiftDetection %>%
-    dplyr::select("event_probability",dplyr::starts_with("q")) %>%
-    max(na.rm = TRUE)
-
-  #remove those within minimum distance
-  bm <- sig.event$time_mid
-  if(length(bm) > 1){
-    tr <- c()
-    for(i in 1:(length(bm) - 1)){
-      diffs <- abs(bm-bm[i])
-      close <- which(diffs < paramTib$minimum.segment.length)
-      ttr <- intersect(close,seq(i+1,length(bm)))
-      tr <- c(tr,ttr)
-    }
-
-    if(length(tr) > 0){
-      sig.event <- sig.event[-tr,]
-    }
-
+  if(nrow(sig.event) == 0){
+    any.sig = FALSE
+  }else{
+    any.sig = TRUE
   }
+
   minp <- x$shiftDetection %>%
     dplyr::filter(empirical_pvalue > 0) %>%
     dplyr::select("empirical_pvalue") %>%
@@ -289,37 +322,52 @@ plot.shift <- function(x,
   sig.event$pvallab <- paste("p =",sig.event$empirical_pvalue)
   sig.event$pvallab[sig.event$empirical_pvalue == 0] <- glue::glue("p < {minp}")
 
-
   #plot shift frequency and cls
   probPlot <- ggplot()+
     actR_ggtheme()+
     geom_ribbon(data = cpp,aes(x = time_edges,ymin = 0,ymax = event_probability)) +
     geom_line(data = npp,aes(x = time_edges,y = nullProbs,color = cl))+
     scale_color_manual(values = colorScale)+
+    xlab(x.axis.label) +
     ylab("Shift Frequency")+
     theme(legend.position = c(0.9,0.8),
           legend.background = element_blank(),
-          legend.title = element_blank())
+          legend.title = element_blank())+
+    scale_x_continuous()
 
-  if(plot.sig.vlines){
+
+  if(grepl(x = x$input$timeUnits,, pattern = "ky",ignore.case = TRUE) | grepl(x = x$input$timeUnits,, pattern = "bp",ignore.case = TRUE)){
+    probPlot <- probPlot +
+      scale_x_reverse()
+  }
+
+  if(plot.sig.vlines & any.sig){
     probPlot <- probPlot +
       geom_vline(data = sig.event,aes(xintercept = time_mid),linetype = "dashed",color = "gray50")
   }
-  if(label.sig){
+  if(label.sig & any.sig){
     probPlot <- probPlot +
       geom_label(data = sig.event,aes(x = time_mid,y = max.y,label = pvallab))
   }
 
 
   timeSeries <- plotSectionMeans(add.to.plot = ribbons,sig.event,time = timeMed,vals = valMed)+
-    scale_x_continuous(position = "top")+
-    scale_y_continuous(position = "right")+
+    scale_x_continuous(name = x.axis.label, position = "top")+
+    scale_y_continuous(name = y.axis.label, position = "right")+
     theme(axis.ticks.x.bottom = element_blank(),
           plot.margin=unit(c(1,1,-.2,1), "cm"))
 
-  # combine the two plots
-  out <- egg::ggarrange(plots = list(timeSeries,probPlot),ncol = 1,padding = 0)
+  if(grepl(x = x$input$timeUnits,, pattern = "ky",ignore.case = TRUE) | grepl(x = x$input$timeUnits,, pattern = "bp",ignore.case = TRUE)){
+    timeSeries <- timeSeries +
+      scale_x_reverse()
+  }
 
+  if(combine.plots){
+    # combine the two plots
+    out <- egg::ggarrange(plots = list(timeSeries,probPlot),ncol = 1,padding = 0)
+  }else{
+    out <- list(timeSeriesPlot = timeSeries, probabilityPlot = probPlot)
+  }
   return(out)
 
 }
