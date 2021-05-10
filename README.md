@@ -15,19 +15,21 @@ and visualization for paleogeoscientific datasets. We’re still early in
 the development process, but expect basic functionality to be online
 soon.
 
+## Contributor guide
+
+We’re ready for interested people to start contributing Abrupt Change
+methods to actR\! [Check out the Contribrutor’s
+Guide\!](contributor_guide.html)
+
 ## Installation
 
 You can install the development version from
 [GitHub](https://github.com/) with:
 
 ``` r
-# install.packages("devtools")
-devtools::install_github("LinkedEarth/actR")
+# install.packages("remotes")
+remotes::install_github("LinkedEarth/actR")
 ```
-
-## Examples
-
-This is a basic example which shows you a basic use case
 
 ``` r
 library(actR)
