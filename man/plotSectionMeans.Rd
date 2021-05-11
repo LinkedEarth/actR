@@ -20,6 +20,8 @@ plotSectionMeans(
 \item{vals}{input value vector}
 
 \item{add.to.plot}{ggplot to add this to}
+
+\item{mean.color}{color of the mean lines}
 }
 \value{
 A ggplot object
