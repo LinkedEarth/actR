@@ -4,7 +4,13 @@
 \alias{plotSectionMeans}
 \title{Plot a shift in mean or variance}
 \usage{
-plotSectionMeans(x, time, vals, add.to.plot = ggplot2::ggplot())
+plotSectionMeans(
+  x,
+  time,
+  vals,
+  add.to.plot = ggplot2::ggplot(),
+  mean.color = "red"
+)
 }
 \arguments{
 \item{x}{Output of detectShiftCore()}

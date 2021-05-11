@@ -152,13 +152,15 @@ plot.excursionCore <- function(x,
 
 #' Plot a shift in mean or variance
 #' @import tibble ggplot2 dplyr
+#'
 #' @param x Output of detectShiftCore()
 #' @param time Input time vector
 #' @param vals input value vector
 #' @param add.to.plot ggplot to add this to
+#' @param mean.color color of the mean lines
 #'
 #' @return A ggplot object
-plotSectionMeans <- function(x,time,vals,add.to.plot = ggplot2::ggplot()){
+plotSectionMeans <- function(x,time,vals,add.to.plot = ggplot2::ggplot(),mean.color = "red"){
 
   #find section means
   cpt <- sort(c(min(time,na.rm = TRUE),x$time_start,max(time,na.rm = TRUE)))
@@ -337,7 +339,7 @@ plot.shift <- function(x,
   }
 
   #get significant events
-  sig.event <- summarizeShiftSignificance(x$shiftDetection, alpha = alpha)
+  sig.event <- summarizeShiftSignificance(x$shiftDetection, alpha = alpha, paramTib = paramTib )
 
   if(nrow(sig.event) == 0){
     any.sig = FALSE
@@ -349,6 +351,10 @@ plot.shift <- function(x,
     dplyr::filter(empirical_pvalue > 0) %>%
     dplyr::select("empirical_pvalue") %>%
     min(na.rm = TRUE)
+
+  max.y <- x$shiftDetection %>%
+    dplyr::select("event_probability" | starts_with("q")) %>%
+    max(na.rm = TRUE)
 
   sig.event$pvallab <- paste("p =",sig.event$empirical_pvalue)
   sig.event$pvallab[sig.event$empirical_pvalue == 0] <- glue::glue("p < {minp}")

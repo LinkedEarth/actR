@@ -67,7 +67,7 @@ propagateUncertainty <- function(time,
   if(ncp == 1){#then it's not an ensemble
     #create ensemble?
     if(simulate.paleo.uncertainty){
-      paleoList <- purrr::rerun(vals + simulateAutoCorrelatedUncertainty(sd = paleo.unc,
+      paleoList <- purrr::rerun(vals + simulateAutoCorrelatedUncertainty(sd = paleo.uncertainty,
                                                                          n = NROW(vals),
                                                                          ar = paleo.ar1,
                                                                          arima.order = paleo.arima.order),.n = n.ens)

@@ -49,6 +49,11 @@ identicalVectorsList <- function(l){
   return(all(purrr::map2_lgl(l,l[1],~ all(.x==.y))))
 }
 
+identicalMatrixColumns <- function(l){
+  l <- purrr::array_branch(l,2)
+  return(all(purrr::map2_lgl(l,l[1],~ all(.x==.y))))
+}
+
 list2matrix <- function(l){
   #find max length
   ml <- max(purrr::map_dbl(l,length))

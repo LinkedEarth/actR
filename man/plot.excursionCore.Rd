@@ -4,7 +4,7 @@
 \alias{plot.excursionCore}
 \title{Plot a basic excursion without propagated uncertainty}
 \usage{
-plot.excursionCore(x, add.to.plot = ggplot2::ggplot())
+\method{plot}{excursionCore}(x, add.to.plot = ggplot2::ggplot())
 }
 \arguments{
 \item{x}{the output of detectExcursionCore()}

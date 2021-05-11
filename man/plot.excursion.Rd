@@ -4,7 +4,7 @@
 \alias{plot.excursion}
 \title{Plot an excursion with uncertainties}
 \usage{
-plot.excursion(
+\method{plot}{excursion}(
   x,
   alpha = 0.05,
   print.significance = FALSE,

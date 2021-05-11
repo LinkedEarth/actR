@@ -111,6 +111,9 @@ detectShift <- function(ltt = NA,
   time <- prepped$time[[1]]
   vals <- prepped$paleoData_values[[1]]
 
+  time.ens.supplied.n <- NCOL(time)
+  vals.ens.supplied.n <- NCOL(vals)
+
   #ensemble with uncertainties
   ptm <- proc.time()
   propagated <- propagateUncertainty(time,vals,changeFun = detectShiftCore,...)
@@ -176,6 +179,7 @@ detectShift <- function(ltt = NA,
   valEns <- list2matrix(ensData$vals)
 
   #add in metadata
+  n.ens<- propagated$nEns[1] #pull example metadata
 
   out <- list(shiftDetection = dsout,
               parameters = propagated$parameters,
@@ -185,6 +189,8 @@ detectShift <- function(ltt = NA,
               null.hypothesis.n = null.hypothesis.n,
               timeEns = timeEns,
               valEns = valEns,
+              time.ens.supplied.n = time.ens.supplied.n,
+              vals.ens.supplied.n = vals.ens.supplied.n,
               input = prepped) %>%
     new_shift()
 
@@ -194,7 +200,7 @@ return(out)
 }
 
 
-summarizeShiftSignificance <- function(shiftDetection,alpha = 0.05){
+summarizeShiftSignificance <- function(shiftDetection,alpha = 0.05,paramTib){
   #find significant events
   maxcli <- strsplit(names(shiftDetection),"q") %>%
     purrr::map(pluck,2) %>%
@@ -205,7 +211,6 @@ sig.event <- shiftDetection %>%
   dplyr::filter(empirical_pvalue < alpha) %>%
   dplyr::mutate(exceedance = event_probability - .[[maxcli]]) %>%
   dplyr::arrange(empirical_pvalue,dplyr::desc(exceedance))
-
 
 #remove those within minimum distance
 bm <- sig.event$time_mid

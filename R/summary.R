@@ -94,7 +94,7 @@ summary.shift <- function(object, alpha = 0.05, params.to.print = c("cpt.fun","m
     title <- glue::glue("{shift.type}")
   }
 
-  sig.event <- summarizeShiftSignificance(object$shiftDetection,alpha = alpha)
+  sig.event <- summarizeShiftSignificance(object$shiftDetection,alpha = alpha,paramTib = params)
 
   n.sig <- nrow(sig.event)
 
@@ -107,17 +107,30 @@ summary.shift <- function(object, alpha = 0.05, params.to.print = c("cpt.fun","m
   sigMessage <- glue::glue("Detected {resFun(n.sig)} {crayon::italic(shift.type)} event(s) that were significant at the alpha < {alpha} level")
 
 
-  hasTimeEnsemble <- !identicalVectorsList(object$timeEns)
-  hasPaleoEnsemble <- !identicalVectorsList(object$valEns)
+  hasTimeEnsemble <- !identicalMatrixColumns(object$timeEns)
+  hasPaleoEnsemble <- !identicalMatrixColumns(object$valEns)
+
+  if(object$time.ens.supplied.n > 1){
+    tsmsg <- glue::glue("Time ensemble supplied (n = {object$time.ens.supplied.n})")
+  }else{
+    tsmsg <- glue::glue("Time ensemble generated in `propagateUncertainties()`)")
+  }
+
+
+  if(object$vals.ens.supplied.n > 1){
+    vsmsg <- glue::glue("Values ensemble supplied (n = {object$vals.ens.supplied.n})")
+  }else{
+    vsmsg <- glue::glue("Values ensemble generated in `propagateUncertainties()`)")
+  }
 
   if(hasTimeEnsemble){
-    hasTimeEnsemble <- crayon::green(hasTimeEnsemble)
+    hasTimeEnsemble <- glue::glue("{crayon::green(hasTimeEnsemble)} {tsmsg}")
   }else{
     hasTimeEnsemble <- crayon::red(hasTimeEnsemble)
   }
 
   if(hasPaleoEnsemble){
-    hasPaleoEnsemble <- crayon::green(hasPaleoEnsemble)
+    hasPaleoEnsemble <- glue::glue("{crayon::green(hasPaleoEnsemble)} {vsmsg}")
   }else{
     hasPaleoEnsemble <- crayon::red(hasPaleoEnsemble)
   }
@@ -130,12 +143,12 @@ summary.shift <- function(object, alpha = 0.05, params.to.print = c("cpt.fun","m
   cat("\n")
   cat(crayon::bold(glue::glue("Overall result: {sigMessage}\n\n")))
   if(n.sig > 0 ){
-    print(sig.event %>% dplyr::select(time_mid,empirical_pvalue))
+    print(sig.event %>% dplyr::select(time_start,time_end,empirical_pvalue))
   }
-  cat(glue::glue("Time uncertainty considered? {hasTimeEnsemble}\n\n"))
-  cat(glue::glue("Paleo uncertainty considered? {hasPaleoEnsemble}\n\n"))
-  cat(glue::glue("Error propagation ensemble members = {object$unc.prop.n} members simulated using {crayon::italic(object$surrogate.method)} method\n\n"))
-  cat(glue::glue("Null hypothesis testing ensemble members = {object$null.hypothesis.n}\n\n"))
+  cat(glue::glue("{crayon::bold('Time uncertainty considered?')} {hasTimeEnsemble}\n\n"))
+  cat(glue::glue("{crayon::bold('Paleo uncertainty considered?')} {hasPaleoEnsemble}\n\n"))
+  cat(glue::glue("Error propagation ensemble members = {object$unc.prop.n}\n\n"))
+  cat(glue::glue("Null hypothesis testing ensemble members = {object$null.hypothesis.n} \n  Members simulated using {crayon::italic(object$surrogate.method)} method\n\n"))
   cat("\n")
   cat(crayon::bold("Parameter choices:\n"))
   for(p in params.to.print){

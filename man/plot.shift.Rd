@@ -4,7 +4,7 @@
 \alias{plot.shift}
 \title{Plot mean or variance shifts, with uncertainties and null hypothesis testing}
 \usage{
-plot.shift(
+\method{plot}{shift}(
   x,
   cl.color = "Reds",
   plot.sig.vlines = TRUE,

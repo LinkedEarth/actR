@@ -4,7 +4,7 @@
 \alias{plot.shiftCore}
 \title{Plot a shift in mean or variance}
 \usage{
-plot.shiftCore(x, line.color = "black", mean.color = "red")
+\method{plot}{shiftCore}(x, line.color = "black", mean.color = "red")
 }
 \arguments{
 \item{x}{tibble with time and vals}
