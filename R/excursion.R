@@ -57,9 +57,6 @@ detectExcursion = function(ltt = NA,
                            time.units = NA,
                            vals.units = NA,
                            dataset.name = NA,
-                           event.yr,
-                           event.window,
-                           ref.window,
                            n.ens = 100,
                            output.figure.path = NA,
                            surrogate.method = "isospectral",
@@ -83,18 +80,6 @@ detectExcursion = function(ltt = NA,
   time <- prepped$time[[1]]
   vals <- prepped$paleoData_values[[1]]
 
-  # yr.start:yr.end defines boundaries of analysis (i.e. both reference windows and the event window)
-  yr.start = event.yr - event.window / 2 - ref.window
-  yr.end = event.yr + event.window / 2 + ref.window
-
-  # event.start:event.end defines the boundaries of the event
-  event.start = event.yr - event.window / 2
-  event.end = event.yr + event.window / 2
-
-  analysis.i = which(time >= yr.start & time <= yr.end) # define analysis window indices
-
-  time = time[analysis.i]
-  vals = vals[analysis.i]
 
   # detect excursions while propagating time and data uncertainties
   ptm <- proc.time()
@@ -102,8 +87,6 @@ detectExcursion = function(ltt = NA,
                                   vals,
                                   n.ens = n.ens,
                                   changeFun = detectExcursionCore,
-                                  event.start = event.start,
-                                  event.end = event.end,
                                   ...)
   te <- proc.time() - ptm
   te <- te[3]
@@ -119,8 +102,6 @@ detectExcursion = function(ltt = NA,
                                 n.ens = n.ens,
                                 surrogate.method = surrogate.method,
                                 changeFun = detectExcursionCore,
-                                event.start = event.start,
-                                event.end = event.end,
                                 how.long.prop = te,
                                 mc.ens = null.hypothesis.n,
                                 ...)
@@ -138,8 +119,8 @@ detectExcursion = function(ltt = NA,
   nullLevels <- nullEventProb %>%
     tidyr::pivot_wider(values_from = qs,names_from = clLevel)
 
-  eventSummary <- tibble::tibble(time_start = event.start,
-                                 time_end = event.end,
+  eventSummary <- tibble::tibble(time_start = dataEst$time_start[1],
+                                 time_end = dataEst$time_end[1],
                                  time_mid = mean(time_start,time_end),
                                  eventDetectionWithUncertainty = mean(dataEst$eventDetected,na.rm = TRUE),
                                  empirical_pvalue = 1-nullEcdf(eventDetectionWithUncertainty),
@@ -148,7 +129,7 @@ detectExcursion = function(ltt = NA,
                                  null.hypothesis.n = null.hypothesis.n) %>%
     dplyr::bind_cols(nullLevels)
 
-  paramTib <- createTibbleFromParameterString(as.character(glue::glue("event.yr = {event.yr}, event.window = {event.window}, ref.window = {ref.window}, {dataEst$parameters}")))
+  paramTib <- createTibbleFromParameterString(as.character(dataEst$parameters[1]))
 
   eventSummary <- dplyr::bind_cols(eventSummary,paramTib,prepped)
 
@@ -164,20 +145,22 @@ detectExcursion = function(ltt = NA,
 #'
 #' @param time time vector of only the points in the window
 #' @param vals value vector of only the points in the window
-#' @param event.end the end of the event window
-#' @param event.start the start of the event window
 #' @param n.consecutive how many consecutive points are required for this to be considered an excursion? (default = 2)
 #' @param exc.type Type of excursion to look for. "positive", "negativee", "either" or "both" (default = "either")
 #' @param min.vals Minimum number of values required in reference and event windows (default = 8)
 #' @param na.rm Remove NAs? (default = TRUE)
 #' @param sig.num how many standard deviations required outside the reference windows must be exceeded for this to be considered an excursion? (default = 2)
+#' @param event.yr time at the center of the excursion window
+#' @param event.window width (in time units) of the excursion window
+#' @param ref.window width (in time units) of the reference windows
 #'
 #' @return a tibble of results
 #' @export
 detectExcursionCore <- function(time,
                                 vals,
-                                event.start,
-                                event.end,
+                                event.yr,
+                                event.window,
+                                ref.window,
                                 sig.num = 2,
                                 n.consecutive = 2,
                                 exc.type = "either",
@@ -185,7 +168,7 @@ detectExcursionCore <- function(time,
                                 na.rm = TRUE){
 
  #write parameters for export
-  params = glue::glue("sig.num = {sig.num}, n.consecutive = {n.consecutive},exc.type = '{exc.type}', min.vals = {min.vals}, na.rm = {na.rm}")
+  params = glue::glue("event.yr = {event.yr}, event.window = {event.window}, ref.window = {ref.window}, sig.num = {sig.num}, n.consecutive = {n.consecutive},exc.type = '{exc.type}', min.vals = {min.vals}, na.rm = {na.rm}")
 
   #removee NAs
   if(na.rm){
@@ -193,6 +176,19 @@ detectExcursionCore <- function(time,
     time <- time[good]
     vals <- vals[good]
   }
+
+  # yr.start:yr.end defines boundaries of analysis (i.e. both reference windows and the event window)
+  yr.start = event.yr - event.window / 2 - ref.window
+  yr.end = event.yr + event.window / 2 + ref.window
+
+  # event.start:event.end defines the boundaries of the event
+  event.start = event.yr - event.window / 2
+  event.end = event.yr + event.window / 2
+
+  analysis.i = which(time >= yr.start & time <= yr.end) # define analysis window indices
+
+  time = time[analysis.i]
+  vals = vals[analysis.i]
 
   # Detrend over analysis window
   a = predict(lm(vals ~ time))
