@@ -1,7 +1,6 @@
 actR_ggtheme <- ggplot2::theme_bw
 
 
-
 #' Plot an excursion with uncertainties
 #' @importFrom glue glue
 #' @importFrom dplyr filter

@@ -26,7 +26,7 @@ detectShiftCore = function(time,
   X = seq(min(time,na.rm = TRUE), max(time,na.rm = TRUE), by = res)
   Y = f(X)
 
-
+# pull out ... parameters
   opts <- list(...)
 
   #check if method can handlle minseglen
@@ -53,6 +53,7 @@ detectShiftCore = function(time,
   change.start <- apply(changes,1,min)
   change.end <- apply(changes,1,max)
 
+  # create a hash for each unique time-value pair
   it.hash <- digest::digest(list(time,vals))
   #report out to tibble
   out <- tibble::tibble(time_start = change.start,
