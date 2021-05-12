@@ -39,9 +39,6 @@ detectExcursionSlidingWindow <- function(time,
 #' @inheritParams propagateUncertainty
 #' @inheritParams testNullHypothesis
 #' @inheritParams detectShift
-#' @param event.yr the center of the proposed excursion window
-#' @param event.window the width of the proposed excursion window
-#' @param ref.window how many years to use as a reference before and after the event window
 #' @inheritDotParams propagateUncertainty
 #' @param output.figure.path path pointing to where should the output figure be saved? An NA will not produce a figure (default = NA)
 #'

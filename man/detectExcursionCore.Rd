@@ -7,8 +7,9 @@
 detectExcursionCore(
   time,
   vals,
-  event.start,
-  event.end,
+  event.yr,
+  event.window,
+  ref.window,
   sig.num = 2,
   n.consecutive = 2,
   exc.type = "either",
@@ -21,9 +22,11 @@ detectExcursionCore(
 
 \item{vals}{value vector of only the points in the window}
 
-\item{event.start}{the start of the event window}
+\item{event.yr}{time at the center of the excursion window}
 
-\item{event.end}{the end of the event window}
+\item{event.window}{width (in time units) of the excursion window}
+
+\item{ref.window}{width (in time units) of the reference windows}
 
 \item{sig.num}{how many standard deviations required outside the reference windows must be exceeded for this to be considered an excursion? (default = 2)}
 
