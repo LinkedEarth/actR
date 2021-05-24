@@ -1,8 +1,8 @@
 #library(arima)
 #library(ggpubr)
 library(ggthemes)
-library(latex2exp)
 library(geoChronR)
+library(ggplot2)
 
 #' Create a linear ramp around the midpoint of a time series
 #'
@@ -15,7 +15,7 @@ library(geoChronR)
 linear.ramp <-function(lngth,width){
   if (width>lngth/2) {stop("Ramp width cannot exceed half of the length")}
   xs = seq(lngth)/lngth-1/2
-  ramp = 4*Ramp(xs,a = -width/lngth)
+  ramp = 4*fBasics::Ramp(xs,a = -width/lngth)
   ramp[xs>width/lngth] = 1.0
   return(ramp)
 }
@@ -29,7 +29,7 @@ ar1.noise <- function(lngth,g,sigma){
 
 
 # global variables
-theme_set(theme_hc(style = "darkunica"))
+theme_set(ggthemes::theme_hc(style = "darkunica"))
 lngth <- 400
 time <- 1.0*seq(lngth)
 
@@ -43,14 +43,14 @@ c1a <- ggplot(data=df1) +
   geom_line(aes(x=time,y=signal1+noise_lo),color='orange') +
   geom_line(aes(x=time,y=signal1),color='white') +
   ylab("y(t)") + xlab(NULL) + ylim(-3,4) +
-  ggtitle(TeX(r'(1a) Abrupt Shift + AR(1), $\sigma=0.2$)'))
-# TODO: put y in LiPD-TIBBLE
+  ggtitle(expression('(1a) Abrupt Shift + AR(1), '*sigma*' = 0.2)'))
+  # TODO: put y in LiPD-TIBBLE
 
 
 c1b <- ggplot(data=df1) +
   geom_line(aes(x=time,y=signal1+noise_hi),color='orange') +
   geom_line(aes(x=time,y=signal1),color='white') +
-  ggtitle(TeX(r'(1b) Abrupt Shift + AR(1), $\sigma=0.8$)')) +
+  ggtitle(expression('(1b) Abrupt Shift + AR(1), '*sigma*' = 0.8)')) +
   ylab('y(t)') + xlab(NULL) + ylim(-3,4)
 # TODO: put y in LiPD-TIBBLE
 
@@ -62,14 +62,14 @@ c2a <- ggplot(data=df2) +
   geom_line(aes(x=time,y=signal2+noise_lo),color='orange') +
   geom_line(aes(x=time,y=signal2),color='white') +
   ylab("y(t)") + xlab(NULL) + ylim(-3,4) +
-  ggtitle(TeX(r'(2a) Gradual shift + AR(1), $\sigma=0.2$)'))
+  ggtitle(expression("(2a) Gradual shift + AR(1), "*sigma*" = 0.2"))
 # TODO: put y in LiPD-TIBBLE
 
 c2b <- ggplot(data=df2) +
   geom_line(aes(x=time,y=signal2+noise_hi),color='orange') +
   geom_line(aes(x=time,y=signal2),color='white') +
   ylab("y(t)") + xlab(NULL) + ylim(-3,4) +
-  ggtitle(TeX(r'(2b) Gradual shift + AR(1), $\sigma=0.8$)'))
+  ggtitle(expression("(2b) Gradual shift + AR(1), "*sigma*" = 0.8"))
 
 # TODO: put y in LiPD-TIBBLE
 
@@ -99,5 +99,49 @@ c3b <- geoChronR::plotTimeseriesEnsRibbons(X = timeMat, Y = signal1+noise_hi, co
 
 #show(c3a)
 grobs = rbind(c1a,c1b,c2a,c2b,c3a,c3b)
-gridExtra::grid.arrange(c1a,c1b,c2a,c2b,c3a,c3b, nrow = 3)
+plots <- gridExtra::grid.arrange(c1a,c1b,c2a,c2b,c3a,c3b, nrow = 3)
+
+
+
+
+#Create lipd-ts-tibble
+#this will be a 4 row tibble, for the four examples, that includes age uncertainty in all.
+row1 <- tibble::tibble(time = list(time),
+                       timeUnits = "CE",
+                       timeEnsemble = list(timeMat),
+                       timeVariableName = "year",
+                       archiveType = "pseudoproxy",
+                       dataSetName = "pseudoShiftData_400yr",
+                       geo_latitude = NA,
+                       geo_longitude = NA,
+                       geo_elevation = NA,
+                       paleoData_variableName = "Abrupt shift + AR(1) (sigma = 0.2)",
+                       paleoData_units = "unitless",
+                       paleoData_values = list(as.matrix(df1$signal + df1$noise_lo)),
+                       paleoData_TSid = "pseudoAS02")
+
+row2 <- row1
+row2$paleoData_values <- list(as.matrix(df1$signal + df1$noise_hi))
+row2$paleoData_variableName = "Abrupt shift + AR(1) (sigma = 0.8)"
+row2$paleoData_TSid = "pseudoAS08"
+
+row3 <- row1
+row3$paleoData_values <- list(as.matrix(df2$signal + df2$noise_lo))
+row3$paleoData_variableName = "Gradual shift + AR(1) (sigma = 0.2)"
+row3$paleoData_TSid = "pseudoGS02"
+
+
+row4 <- row1
+row4$paleoData_values <- list(as.matrix(df2$signal + df2$noise_hi))
+row4$paleoData_variableName = "Gradual shift + AR(1) (sigma = 0.8)"
+row4$paleoData_TSid = "pseudoGS08"
+
+
+
+pseudoShifts <- dplyr::bind_rows(row1,row2,row3,row4)
+
+pseudoShifts <- structure(pseudoShifts,class = c("lipd-ts-tibble",class(tibble::tibble())))
+
+
+usethis::use_data(pseudoShifts, overwrite = TRUE)
 
