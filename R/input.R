@@ -25,7 +25,7 @@ prepareInput <- function(ltt = NA,
                          expecting.one.row = TRUE,
                          sort.by.time = TRUE,
                          remove.time.nas = TRUE){
-  if(!is.na(ltt)){#great, there's already a tibble ts
+  if(!all(is.na(ltt))){#great, there's already a tibble ts
     #check to make sure it is.
     if(!is.data.frame(ltt)){#change this to class once implemented in lipdR
       stop(glue::glue("ltt needs to be a data.frame or tibble, but appears to be a {class(ltt)}"))

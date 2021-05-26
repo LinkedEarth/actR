@@ -30,7 +30,7 @@ propagateUncertainty(
 
 \item{simulate.paleo.uncertainty}{TRUE or FALSE. If an ensemble is not included, do you want to simulate paleo ensembles (default = TRUE)}
 
-\item{n.ens}{How many ensembles to propagate through? (default = 100)}
+\item{n.ens}{How many ensembles to use for error propagation? (default = 100)}
 
 \item{bam.model}{BAM Model parameters to use if simulating time uncertainty (default = list(ns = n.ens, name = "bernoulli", param = 0.05), paleo.uncertainty = sd(vals,na.rm = TRUE)))}
 

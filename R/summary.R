@@ -1,3 +1,8 @@
+#' Summarize Excursion Output
+#'
+#' @param object excursion class output
+#' @param params.to.print a vector of parameters to print
+#' @export
 summary.excursion <- function(object, params.to.print = c("sig.num","n.consecutive","exc.type","min.vals","na.rm")){
 
   if(!is.na(object$dataSetName) & !is.na(object$paleoData_variableName)){
@@ -69,6 +74,14 @@ for(p in params.to.print){
 }
 
 
+#' Summarize shift output
+#'
+#' @param object shift output
+#' @param alpha significance level
+#' @param params.to.print vector of paramters to print
+#'
+#' @return
+#' @export
 summary.shift <- function(object, alpha = 0.05, params.to.print = c("cpt.fun","minimum.segment.length","method","penalty","ncpts.max")){
 
   params <- createTibbleFromParameterString(object$parameters[1])

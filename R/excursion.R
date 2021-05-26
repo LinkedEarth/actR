@@ -58,7 +58,7 @@ detectExcursion = function(ltt = NA,
                            output.figure.path = NA,
                            surrogate.method = "isospectral",
                            null.hypothesis.n = 100,
-                           null.quantiles = c(.9,.95),
+                           null.quantiles = c(.95),
                            ...) {
 
   #prep inputs

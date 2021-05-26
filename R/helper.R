@@ -14,7 +14,13 @@ maxConsecutive <- function(vec,val = TRUE,gte = NA){
   consec <- rle(vec)
 
   # max consecutive values
-  mv <- max(consec$lengths[consec$values==val])
+  wcv <- which(consec$values==val)
+
+  if(length(wcv > 0)){
+    mv <- max(consec$lengths[wcv])
+  }else{
+    mv <- 0
+  }
   if(!is.finite(mv)){
     mv <- 0
   }
