@@ -15,6 +15,7 @@ actR_ggtheme <- ggplot2::theme_bw
 #' @param lab.mult When labeling significance, how much higher than the highest point to put the label
 #'
 #' @return a ggplot2 object
+#' @export
 plot.excursion <- function(x,
                            alpha = 0.05,
                            print.significance = FALSE,
@@ -72,7 +73,7 @@ plot.excursion <- function(x,
         ggplot2::annotate("text",x = l.x, y = l.y,label = alpha.msg)
     }
   }else{
-    plotout <- plotExcursionCore(ensOut[1,])
+    plotout <- plot.excursionCore(ensOut[1,])
   }
 
 
@@ -111,6 +112,7 @@ plot.excursion <- function(x,
 #' @param add.to.plot a ggplot object upon which to add this plot
 #'
 #' @return a ggplot object
+#' @export
 plot.excursionCore <- function(x,
                                add.to.plot = ggplot2::ggplot()){
 
@@ -157,7 +159,7 @@ plot.excursionCore <- function(x,
 #' @param vals input value vector
 #' @param add.to.plot ggplot to add this to
 #' @param mean.color color of the mean lines
-#'
+#' @export
 #' @return A ggplot object
 plotSectionMeans <- function(x,time,vals,add.to.plot = ggplot2::ggplot(),mean.color = "red"){
 
@@ -196,7 +198,7 @@ plotSectionMeans <- function(x,time,vals,add.to.plot = ggplot2::ggplot(),mean.co
 #' @param line.color color of the line
 #' @param mean.color color of the means
 #' @param x tibble with time and vals
-#'
+#' @export
 #' @return A ggplot object
 plot.shiftCore <- function(x,line.color = "black", mean.color = "red"){
   if(nrow(x)==0){#how to handle this?
@@ -251,7 +253,7 @@ plot.shiftCore <- function(x,line.color = "black", mean.color = "red"){
 #' @param y.axis.label Label the y-axis (default = NA, which will automatically generate from input)
 #' @param combine.plots Combine the probability and timeseries plots into a single plot (TRUE)? Or return a list with each plot as a separate object (FALSE)?
 #' @param x.lims 2-element vector to usee as x-axis limits (default = NA)
-#'
+#' @export
 #' @return a ggplot object
 plot.shift <- function(x,
                        cl.color = "Reds",
@@ -346,10 +348,14 @@ plot.shift <- function(x,
     any.sig = TRUE
   }
 
-  minp <- x$shiftDetection %>%
-    dplyr::filter(empirical_pvalue > 0) %>%
-    dplyr::select("empirical_pvalue") %>%
-    min(na.rm = TRUE)
+  if(max(x$shiftDetection$empirical_pvalue,na.rm = TRUE) > 0){
+    minp <- x$shiftDetection %>%
+      dplyr::select(empirical_pvalue) %>%
+      dplyr::filter(empirical_pvalue > 0) %>%
+      min(na.rm = TRUE)
+  }else{
+    minp <- 0
+  }
 
   max.y <- x$shiftDetection %>%
     dplyr::select("event_probability" | starts_with("q")) %>%

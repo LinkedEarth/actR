@@ -172,7 +172,6 @@ detectShift <- function(ltt = NA,
   nhSummary$empirical_pvalue <- purrr::array_branch(nhMat,margin = 1) %>%
     purrr::map2_dbl(.y = propSummary$event_probability,.f = getEmpP)
 
-
   dsout <- dplyr::bind_cols(propSummary,nhSummary)
 
 

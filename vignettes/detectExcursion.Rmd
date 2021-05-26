@@ -1,0 +1,145 @@
+---
+title: "detectExcursion"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{detectExcursion}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+
+```
+
+## Excursion detection in actR
+
+This (in development) vignette will showcase a simple example of detecting an excursion -- defined in actR as a short term deviation from a baseline -- using the classic NGRIP d18O record. This dataset comes preloaded in actR, and you can learn more about it with `?ngrip`.
+
+actR uses an excursion detection algorithm developed and used by [Morrill et al. (2013)](https://cp.copernicus.org/articles/9/423/2013/cp-9-423-2013.pdf).
+
+
+```{r setup}
+library(actR)
+```
+
+### Excursion detection with no uncertainties
+
+First, let's take a look at the excursion in the NGRIP d18O dataset near 8200 yr BP (the 8.2 ka event). First, we'll tell it not to simulate any uncertainties. We're using the `detectExcursion()` function, a high-level function for this approach. 
+
+We'll need to give it some key parameters, in this case, we need to define the center and width of the event window (8200 and 200 yr, respectively). We also need to define the reference intervals (400 yrs on each side), and how many standard deviations to use for the baseline (sig.num = 2). We're only looking for cold (negative excursions).
+
+
+```{r no uncertainty, warning = FALSE}
+excOutNoUnc <- detectExcursion(ngrip, 
+                          vals.variable.name = "d18O",
+                          event.yr = 8200,
+                          event.window = 200,
+                          ref.window = 400,
+                          sig.num = 2,
+                          exc.type = "negative",
+                          n.ens = 1,
+                          null.hypothesis.n = 1,
+                          simulate.time.uncertainty = FALSE,
+                          simulate.paleo.uncertainty = FALSE)
+```
+
+After it runs, the `summary()` or `print()` functions will summarize the results.
+
+```{r, warning = FALSE}
+summary(excOutNoUnc)
+```
+
+Here we see the results, but it's easier to see the results, especially without uncertainties, as a plot:
+
+```{r, warning = FALSE}
+plot(excOutNoUnc)
+```
+
+
+Here we see the baselines defined as red lines, with the excursions and the points that exceed the threshhold as red dots. The method requires a minimum number of consecutive points to pass the threshold, the default is 2, this parameters is `n.consecutive`.
+
+### Excursion detection with d18O uncertainties
+
+So there's clearly and excursion centered on 8.2 ka, but how much might this be affected by uncertainty in the y-axis? In this case we're not really thinking of measurement error, but of the myriad uncertainties that complicate the relationship between d18O and climate (in this case, we're thinking mostly of cooling). actR propagates these uncertainties as ensembles, and works best if you pass a full ensemble as input. However most datasets don't have paleo ensembles, so actR will simulate an ensemble based on an uncertainty estimate (0.2) and uncertainty AR1 coefficient (0.8).
+
+Now, because we're working with ensembles, this will run multiple times to propagate the error. We specify the number of error propagation ensemble members in `n.ens`. To keep this vignette snappy, we're only using 50, but you probably want 100 or more. 
+
+We're also going to take advantage of actR's robust null hypothesis testing, which will repeat the full analysis for synthetic data that mirrors the characteristics of the input data. Check out this (TBD) to learn more about null hypothesis testing in actR. We'll also run the null hypothesis simulation 50 times. 
+
+
+```{r paleo uncertainty, warning = FALSE}
+excOutUncY <- detectExcursion(ngrip, 
+                          vals.variable.name = "d18O",
+                          event.yr = 8200,
+                          event.window = 200,
+                          ref.window = 400,
+                          exc.type = "negative",
+                          n.ens = 50,
+                          null.hypothesis.n = 50,
+                          simulate.time.uncertainty = FALSE,
+                          simulate.paleo.uncertainty = TRUE,
+                          paleo.uncertainty = 0.2,
+                          paleo.ar1 = 0.8)
+```
+
+This time, when we summarize the results, we get more interesting output, including an empirical p-value, which is the fraction of null hypothesis simulations that exceed the positivity rate in the actual data. Typically, empirical p-values less than 0.05 are considered significant. 
+
+```{r, warning = FALSE}
+summary(excOutUncY) 
+```
+
+We also get a bit more information when plotting with uncertainties. This plotting routine will show the data with uncertainty bands in the back, and a representative ensemble member illustrating the excursion.
+
+```{r, warning = FALSE}
+plot(excOutUncY) 
+
+```
+
+Including d18O uncertainty muddies the water a bit, but this feature is still clearly robust to uncertainties in the paleo data. But what about age uncertainty?
+
+### Excursion detection with d18O uncertainties and age uncertainty
+
+In addition to d18O uncertainty, age uncertainty has the potential to obscure abrupt changes in datasets. When we're testing an excursion to see if it's robust to age uncertainty, we're examining the likelihood that, given age uncertainty, the excursion occurred during this specific 200 year window, NOT whether the excursion occurred at all. Age uncertainty is unlikely to destroy an excursion this pronounced, but may be able to move it from 8.2 to 8.5 ka. 
+
+Again, actR is designed to work with ensembles, so entering an age ensemble in to `detectExcursion()` is ideal. But as is often the case, this NGRIP dataset doesn't come with ensembles. In this case, actR can reasonably simulate age uncertainties (especially for layer counted records) using BAM (Comboul et al. 2015). Here we'll use BAM with a Bernoulli model and symmetric 0.02 over/undercounting rates. 
+
+Once again, we'll run all of this, including the age uncertainties, through our robust null hypothesis testing.
+
+
+```{r paleo and age uncertainty, warning = FALSE}
+excOutUncXY <- detectExcursion(ngrip, 
+                          vals.variable.name = "d18O",
+                          event.yr = 8200,
+                          event.window = 200,
+                          ref.window = 400,
+                          exc.type = "negative",
+                          n.ens = 50,
+                          null.hypothesis.n = 50,
+                          simulate.time.uncertainty = TRUE,
+                          bam.model = list(ns = 50, name = "bernoulli", param = 0.02),
+                          simulate.paleo.uncertainty = TRUE,
+                          paleo.uncertainty = 0.2)
+
+```
+
+Let's examine the result. 
+
+```{r, warning = FALSE}
+
+summary(excOutUncXY) 
+
+```
+
+And plot the output.
+
+```{r, warning = FALSE}
+plot(excOutUncXY)
+```
+
+Given these uncertainties, and all of our parametric choices, we rest assured that this excursion is robust to our uncertainties. 
+
+
