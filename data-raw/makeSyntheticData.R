@@ -4,29 +4,6 @@ library(ggthemes)
 library(geoChronR)
 library(ggplot2)
 
-#' Create a linear ramp around the midpoint of a time series
-#'
-#' @param lngth length of the time axis
-#' @param width the width of the ramp. width  = 0 results in a step jump at the midpoint. width = lngth/2 results in a smooth linear ramp
-#' @importFrom fBasics Ramp
-#' @return values of the function (between 0 and 1)
-#' @export
-
-linear.ramp <-function(lngth,width){
-  if (width>lngth/2) {stop("Ramp width cannot exceed half of the length")}
-  xs = seq(lngth)/lngth-1/2
-  ramp = 4*fBasics::Ramp(xs,a = -width/lngth)
-  ramp[xs>width/lngth] = 1.0
-  return(ramp)
-}
-
-
-
-ar1.noise <- function(lngth,g,sigma){
-  ar1=sigma/sqrt(1-g^2)*arima.sim(model=list(g,0,0),n=lngth)
-  return(ar1)
-}
-
 
 # global variables
 theme_set(ggthemes::theme_hc(style = "darkunica"))
@@ -34,42 +11,42 @@ lngth <- 400
 time <- 1.0*seq(lngth)
 
 # case 1: abrupt shift
-signal1 <- linear.ramp(lngth,0)
-noise_lo <- ar1.noise(lngth,0.8,0.2)
-noise_hi <- ar1.noise(lngth,0.8,0.8)
+signal1 <- linearRamp(lngth,0)
+noise_lo <- ar1noise(lngth,0.8,0.2)
+noise_hi <- ar1noise(lngth,0.8,0.8)
 
 df1 <- data.frame(signal=signal1,noise_hi,noise_lo)
 c1a <- ggplot(data=df1) +
   geom_line(aes(x=time,y=signal1+noise_lo),color='orange') +
   geom_line(aes(x=time,y=signal1),color='white') +
   ylab("y(t)") + xlab(NULL) + ylim(-3,4) +
-  ggtitle(expression('(1a) Abrupt Shift + AR(1), '*sigma*' = 0.2)'))
+  ggtitle(expression('1a) Abrupt Shift + AR(1), '*sigma*' = 0.2)'))
   # TODO: put y in LiPD-TIBBLE
 
 
 c1b <- ggplot(data=df1) +
   geom_line(aes(x=time,y=signal1+noise_hi),color='orange') +
   geom_line(aes(x=time,y=signal1),color='white') +
-  ggtitle(expression('(1b) Abrupt Shift + AR(1), '*sigma*' = 0.8)')) +
+  ggtitle(expression('1b) Abrupt Shift + AR(1), '*sigma*' = 0.8)')) +
   ylab('y(t)') + xlab(NULL) + ylim(-3,4)
 # TODO: put y in LiPD-TIBBLE
 
 
 # case 2: noisy jump with trend
-signal2 <- linear.ramp(lngth,50)
+signal2 <- linearRamp(lngth,50)
 df2 <- data.frame(signal=signal2,noise_hi,noise_lo)
 c2a <- ggplot(data=df2) +
   geom_line(aes(x=time,y=signal2+noise_lo),color='orange') +
   geom_line(aes(x=time,y=signal2),color='white') +
   ylab("y(t)") + xlab(NULL) + ylim(-3,4) +
-  ggtitle(expression("(2a) Gradual shift + AR(1), "*sigma*" = 0.2"))
+  ggtitle(expression("2a) Gradual shift + AR(1), "*sigma*" = 0.2"))
 # TODO: put y in LiPD-TIBBLE
 
 c2b <- ggplot(data=df2) +
   geom_line(aes(x=time,y=signal2+noise_hi),color='orange') +
   geom_line(aes(x=time,y=signal2),color='white') +
   ylab("y(t)") + xlab(NULL) + ylim(-3,4) +
-  ggtitle(expression("(2b) Gradual shift + AR(1), "*sigma*" = 0.8"))
+  ggtitle(expression("2b) Gradual shift + AR(1), "*sigma*" = 0.8"))
 
 # TODO: put y in LiPD-TIBBLE
 

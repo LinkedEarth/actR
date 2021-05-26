@@ -1,5 +1,5 @@
 
-#' Detect a changepoint while propagating proxy and/or time uncertainty
+#' Explore uncertainty space on abscissa or ordinate and propagate of any of actR's change functions
 #'
 #' @param time a time vector, or matrix of time ensemble members (ensembles in columns)
 #' @param vals a values vector, or matrix of values ensemble members (ensembles in columns)
@@ -14,7 +14,7 @@
 #' @param summarize Boolean. Summarize the output? Or return all the ensembles?
 #' @param ... arguments to pass to pass to changeFun
 #'
-#' @return a propagated uncertainty tibbble
+#' @return a propagated uncertainty tibble
 #' @export
 propagateUncertainty <- function(time,
                                  vals,

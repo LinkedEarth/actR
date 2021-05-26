@@ -1,0 +1,35 @@
+---
+title: "abruptShift_tests"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{abruptShift_tests}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(actR)
+```
+
+
+This notebook implements a test of the `actR::detectShiftCore()` function on synthetic data (see data_raw/makeSyntheticData.R for their construction). 
+
+The idea is to evaluate the proportion of false negatives and false positives and construct receiver operating characteristic curves and their sensitivity to:
+- abruptness (the time over which the shift occurs, from 0 to T/2, where T is the length of the series)
+- noise levels. 
+- age uncertainties.
+
+```{r Load test data }
+lngth <- 400
+time <- 1.0*seq(lngth)
+vals <- pseudoShifts$paleoData_values[[1]]  
+res <- detectShiftCore(time = time,vals = vals)
+propagateUncertainty(time = time,vals = vals, changeFun = detectShiftCore)
+```
