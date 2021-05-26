@@ -91,7 +91,7 @@
             
       
       
-      <div class="hidden name"><code>detectShift.Rmd</code></div>
+      <div class="hidden name"><code>detectShift_jeg.Rmd</code></div>
 
     </div>
 
@@ -103,6 +103,7 @@
 <div id="shift-detection-in-actr" class="section level2">
 <h2 class="hasAnchor">
 <a href="#shift-detection-in-actr" class="anchor"></a>Shift detection in actR</h2>
+<p>This vignette shows how actR detects shift (and their statistical significance) for 2 of our example datasets: the geob7926_2 sedimentary record of Kim et al <a href="https://www.doi.org/10.1016/j.epsl.2012.05.018">2012</a> covering the last deglaciation (roughly 28 to 9ka BP) and the Great Basin tree-ring record of Salzer et al <a href="https://www.doi.org/10.1007/s00382-013-1911-9">2013</a> covering the Common Era at annual resolution.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit">
 <span class="kw">msGeob</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/detectShift.html">detectShift</a></span>(<span class="kw">geob7926_2</span>,
                     time.variable.name = <span class="st">"ageEnsemble"</span>,
@@ -121,12 +122,14 @@
 <span class="co">#&gt; GeoB7926_2.Kim.2012 - SST_from_uk37_ensemble: Shift in Mean results</span>
 <span class="co">#&gt; Searched for Shift in Mean with a minimum segment length of 3000 years, summarizing the results over windows of 500 years.</span>
 <span class="co">#&gt; </span>
-<span class="co">#&gt; Overall result: Detected 2 Shift in Mean event(s) that were significant at the alpha &lt; 0.05 level</span>
-<span class="co">#&gt; # A tibble: 2 x 3</span>
+<span class="co">#&gt; Overall result: Detected 4 Shift in Mean event(s) that were significant at the alpha &lt; 0.05 level</span>
+<span class="co">#&gt; # A tibble: 4 x 3</span>
 <span class="co">#&gt;   time_start time_end empirical_pvalue</span>
 <span class="co">#&gt;        &lt;dbl&gt;    &lt;dbl&gt;            &lt;dbl&gt;</span>
-<span class="co">#&gt; 1      9727.   10227.                0</span>
-<span class="co">#&gt; 2     23227.   23727.                0</span>
+<span class="co">#&gt; 1      9727.   10227.             0   </span>
+<span class="co">#&gt; 2     25727.   26227.             0.02</span>
+<span class="co">#&gt; 3      3727.    4227.             0.04</span>
+<span class="co">#&gt; 4     18227.   18727.             0.04</span>
 <span class="co">#&gt; Time uncertainty considered? TRUE Time ensemble supplied (n = 100)</span>
 <span class="co">#&gt; Paleo uncertainty considered? TRUE Values ensemble supplied (n = 2500)</span>
 <span class="co">#&gt; Error propagation ensemble members = 50</span>
@@ -141,9 +144,9 @@
 <span class="co">#&gt; ncpts.max = 1</span>
 </pre></div>
 <div class="sourceCode" id="cb4"><pre class="downlit">
-<span class="kw">geoBplot</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="kw">msGeob</span>)
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="kw">msGeob</span>)
 </pre></div>
-<p><img src="detectShift_files/figure-html/unnamed-chunk-4-1.png" width="700"></p>
+<p><img src="detectShift_jeg_files/figure-html/unnamed-chunk-4-1.png" width="700"><img src="detectShift_jeg_files/figure-html/unnamed-chunk-4-2.png" width="700"></p>
 <div class="sourceCode" id="cb5"><pre class="downlit">
 <span class="kw">msGb</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/detectShift.html">detectShift</a></span>(<span class="kw">great_basin</span>,
                      time.variable.name = <span class="st">"year"</span>,
@@ -160,9 +163,9 @@
 <span class="co">#&gt; This will probably take about 1 minutes</span>
 </pre></div>
 <div class="sourceCode" id="cb6"><pre class="downlit">
-<span class="kw">gbmPlot</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="kw">msGb</span>)
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="kw">msGb</span>)
 </pre></div>
-<p><img src="detectShift_files/figure-html/unnamed-chunk-6-1.png" width="700"></p>
+<p><img src="detectShift_jeg_files/figure-html/unnamed-chunk-6-1.png" width="700"><img src="detectShift_jeg_files/figure-html/unnamed-chunk-6-2.png" width="700"></p>
 <div class="sourceCode" id="cb7"><pre class="downlit">
 <span class="kw">vsGb</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/detectShift.html">detectShift</a></span>(<span class="kw">great_basin</span>,
                      time.variable.name = <span class="st">"year"</span>,
@@ -179,9 +182,9 @@
 <span class="co">#&gt; This will probably take about 1 minutes</span>
 </pre></div>
 <div class="sourceCode" id="cb8"><pre class="downlit">
-<span class="kw">gbvPlot</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="kw">vsGb</span>)
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="kw">vsGb</span>)
 </pre></div>
-<p><img src="detectShift_files/figure-html/unnamed-chunk-8-1.png" width="700"></p>
+<p><img src="detectShift_jeg_files/figure-html/unnamed-chunk-8-1.png" width="700"><img src="detectShift_jeg_files/figure-html/unnamed-chunk-8-2.png" width="700"></p>
 </div>
   </div>
 

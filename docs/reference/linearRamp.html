@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Print Excursion — print.excursion • actR</title>
+<title>Linear ramp — linearRamp • actR</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="Print Excursion — print.excursion" />
-<meta property="og:description" content="Print Excursion" />
+<meta property="og:title" content="Linear ramp — linearRamp" />
+<meta property="og:description" content="linearRamp()  Create a linear ramp around the midpoint of a series. Slope can be adjusted as desired to create gradual or abrupt shifts." />
 
 
 
@@ -130,34 +130,33 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Print Excursion</h1>
+    <h1>Linear ramp</h1>
     
-    <div class="hidden name"><code>print.excursion.Rd</code></div>
+    <div class="hidden name"><code>linearRamp.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Print Excursion</p>
+    <p>linearRamp()  Create a linear ramp around the midpoint of a series. Slope can be adjusted as desired to create gradual or abrupt shifts.</p>
     </div>
 
-    <pre class="usage"><span class='co'># S3 method for excursion</span>
-<span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='kw'>x</span>, <span class='kw'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>linearRamp</span>(<span class='kw'>lngth</span>, <span class='kw'>width</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>x</th>
-      <td><p>excursion object to print</p></td>
+      <th>lngth</th>
+      <td><p>length of the time axis</p></td>
     </tr>
     <tr>
-      <th>...</th>
-      <td><p>Arguments passed on to <code><a href='https://rdrr.io/r/base/print.html'>print</a></code></p><dl>
-    <dt><code></code></dt><dd><p></p></dd>
-  
-</dl></td>
+      <th>width</th>
+      <td><p>the width of the ramp. width  = 0 results in a step jump at the midpoint. width = lngth/2 (the largest alloweable value) results in a smooth linear ramp</p></td>
     </tr>
     </table>
 
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>values of the function (between 0 and 1)</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

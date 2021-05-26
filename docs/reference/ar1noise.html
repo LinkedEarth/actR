@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Print Excursion — print.excursion • actR</title>
+<title>AR(1) noise — ar1noise • actR</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="Print Excursion — print.excursion" />
-<meta property="og:description" content="Print Excursion" />
+<meta property="og:title" content="AR(1) noise — ar1noise" />
+<meta property="og:description" content="samples from AR(1) process" />
 
 
 
@@ -130,34 +130,37 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Print Excursion</h1>
+    <h1>AR(1) noise</h1>
     
-    <div class="hidden name"><code>print.excursion.Rd</code></div>
+    <div class="hidden name"><code>ar1noise.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Print Excursion</p>
+    <p>samples from AR(1) process</p>
     </div>
 
-    <pre class="usage"><span class='co'># S3 method for excursion</span>
-<span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='kw'>x</span>, <span class='kw'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>ar1noise</span>(<span class='kw'>lngth</span>, <span class='kw'>g</span>, <span class='kw'>sigma</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>x</th>
-      <td><p>excursion object to print</p></td>
+      <th>lngth</th>
+      <td><p>number of samples</p></td>
     </tr>
     <tr>
-      <th>...</th>
-      <td><p>Arguments passed on to <code><a href='https://rdrr.io/r/base/print.html'>print</a></code></p><dl>
-    <dt><code></code></dt><dd><p></p></dd>
-  
-</dl></td>
+      <th>g</th>
+      <td><p>lab-1 autocorrelation (short-term memory parameter)</p></td>
+    </tr>
+    <tr>
+      <th>sigma</th>
+      <td><p>standard deviation of the Gaussian innovations</p></td>
     </tr>
     </table>
 
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>lngth samples of the process (vector)</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
