@@ -1,0 +1,86 @@
+---
+title: "detectShift"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{detectShift}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(actR)
+```
+
+## Shift detection in actR
+
+This vignette shows how actR detects shift (and their statistical significance) for 2 of our example datasets: the geob7926_2 sedimentary record of Kim et al [2012](https://www.doi.org/10.1016/j.epsl.2012.05.018) covering the last deglaciation (roughly 28 to 9ka BP) and the Great Basin tree-ring record of Salzer et al [2013](https://www.doi.org/10.1007/s00382-013-1911-9) covering the Common Era at annual resolution.
+
+
+```{r, warning=FALSE}
+msGeob <- detectShift(geob7926_2,
+                    time.variable.name = "ageEnsemble",
+                    vals.variable.name = "SST_from_uk37_ensemble",
+                    null.hypothesis.n = 50,
+                    summary.bin.step = 500,
+                    minimum.segment.length = 3000,
+                    n.ens = 50)
+```
+
+
+```{r, warning=FALSE}
+summary(msGeob)
+```
+
+
+
+```{r, warning=FALSE}
+plot(msGeob)
+
+```
+
+
+
+
+
+```{r, warning=FALSE}
+msGb <- detectShift(great_basin,
+                     time.variable.name = "year",
+                    vals.variable.name = "trsgi",
+                    null.hypothesis.n = 50,
+                    summary.bin.step = 1,
+                    minimum.segment.length = 50,
+                    simulate.time.uncertainty = FALSE,
+                    cpt.fun = changepoint::cpt.mean,
+                    paleo.uncertainty = 0.1,
+                    n.ens = 50)
+```
+
+
+```{r, warning=FALSE}
+plot(msGb)
+```
+
+
+```{r, warning=FALSE}
+vsGb <- detectShift(great_basin,
+                     time.variable.name = "year",
+                    vals.variable.name = "trsgi",
+                    null.hypothesis.n = 50,
+                    summary.bin.step = 10,
+                    minimum.segment.length = 50,
+                    simulate.time.uncertainty = FALSE,
+                    paleo.uncertainty = 0.1,
+                    cpt.fun = changepoint::cpt.var,surrogate.method = "shuffle",
+                    n.ens = 50)
+```
+```{r}
+plot(vsGb)
+```
+
