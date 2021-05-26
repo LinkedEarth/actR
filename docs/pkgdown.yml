@@ -3,6 +3,7 @@ pkgdown: 1.6.1
 pkgdown_sha: ~
 articles:
   detectExcursion: detectExcursion.html
+  detectShift: detectShift.html
   neotoma: neotoma.html
-last_built: 2021-05-26T09:58Z
+last_built: 2021-05-26T11:21Z
 

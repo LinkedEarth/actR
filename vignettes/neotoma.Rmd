@@ -14,6 +14,11 @@ knitr::opts_chunk$set(
 )
 ```
 
+## Using Neotoma data in actR
+
+This vignette isn't quite working yet. Check back soon.
+
+
 ```{r setup}
 # library(actR)
 # library(neotoma)
