@@ -1,14 +1,14 @@
 Package: actR
 Title: Abrupt Change Toolkit in R (actR) - Detect, Quantify and Visualize Abrupt Changes
 Version: 0.1.0
-Authors@R: 
+Authors@R: c(
     person(given = "Nicholas",
            family = "McKay",
            role = c("aut", "cre"),
            email = "nick@nau.edu",
            comment = c(ORCID = "0000-0003-3598-5113")),
     person("Julien", "Emile-Geay", role = c("aut"),
-      comment = c(ORCID = "0000-0001-5920-4751"))
+      comment = c(ORCID = "0000-0001-5920-4751")))
 Description: actR simplifies the process of objectively detecting abrupt changes in paleogeoscientific timeseries. In addition to detection, actR provides tools to estimate significance, and visualize the results. This package is in active development.
 License: MIT + file LICENSE
 Encoding: UTF-8

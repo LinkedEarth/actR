@@ -40,7 +40,7 @@ summary(msGeob)
 
 
 ```{r, warning=FALSE}
-plot(msGeob)
+geoBplot <- plot(msGeob)
 
 ```
 
@@ -63,7 +63,7 @@ msGb <- detectShift(great_basin,
 
 
 ```{r, warning=FALSE}
-plot(msGb)
+gbmPlot <- plot(msGb)
 ```
 
 
@@ -79,7 +79,9 @@ vsGb <- detectShift(great_basin,
                     cpt.fun = changepoint::cpt.var,surrogate.method = "shuffle",
                     n.ens = 50)
 ```
+
+
 ```{r}
-plot(vsGb)
+gbvPlot <- plot(vsGb)
 ```
 

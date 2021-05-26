@@ -42,3 +42,9 @@
 #' @source \url{https://github.com/nickmckay/Temperature12k/}
 "geob7926_2"
 
+#' A synthetic example of shifts in mean statee for testing and illustration, with and without age ensembles
+#'
+#' @author Julien Emile-Geay
+#' @format A LiPD-TS-tibble with 4 LiPD variable columns, age and temperature ensembles
+"pseudoShifts"
+

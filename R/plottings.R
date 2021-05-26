@@ -265,6 +265,8 @@ plot.shift <- function(x,
                        y.axis.label = NA,
                        combine.plots = TRUE){
 
+
+
   if(is.na(x.axis.label)){
     x.axis.label <- glue::glue("{x$input$timeVariableName} ({x$input$timeUnits})")
   }
