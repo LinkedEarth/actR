@@ -2,7 +2,7 @@
 % Please edit documentation in R/uq.R
 \name{propagateUncertainty}
 \alias{propagateUncertainty}
-\title{Detect a changepoint while propagating proxy and/or time uncertainty}
+\title{Explore uncertainty space on abscissa or ordinate and propagate of any of actR's change functions}
 \usage{
 propagateUncertainty(
   time,
@@ -45,8 +45,8 @@ propagateUncertainty(
 \item{...}{arguments to pass to pass to changeFun}
 }
 \value{
-a propagated uncertainty tibbble
+a propagated uncertainty tibble
 }
 \description{
-Detect a changepoint while propagating proxy and/or time uncertainty
+Explore uncertainty space on abscissa or ordinate and propagate of any of actR's change functions
 }

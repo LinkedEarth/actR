@@ -9,13 +9,15 @@ Authors@R: c(
            comment = c(ORCID = "0000-0003-3598-5113")),
     person("Julien", "Emile-Geay", role = c("aut"),
       comment = c(ORCID = "0000-0001-5920-4751")))
+
+Maintainer: Nick McKay <nick@nau.edu>
 Description: actR simplifies the process of objectively detecting abrupt changes in paleogeoscientific timeseries. In addition to detection, actR provides tools to estimate significance, and visualize the results. This package is in active development.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
-Imports: 
+Imports:
     ggplot2,
     stats,
     dplyr,
@@ -31,14 +33,15 @@ Imports:
     changepoint,
     egg,
     digest,
-    crayon
-Suggests: 
+    crayon,
+    fBasics
+Suggests:
     testthat,
     knitr,
     rmarkdown
-Remotes: 
+Remotes:
     github::nickmckay/geoChronR,
     github::nickmckay/lipdR
-Depends: 
+Depends:
     R (>= 2.10)
 VignetteBuilder: knitr

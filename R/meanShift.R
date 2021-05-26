@@ -75,7 +75,7 @@ detectShiftCore = function(time,
 } # end function
 
 #' Detect a shift in the mean and/or variance of a dataset
-#' @description detectShift() allows you to detect a shift in the mean and/or variance of a dataset, and assess it's significance given age and data uncertainty relative to a robust null hypothesis. This approach uses the function changepoint::cpt.mean(), changepoint::cpt.var(), or changepoint::cpt.meanvar()  from the changepoint package, propagates inputted or modelled time and/or value ensembles, and summarizes their likelihoods relative to a robust null hypothesis (see ?testNullHypothesis)
+#' @description detectShift() allows you to detect a shift in the mean and/or variance of a dataset, and assess its significance given age and data uncertainty relative to a robust null hypothesis. This approach uses the function changepoint::cpt.mean(), changepoint::cpt.var(), or changepoint::cpt.meanvar()  from the changepoint package, propagates inputted or modelled time and/or value ensembles, and summarizes their likelihoods relative to a robust null hypothesis (see ?testNullHypothesis)
 #' @inheritParams prepareInput
 #' @param summary.bin.step Time interval over which to summarize the results
 #' @param null.hypothesis.n How many simulations to run for null hypothesis testing (default = 100)
