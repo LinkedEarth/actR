@@ -26,7 +26,7 @@ detectShiftCore = function(time,
   X = seq(min(time,na.rm = TRUE), max(time,na.rm = TRUE), by = res)
   Y = f(X)
 
-# pull out ... parameters
+  # pull out ... parameters
   opts <- list(...)
 
   #check if method can handlle minseglen
@@ -50,8 +50,13 @@ detectShiftCore = function(time,
 
 
   changes <- matrix(X[c(resInds,resInds+1)],ncol = 2,byrow = FALSE)
-  change.start <- apply(changes,1,min)
-  change.end <- apply(changes,1,max)
+  if(nrow(changes) > 0){
+    change.start <- apply(changes,1,min)
+    change.end <- apply(changes,1,max)
+  }else{
+    change.start <- NA
+    change.end <- NA
+  }
 
   # create a hash for each unique time-value pair
   it.hash <- digest::digest(list(time,vals))
@@ -138,13 +143,15 @@ detectShift <- function(ltt = NA,
 
   #get a matrix of nulls
   nhMat <- purrr::map(nh,
-                          summarizeEventProbability,
-                          bin.step = summary.bin.step,
-                          min.time = min(time, na.rm = T),
-                          max.time = max(time, na.rm = T)) %>%
+                      summarizeEventProbability,
+                      bin.step = summary.bin.step,
+                      min.time = min(time, na.rm = T),
+                      max.time = max(time, na.rm = T)) %>%
     setNames(paste0("nh",seq_along(nh))) %>%
     purrr::map_dfc(purrr::pluck,"event_probability") %>%
     as.matrix()
+
+  nhMat[is.na(nhMat)] <- 0
 
   #get quantiles for nulls
   nhSummary <- nhMat %>%
@@ -160,11 +167,10 @@ detectShift <- function(ltt = NA,
     p <- 1 - ef(act)
     p[act == 0] <- 1
     return(p)
-    }
+  }
 
   nhSummary$empirical_pvalue <- purrr::array_branch(nhMat,margin = 1) %>%
     purrr::map2_dbl(.y = propSummary$event_probability,.f = getEmpP)
-
 
   dsout <- dplyr::bind_cols(propSummary,nhSummary)
 
@@ -195,7 +201,7 @@ detectShift <- function(ltt = NA,
               input = prepped) %>%
     new_shift()
 
-return(out)
+  return(out)
 
 
 }
@@ -208,29 +214,29 @@ summarizeShiftSignificance <- function(shiftDetection,alpha = 0.05,paramTib){
     purrr::map_dbl(~ ifelse(is.null(.x),0,as.numeric(.x))) %>%
     which.max()
 
-sig.event <- shiftDetection %>%
-  dplyr::filter(empirical_pvalue < alpha) %>%
-  dplyr::mutate(exceedance = event_probability - .[[maxcli]]) %>%
-  dplyr::arrange(empirical_pvalue,dplyr::desc(exceedance))
+  sig.event <- shiftDetection %>%
+    dplyr::filter(empirical_pvalue < alpha) %>%
+    dplyr::mutate(exceedance = event_probability - .[[maxcli]]) %>%
+    dplyr::arrange(empirical_pvalue,dplyr::desc(exceedance))
 
-#remove those within minimum distance
-bm <- sig.event$time_mid
-if(length(bm) > 1){
-  tr <- c()
-  for(i in 1:(length(bm) - 1)){
-    diffs <- abs(bm-bm[i])
-    close <- which(diffs < paramTib$minimum.segment.length)
-    ttr <- intersect(close,seq(i+1,length(bm)))
-    tr <- c(tr,ttr)
+  #remove those within minimum distance
+  bm <- sig.event$time_mid
+  if(length(bm) > 1){
+    tr <- c()
+    for(i in 1:(length(bm) - 1)){
+      diffs <- abs(bm-bm[i])
+      close <- which(diffs < paramTib$minimum.segment.length)
+      ttr <- intersect(close,seq(i+1,length(bm)))
+      tr <- c(tr,ttr)
+    }
+
+    if(length(tr) > 0){
+      sig.event <- sig.event[-tr,]
+    }
+
   }
 
-  if(length(tr) > 0){
-    sig.event <- sig.event[-tr,]
-  }
-
-}
-
-return(sig.event)
+  return(sig.event)
 
 
 }

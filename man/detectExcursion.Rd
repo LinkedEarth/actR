@@ -17,7 +17,7 @@ detectExcursion(
   output.figure.path = NA,
   surrogate.method = "isospectral",
   null.hypothesis.n = 100,
-  null.quantiles = c(0.9, 0.95),
+  null.quantiles = c(0.95),
   ...
 )
 }
@@ -38,7 +38,7 @@ detectExcursion(
 
 \item{dataset.name}{If ltt is not provided, specify the dataset name}
 
-\item{n.ens}{How many ensembles to propagate through? (default = 100)}
+\item{n.ens}{How many ensembles to use for error propagation? (default = 100)}
 
 \item{output.figure.path}{path pointing to where should the output figure be saved? An NA will not produce a figure (default = NA)}
 

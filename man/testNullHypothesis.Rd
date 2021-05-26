@@ -8,8 +8,6 @@ testNullHypothesis(
   time,
   vals,
   changeFun,
-  simulate.time.uncertainty = TRUE,
-  simulate.paleo.uncertainty = TRUE,
   n.ens = 100,
   mc.ens = 100,
   surrogate.method = "isospectral",
@@ -24,11 +22,7 @@ testNullHypothesis(
 
 \item{changeFun}{the change function to across which to propagate}
 
-\item{simulate.time.uncertainty}{TRUE or FALSE. If an ensemble is not included, do you want to simulate time ensembles (default = TRUE)}
-
-\item{simulate.paleo.uncertainty}{TRUE or FALSE. If an ensemble is not included, do you want to simulate paleo ensembles (default = TRUE)}
-
-\item{n.ens}{How many ensembles to propagate through? (default = 100)}
+\item{n.ens}{How many ensembles to use for error propagation? (default = 100)}
 
 \item{mc.ens}{How many Monte Carlo simulations to use for null hypothesis testing}
 
@@ -43,6 +37,8 @@ testNullHypothesis(
 \item{...}{
   Arguments passed on to \code{\link[=propagateUncertainty]{propagateUncertainty}}
   \describe{
+    \item{\code{simulate.time.uncertainty}}{TRUE or FALSE. If an ensemble is not included, do you want to simulate time ensembles (default = TRUE)}
+    \item{\code{simulate.paleo.uncertainty}}{TRUE or FALSE. If an ensemble is not included, do you want to simulate paleo ensembles (default = TRUE)}
     \item{\code{bam.model}}{BAM Model parameters to use if simulating time uncertainty (default = list(ns = n.ens, name = "bernoulli", param = 0.05), paleo.uncertainty = sd(vals,na.rm = TRUE)))}
     \item{\code{paleo.uncertainty}}{Uncertainty to use if modelling uncertainty for paleo values. (default = sd(vals,na.rm = TRUE)/2)}
     \item{\code{paleo.ar1}}{Autocorrelation coefficient to use for modelling uncertainty on paleoData, what fraction of the uncertainties are autocorrelated? (default = sqrt(0.5); or 50\% autocorrelated uncertainty)}
