@@ -2,7 +2,7 @@
 % Please edit documentation in R/synth.R
 \name{linearRamp}
 \alias{linearRamp}
-\title{Create a linear ramp around the midpoint of a time series}
+\title{Linear ramp}
 \usage{
 linearRamp(lngth, width)
 }

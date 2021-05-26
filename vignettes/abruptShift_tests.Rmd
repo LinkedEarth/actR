@@ -30,6 +30,6 @@ The idea is to evaluate the proportion of false negatives and false positives an
 lngth <- 400
 time <- 1.0*seq(lngth)
 vals <- pseudoShifts$paleoData_values[[1]]  
-res <- detectShiftCore(time = time,vals = vals)
-propagateUncertainty(time = time,vals = vals, changeFun = detectShiftCore)
+DSres <- detectShiftCore(time = time,vals = vals)
+PUres <- propagateUncertainty(time = time,vals = vals, changeFun = detectShiftCore, n.ens = 100, simulate.time.uncertainty = FALSE)
 ```

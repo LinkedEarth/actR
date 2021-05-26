@@ -7,7 +7,13 @@
 \method{print}{excursion}(x, ...)
 }
 \arguments{
-\item{...}{}
+\item{x}{excursion object to print}
+
+\item{...}{
+  Arguments passed on to \code{\link[=print]{print}}
+  \describe{
+    \item{\code{}}{}
+  }}
 }
 \description{
 Print Excursion
