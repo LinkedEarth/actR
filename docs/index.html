@@ -54,6 +54,9 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
+      <a href="articles/abruptShift_tests.html">abruptShift_tests</a>
+    </li>
+    <li>
       <a href="articles/detectExcursion.html">detectExcursion</a>
     </li>
     <li>
@@ -86,6 +89,36 @@
 <!-- badges: start -->
 
 <p>The goal of actR – the Abupt Change Toolkit in R – is to streamline abrupt change detection, signficance testing, uncertainty quantification and visualization for paleogeoscientific datasets. We’re still early in the development process, but expect basic functionality to be online soon.</p>
+<div id="actr-design-and-philososphy" class="section level2">
+<h2 class="hasAnchor">
+<a href="#actr-design-and-philososphy" class="anchor"></a>actR Design and Philososphy</h2>
+<div id="data-input" class="section level3">
+<h3 class="hasAnchor">
+<a href="#data-input" class="anchor"></a>Data input</h3>
+<p><img src="DataInputDiagram.png" width="50%"></p>
+<p>actR, like most software, benefits greatly from standardized data inputs. To achieve this, actR works best with LiPD data, although users can also directly input data as matrices or vectors and metadata in R. Either way, the inputs are passed through the <code><a href="reference/prepareInput.html">prepareInput()</a></code> function, which helps to standardize the input for subsequent analysis, and includes options for simple data preprocessing for methods as needed.</p>
+</div>
+<div id="change-detection---single-site" class="section level3">
+<h3 class="hasAnchor">
+<a href="#change-detection---single-site" class="anchor"></a>Change detection - single site</h3>
+<p><img src="ChangeDetectionDiagram.png" width="50%"></p>
+<p>actR equips single site, time series based change detection with error propagation and robust null hypothesis testing. Change detection algorithms are often highly parametric, and don’t consider many uncertainties that are relevant to paleogeoscientific data. There are two key processes to achieve this.</p>
+<p>The first is handled by <code><a href="reference/propagateUncertainty.html">propagateUncertainty()</a></code>, which will take age and/or paleo (i.e., y-axis) uncertainties, and propagate through the analysis using an ensemble approach. Age and/or paleo ensembles can be entered directly into actR (this is typically preferred when possible), or generated internally if desired.</p>
+<p>The second, is robust null hypothesis testing, using the function <code><a href="reference/testNullHypothesis.html">testNullHypothesis()</a></code>, which generates surrogate data based on the characteristics of the input data, and the repeats the entire analysis (including error propagation) many times. This lets the user assess how plausible surrogate data perform given the data, algorithm, and parametric choices, and determine whether any detected changes are robust to those sources of uncertainty and bias.</p>
+<p>For an example of how this proceess works, <a href="articles/detectExcursion.html">check out this example</a>.</p>
+</div>
+<div id="change-detection---multi-sitee-geospatial" class="section level3">
+<h3 class="hasAnchor">
+<a href="#change-detection---multi-sitee-geospatial" class="anchor"></a>Change detection - multi sitee / geospatial</h3>
+<p>This is planned, but still in progress.</p>
+</div>
+<div id="results" class="section level3">
+<h3 class="hasAnchor">
+<a href="#results" class="anchor"></a>Results</h3>
+<p><img src="SummarizeResultsDiagram.png" width="50%"></p>
+<p>All change detection methods implemented in actR have two output options, <code><a href="https://rdrr.io/r/base/summary.html">summary()</a></code> (and <code><a href="https://rdrr.io/r/base/print.html">print()</a></code>), which provides a teext summary of the test conducted and the results, and <code><a href="https://rdrr.io/r/graphics/plot.html">plot()</a></code> which visualizes the results, including both error propagation and null hypothesis testing. Other approaches, including geospatial change detection, will include additional outputs as appropriate.</p>
+</div>
+</div>
 <div id="contributor-guide" class="section level2">
 <h2 class="hasAnchor">
 <a href="#contributor-guide" class="anchor"></a>Contributor guide</h2>
@@ -98,11 +131,6 @@
 <div class="sourceCode" id="cb1"><pre class="downlit">
 <span class="co"># install.packages("remotes")</span>
 <span class="kw">remotes</span>::<span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span>(<span class="st">"LinkedEarth/actR"</span>)
-</pre></div>
-<div class="sourceCode" id="cb2"><pre class="downlit">
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="kw">actR</span>)
-<span class="co">## basic example code</span>
-<span class="co">#TBD</span>
 </pre></div>
 </div>
 </div>
@@ -119,7 +147,8 @@
 <div class="developers">
 <h2>Developers</h2>
 <ul class="list-unstyled">
-<li>Nicholas McKay <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/YOUR-ORCID-ID" target="orcid.widget" aria-label="ORCID"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li>Nicholas McKay <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0003-3598-5113" target="orcid.widget" aria-label="ORCID"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li>Julien Emile-Geay <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0001-5920-4751" target="orcid.widget" aria-label="ORCID"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
 </ul>
 </div>
 
@@ -134,7 +163,7 @@
 
 
       <footer><div class="copyright">
-  <p>Developed by Nicholas McKay.</p>
+  <p>Developed by Nicholas McKay, Julien Emile-Geay.</p>
 </div>
 
 <div class="pkgdown">
