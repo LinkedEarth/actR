@@ -24,7 +24,7 @@ This vignette shows how actR detects shift (and their statistical significance) 
 
 The following code does these things:
 * loads the data from the provided LiPD file "geob7926_2" (available as a tibble for easier load-in).
-* extracts the pre-existing age ensemble (generated outside of actR) and the akenone-reconstructed SST. 
+* extracts the pre-existing age ensemble (generated using [Bacon](https://cran.r-project.org/web/packages/rbacon/index.html) within [GeoChronR](https://nickmckay.github.io/GeoChronR/)) and the akenone-reconstructed SST. 
 * tests significance against 50 surrogate timeseries [need to clarify difference between n.ens and null.hypothesis.n].
 * specifies a minimum segment length of 3000y 
 
@@ -98,5 +98,5 @@ Note also that actR offers 3 different methods to generate surrogates, as detail
 gbvPlot <- plot(vsGb)
 ```
 
-Now a change is detected at the very end of the record. To check its robustness, we should probably inquire more about the sample depth in the dataset (number of cores used to make the composite in each year), as well as the detrending technique used. This is a reminder that no technique, however nifty, is a substitute for knowing your data!
+Now a change in variance is detected at the very end of the record. To check its robustness, we should probably inquire more about the sample depth of the dataset (number of tree cores used to make the composite in each year), as well as the technique used for removing the biological component of the signal. This is a reminder that no technique, however nifty, is a substitute for knowing your data!
 
