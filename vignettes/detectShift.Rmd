@@ -20,6 +20,13 @@ library(actR)
 
 ## Shift detection in actR
 
+This vignette shows how actR detects shift (and their statistical significance) for 2 of our example datasets: the geob7926_2 sedimentary record of Kim et al [2012](https://www.doi.org/10.1016/j.epsl.2012.05.018) covering the last deglaciation (roughly 28 to 9ka BP) and the Great Basin tree-ring record of Salzer et al [2013](https://www.doi.org/10.1007/s00382-013-1911-9) covering the Common Era at annual resolution.
+
+The following code does these things:
+* loads the data from the provided LiPD file "geob7926_2" (available as a tibble for easier load-in).
+* extracts the pre-existing age ensemble (generated outside of actR) and the akenone-reconstructed SST. 
+* tests significance against 50 surrogate timeseries [need to clarify difference between n.ens and null.hypothesis.n].
+* specifies a minimum segment length of 3000y 
 
 
 ```{r, warning=FALSE}
@@ -32,11 +39,13 @@ msGeob <- detectShift(geob7926_2,
                     n.ens = 50)
 ```
 
+This lines generates a textual summary of the output:
 
 ```{r, warning=FALSE}
 summary(msGeob)
 ```
 
+and this command plots it:
 
 
 ```{r, warning=FALSE}
@@ -44,9 +53,10 @@ geoBplot <- plot(msGeob)
 
 ```
 
+Note that, as usual with actR, the plot is a [ggplot2](https://ggplot2.tidyverse.org) object, which is infinitely customizable (e.g. for a talk, a poster, a paper, etc).
 
 
-
+Now we repeat the same steps over the Great Basin tree-ring record of Salzer et al [2013](https://www.doi.org/10.1007/s00382-013-1911-9). We first attempt to detect changes in the mean. 
 
 ```{r, warning=FALSE}
 msGb <- detectShift(great_basin,
@@ -66,6 +76,8 @@ msGb <- detectShift(great_basin,
 gbmPlot <- plot(msGb)
 ```
 
+As you can see, the method does not detect any on this dataset. However, one might also want to detect shifts in variance. To do so, all you have to do is specify `cpt.fun = changepoint::cpt.var` (leveraging the [changepoint](https://cran.r-project.org/web/packages/changepoint/index.html) package).
+
 
 ```{r, warning=FALSE}
 vsGb <- detectShift(great_basin,
@@ -80,8 +92,11 @@ vsGb <- detectShift(great_basin,
                     n.ens = 50)
 ```
 
+Note also that actR offers 3 different methods to generate surrogates, as detailed in the documentation. The default is _isospectral_, which was used in the previous examples. To change that to the rEDM "shuffle" method, just specify `surrogate.method = "shuffle"`.  
 
 ```{r}
 gbvPlot <- plot(vsGb)
 ```
+
+Now a change is detected at the very end of the record. To check its robustness, we should probably inquire more about the sample depth in the dataset (number of cores used to make the composite in each year), as well as the detrending technique used. This is a reminder that no technique, however nifty, is a substitute for knowing your data!
 

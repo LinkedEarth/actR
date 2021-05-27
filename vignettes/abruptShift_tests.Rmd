@@ -21,7 +21,8 @@ library(actR)
 
 This notebook implements a test of the `actR::detectShiftCore()` function on synthetic data (see data_raw/makeSyntheticData.R for their construction). 
 
-The idea is to evaluate the proportion of false negatives and false positives and construct receiver operating characteristic curves and their sensitivity to:
+The idea is to use the simplest model of a shift (linear ramp emulating either a step or gradual change) to evaluate the proportion of false negatives and false positives: how often is a gradual shift mistaken for an abrupt one, or missed altogether? How often is a shift identified when none exists? 
+From these rates we construct receiver operating characteristic curves and their sensitivity to:
 - abruptness (the time over which the shift occurs, from 0 to T/2, where T is the length of the series)
 - noise levels. 
 - age uncertainties.
@@ -33,3 +34,8 @@ vals <- pseudoShifts$paleoData_values[[1]]
 DSres <- detectShiftCore(time = time,vals = vals)
 PUres <- propagateUncertainty(time = time,vals = vals, changeFun = detectShiftCore, n.ens = 100, simulate.time.uncertainty = FALSE)
 ```
+
+
+Now we'll do the same, by looping over various values of the shift
+#h/t https://stackoverflow.com/questions/62881921/non-integer-sequencing-in-for-loop-in-r
+
