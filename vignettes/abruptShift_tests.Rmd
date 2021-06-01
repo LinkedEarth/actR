@@ -30,12 +30,39 @@ From these rates we construct receiver operating characteristic curves and their
 ```{r Load test data }
 lngth <- 400
 time <- 1.0*seq(lngth)
-vals <- pseudoShifts$paleoData_values[[1]]  
-DSres <- detectShiftCore(time = time,vals = vals)
-PUres <- propagateUncertainty(time = time,vals = vals, changeFun = detectShiftCore, n.ens = 100, simulate.time.uncertainty = FALSE)
+pureshift <- linearRamp(lngth,width = 0)
+ShiftHappens <- detectShift(time = time,
+                            vals = pureshift,
+                            vals.variable.name = 'Step Change',
+                            time.units = 'years',
+                            vals.units = 'unitless',
+                            summary.bin.step = 1,
+                            simulate.time.uncertainty = FALSE,
+                            simulate.paleo.uncertainty = FALSE,
+                            null.hypothesis.n = 50)
+
+plot(ShiftHappens)
 ```
 
 
 Now we'll do the same, by looping over various values of the shift
-#h/t https://stackoverflow.com/questions/62881921/non-integer-sequencing-in-for-loop-in-r
+
+
+```{r gradual vs abrupt}
+widths <- c(0, lngth/40, lngth/20, lngth/10, lngth/5, lngth/2)
+rampRes = vector(mode = "list",length = length(widths))
+for(w in 1:length(widths)) {
+  rampRes[[w]] <- detectShift(time = time,
+                            vals = linearRamp(lngth,width = widths[w]),
+                            vals.variable.name = 'Ramp',
+                            time.units = 'years',
+                            vals.units = 'unitless',
+                            summary.bin.step = 1,
+                            simulate.time.uncertainty = FALSE,
+                            simulate.paleo.uncertainty = FALSE,
+                            null.hypothesis.n = 50)
+  plot(rampRes[[w]])
+}
+```
+
 
