@@ -55,7 +55,7 @@ robust to those sources of uncertainty and bias.
 For an example of how this proceess works, [check out this
 example](articles/detectExcursion.html).
 
-### Change detection - multi sitee / geospatial
+### Change detection - multi site / geospatial
 
 This is planned, but still in progress.
 
