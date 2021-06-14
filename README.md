@@ -11,9 +11,13 @@ status](https://github.com/LinkedEarth/actR/workflows/R-CMD-check/badge.svg)](ht
 
 The goal of actR – the Abupt Change Toolkit in R – is to streamline
 abrupt change detection, signficance testing, uncertainty quantification
-and visualization for paleogeoscientific datasets. We’re still early in
-the development process, but expect basic functionality to be online
-soon.
+and visualization for paleogeoscientific datasets. This project is
+funded by the Belmont Forum as part of the “Abrupt Changes in Climate
+and Ecosystems - Data & e-Infrastructure (ACCEDE)” project, as part of
+the Science-driven e-Infrastructure Innovation program.
+
+We’re still early in the development process, but basic is now
+availables.
 
 ## actR Design and Philososphy
 
@@ -64,7 +68,7 @@ This is planned, but still in progress.
 <img src="SummarizeResultsDiagram.png" width="50%" />
 
 All change detection methods implemented in actR have two output
-options, `summary()` (and `print()`), which provides a teext summary of
+options, `summary()` (and `print()`), which provides a text summary of
 the test conducted and the results, and `plot()` which visualizes the
 results, including both error propagation and null hypothesis testing.
 Other approaches, including geospatial change detection, will include
