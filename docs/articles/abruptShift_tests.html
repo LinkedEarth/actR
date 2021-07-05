@@ -63,9 +63,6 @@
       <a href="../articles/detectShift.html">detectShift</a>
     </li>
     <li>
-      <a href="../articles/detectShift_jeg.html">detectShift</a>
-    </li>
-    <li>
       <a href="../articles/neotoma.html">neotoma</a>
     </li>
   </ul>
@@ -101,14 +98,68 @@
 <span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="kw">actR</span>)
 </pre></div>
 <p>This notebook implements a test of the <code><a href="../reference/detectShiftCore.html">actR::detectShiftCore()</a></code> function on synthetic data (see data_raw/makeSyntheticData.R for their construction).</p>
-<p>The idea is to evaluate the proportion of false negatives and false positives and construct receiver operating characteristic curves and their sensitivity to: - abruptness (the time over which the shift occurs, from 0 to T/2, where T is the length of the series) - noise levels. - age uncertainties.</p>
+<p>The idea is to use the simplest model of a shift (linear ramp emulating either a step or gradual change) to evaluate the proportion of false negatives and false positives: how often is a gradual shift mistaken for an abrupt one, or missed altogether? How often is a shift identified when none exists? From these rates we construct receiver operating characteristic curves and their sensitivity to: - abruptness (the time over which the shift occurs, from 0 to T/2, where T is the length of the series) - noise levels. - age uncertainties.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit">
 <span class="kw">lngth</span> <span class="op">&lt;-</span> <span class="fl">400</span>
 <span class="kw">time</span> <span class="op">&lt;-</span> <span class="fl">1.0</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span>(<span class="kw">lngth</span>)
-<span class="kw">vals</span> <span class="op">&lt;-</span> <span class="kw">pseudoShifts</span><span class="op">$</span><span class="kw">paleoData_values</span>[[<span class="fl">1</span>]]  
-<span class="kw">DSres</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/detectShiftCore.html">detectShiftCore</a></span>(time = <span class="kw">time</span>,vals = <span class="kw">vals</span>)
-<span class="kw">PUres</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/propagateUncertainty.html">propagateUncertainty</a></span>(time = <span class="kw">time</span>,vals = <span class="kw">vals</span>, changeFun = <span class="kw">detectShiftCore</span>, n.ens = <span class="fl">100</span>, simulate.time.uncertainty = <span class="fl">FALSE</span>)
+<span class="kw">pureshift</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/linearRamp.html">linearRamp</a></span>(<span class="kw">lngth</span>,width = <span class="fl">0</span>)
+<span class="kw">ShiftHappens</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/detectShift.html">detectShift</a></span>(time = <span class="kw">time</span>,
+                            vals = <span class="kw">pureshift</span>,
+                            vals.variable.name = <span class="st">'Step Change'</span>,
+                            time.units = <span class="st">'years'</span>,
+                            vals.units = <span class="st">'unitless'</span>,
+                            summary.bin.step = <span class="fl">1</span>,
+                            simulate.time.uncertainty = <span class="fl">FALSE</span>,
+                            simulate.paleo.uncertainty = <span class="fl">FALSE</span>,
+                            null.hypothesis.n = <span class="fl">50</span>)
+<span class="co">#&gt; timeVariableName is at least partially absent in the input data</span>
+<span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 100 ensemble members. </span>
+<span class="co">#&gt; This will probably take about 1 minutes</span>
+
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="kw">ShiftHappens</span>)
 </pre></div>
+<p><img src="abruptShift_tests_files/figure-html/Load%20test%20data-1.png" width="700"><img src="abruptShift_tests_files/figure-html/Load%20test%20data-2.png" width="700"></p>
+<p>Now we’ll do the same, by looping over various values of the shift</p>
+<div class="sourceCode" id="cb3"><pre class="downlit">
+<span class="kw">widths</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">0</span>, <span class="kw">lngth</span><span class="op">/</span><span class="fl">40</span>, <span class="kw">lngth</span><span class="op">/</span><span class="fl">20</span>, <span class="kw">lngth</span><span class="op">/</span><span class="fl">10</span>, <span class="kw">lngth</span><span class="op">/</span><span class="fl">5</span>, <span class="kw">lngth</span><span class="op">/</span><span class="fl">2</span>)
+<span class="kw">rampRes</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html">vector</a></span>(mode = <span class="st">"list"</span>,length = <span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span>(<span class="kw">widths</span>))
+<span class="co">for</span>(<span class="kw">w</span> <span class="co">in</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span>(<span class="kw">widths</span>)) {
+  <span class="kw">rampRes</span>[[<span class="kw">w</span>]] <span class="op">&lt;-</span> <span class="fu"><a href="../reference/detectShift.html">detectShift</a></span>(time = <span class="kw">time</span>,
+                            vals = <span class="fu"><a href="../reference/linearRamp.html">linearRamp</a></span>(<span class="kw">lngth</span>,width = <span class="kw">widths</span>[<span class="kw">w</span>]),
+                            vals.variable.name = <span class="st">'Ramp'</span>,
+                            time.units = <span class="st">'years'</span>,
+                            vals.units = <span class="st">'unitless'</span>,
+                            summary.bin.step = <span class="fl">1</span>,
+                            simulate.time.uncertainty = <span class="fl">FALSE</span>,
+                            simulate.paleo.uncertainty = <span class="fl">FALSE</span>,
+                            null.hypothesis.n = <span class="fl">50</span>)
+  <span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="kw">rampRes</span>[[<span class="kw">w</span>]])
+}
+<span class="co">#&gt; timeVariableName is at least partially absent in the input data</span>
+<span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 100 ensemble members. </span>
+<span class="co">#&gt; This will probably take about 1 minutes</span>
+</pre></div>
+<p><img src="abruptShift_tests_files/figure-html/gradual%20vs%20abrupt-1.png" width="700"></p>
+<pre><code>#&gt; timeVariableName is at least partially absent in the input data
+#&gt; Testing null hypothesis with 50 simulations, each with 100 ensemble members. 
+#&gt; This will probably take about 1 minutes</code></pre>
+<p><img src="abruptShift_tests_files/figure-html/gradual%20vs%20abrupt-2.png" width="700"></p>
+<pre><code>#&gt; timeVariableName is at least partially absent in the input data
+#&gt; Testing null hypothesis with 50 simulations, each with 100 ensemble members. 
+#&gt; This will probably take about 1 minutes</code></pre>
+<p><img src="abruptShift_tests_files/figure-html/gradual%20vs%20abrupt-3.png" width="700"></p>
+<pre><code>#&gt; timeVariableName is at least partially absent in the input data
+#&gt; Testing null hypothesis with 50 simulations, each with 100 ensemble members. 
+#&gt; This will probably take about 1 minutes</code></pre>
+<p><img src="abruptShift_tests_files/figure-html/gradual%20vs%20abrupt-4.png" width="700"></p>
+<pre><code>#&gt; timeVariableName is at least partially absent in the input data
+#&gt; Testing null hypothesis with 50 simulations, each with 100 ensemble members. 
+#&gt; This will probably take about 1 minutes</code></pre>
+<p><img src="abruptShift_tests_files/figure-html/gradual%20vs%20abrupt-5.png" width="700"></p>
+<pre><code>#&gt; timeVariableName is at least partially absent in the input data
+#&gt; Testing null hypothesis with 50 simulations, each with 100 ensemble members. 
+#&gt; This will probably take about 1 minutes</code></pre>
+<p><img src="abruptShift_tests_files/figure-html/gradual%20vs%20abrupt-6.png" width="700"></p>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

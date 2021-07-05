@@ -14,42 +14,26 @@ knitr::opts_chunk$set(
 )
 ```
 
-## Using Neotoma data in actR
-
-This vignette isn't quite working yet. Check back soon.
-
-
 ```{r setup}
-# library(actR)
-# library(neotoma)
-# library(neotoma2lipd)
-# library(lipdR)
-# library(tidyverse)
-# library(geoChronR)
+library(actR)
+library(neotoma)
+library(neotoma2lipd)
+library(lipdR)
+library(tidyverse)
+library(geoChronR)
 ```
 
 ```{r}
-# site <- neotoma::get_site("Penegor Lake")
-# L <- neotoma2Lipd(site)
+site <- neotoma::get_site("Penegor Lake")
+L <- neotoma2Lipd(site)
 ```
 
 ```{r}
-# neg <- which(L$chronData[[1]]$measurementTable[[1]]$age$values < 0)
-# 
-# 
-# if(length(neg) > 0){
-#   L$chronData[[1]]$measurementTable[[1]]$age$values[neg] <- NA
-# }
-# 
-# L <- runBacon(L,chron.num = 1,bacon.dir = "~/Cores",model.num = 2,lab.id.var = NULL, age.14c.var = 'age', age.14c.uncertainty.var = 'unc.estimate', age.var = NULL, age.uncertainty.var = NULL, depth.var = 'depth', reservoir.age.14c.var = NULL, reservoir.age.14c.uncertainty.var = NULL, rejected.ages.var = NULL,ask = FALSE, suggest = FALSE)
-
-
+L <- runBacon(L,bacon.dir = "~/Dropbox/MacBacon/",chron.num = 1,age.14c.var = "age",age.14c.uncertainty.var = "unc.estimate",lab.id.var = "chron.control.id")
 ```
 
-
-
 ```{r}
-
+tts <- extractTs(L) %>% ts2tibble()
 ```
 
 
