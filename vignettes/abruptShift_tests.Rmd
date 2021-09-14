@@ -39,7 +39,7 @@ ShiftHappens <- detectShift(time = time,
                             summary.bin.step = 1,
                             simulate.time.uncertainty = FALSE,
                             simulate.paleo.uncertainty = FALSE,
-                            null.hypothesis.n = 50)
+                            null.hypothesis.n = 50,n.ens = 50)
 
 plot(ShiftHappens)
 ```
