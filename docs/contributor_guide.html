@@ -71,7 +71,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">actR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.1</span>
       </span>
     </div>
 
@@ -79,7 +79,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -160,50 +160,50 @@
 <div id="step-by-step-guide-for-contributors" class="section level2">
 <h2 class="hasAnchor">
 <a href="#step-by-step-guide-for-contributors" class="anchor"></a>Step by step guide for contributors</h2>
-<div id="make-a-branch-of-the-github-repo" class="section level3">
+<div id="1-make-a-branch-of-the-github-repo" class="section level3">
 <h3 class="hasAnchor">
-<a href="#make-a-branch-of-the-github-repo" class="anchor"></a>1. Make a branch of the github repo</h3>
+<a href="#1-make-a-branch-of-the-github-repo" class="anchor"></a>1. Make a branch of the github repo</h3>
 </div>
-<div id="create-a-new-r-in-actrr-file-for-your-functions-basic-code" class="section level3">
+<div id="2-create-a-new-r-in-actrr-file-for-your-functions-basic-code" class="section level3">
 <h3 class="hasAnchor">
-<a href="#create-a-new-r-in-actrr-file-for-your-functions-basic-code" class="anchor"></a>2. Create a new R in actR/R file for your function’s basic code</h3>
+<a href="#2-create-a-new-r-in-actrr-file-for-your-functions-basic-code" class="anchor"></a>2. Create a new R in actR/R file for your function’s basic code</h3>
 <p><code><a href="https://usethis.r-lib.org/reference/use_r.html">usethis::use_r("newMethod")</a></code></p>
 </div>
-<div id="write-a-core-function-and-unit_test" class="section level3">
+<div id="3-write-a-core-function-and-unit_test" class="section level3">
 <h3 class="hasAnchor">
-<a href="#write-a-core-function-and-unit_test" class="anchor"></a>3. Write a *Core() function and unit_test</h3>
+<a href="#3-write-a-core-function-and-unit_test" class="anchor"></a>3. Write a *Core() function and unit_test</h3>
 <p>As you go, document your function.</p>
 <p>Good time to try check()</p>
 <p>some useful test data for this are found</p>
 </div>
-<div id="write-a-wrapper-function-that-uses-your-core-function-propagateuncertainty-and-testnullhypothesis-to-analyze-and-then-synthesize-those-results-" class="section level3">
+<div id="4-write-a-wrapper-function-that-uses-your-core-function-propagateuncertainty-and-testnullhypothesis-to-analyze-and-then-synthesize-those-results" class="section level3">
 <h3 class="hasAnchor">
-<a href="#write-a-wrapper-function-that-uses-your-core-function-propagateuncertainty-and-testnullhypothesis-to-analyze-and-then-synthesize-those-results-" class="anchor"></a>4. Write a wrapper function that uses *your Core() function, propagateUncertainty() and testNullHypothesis() to analyze and then synthesize those results.</h3>
+<a href="#4-write-a-wrapper-function-that-uses-your-core-function-propagateuncertainty-and-testnullhypothesis-to-analyze-and-then-synthesize-those-results" class="anchor"></a>4. Write a wrapper function that uses *your Core() function, propagateUncertainty() and testNullHypothesis() to analyze and then synthesize those results.</h3>
 <p>For single dataset analyses, the input should be structured as a LiPD-ts-tibble</p>
 <p>The core output should be a tibble with each null hypothesis result as a row. It is often appropriate to return a list, with the tibble as one output.</p>
 <p>Define a class for this output.</p>
 </div>
-<div id="write-a-plot-yourclass-function-that-takes-only-the-output-from-the-wrapper-along-with-plotting-arguments-and-produces-a-ggplot-object-" class="section level3">
+<div id="5-write-a-plotyourclass-function-that-takes-only-the-output-from-the-wrapper-along-with-plotting-arguments-and-produces-a-ggplot-object" class="section level3">
 <h3 class="hasAnchor">
-<a href="#write-a-plot-yourclass-function-that-takes-only-the-output-from-the-wrapper-along-with-plotting-arguments-and-produces-a-ggplot-object-" class="anchor"></a>5. Write a plot.yourClass() function that takes only the output from the wrapper, along with plotting arguments, and produces a ggplot object.</h3>
+<a href="#5-write-a-plotyourclass-function-that-takes-only-the-output-from-the-wrapper-along-with-plotting-arguments-and-produces-a-ggplot-object" class="anchor"></a>5. Write a plot.yourClass() function that takes only the output from the wrapper, along with plotting arguments, and produces a ggplot object.</h3>
 <p>This code should go in the plottings.R file</p>
 </div>
-<div id="write-a-summary-yourclass-function-that-prints-out-key-results-" class="section level3">
+<div id="6-write-a-summaryyourclass-function-that-prints-out-key-results" class="section level3">
 <h3 class="hasAnchor">
-<a href="#write-a-summary-yourclass-function-that-prints-out-key-results-" class="anchor"></a>6. Write a summary.yourClass() function that prints out key results.</h3>
+<a href="#6-write-a-summaryyourclass-function-that-prints-out-key-results" class="anchor"></a>6. Write a summary.yourClass() function that prints out key results.</h3>
 <p>This code should go in the summary.R file.</p>
 <p>Also create a print.yourClass() function in the print.R file. So far, all the classes just reuse their summary methods as their print methods.</p>
 </div>
-<div id="thats-it-but-lets-make-sure-everything-is-working-properly" class="section level3">
+<div id="7-thats-it-but-lets-make-sure-everything-is-working-properly" class="section level3">
 <h3 class="hasAnchor">
-<a href="#thats-it-but-lets-make-sure-everything-is-working-properly" class="anchor"></a>7. That’s it! But let’s make sure everything is working properly</h3>
+<a href="#7-thats-it-but-lets-make-sure-everything-is-working-properly" class="anchor"></a>7. That’s it! But let’s make sure everything is working properly</h3>
 <p>Make sure your R cmd-check is passing:</p>
 <p>devtools::check()</p>
 <p>devtools::test()</p>
 </div>
-<div id="now-were-set-lets-add-it-into-to-actr" class="section level3">
+<div id="8-now-were-set-lets-add-it-into-to-actr" class="section level3">
 <h3 class="hasAnchor">
-<a href="#now-were-set-lets-add-it-into-to-actr" class="anchor"></a>8. Now we’re set, let’s add it into to actR!</h3>
+<a href="#8-now-were-set-lets-add-it-into-to-actr" class="anchor"></a>8. Now we’re set, let’s add it into to actR!</h3>
 <p>Pull request</p>
 </div>
 </div>

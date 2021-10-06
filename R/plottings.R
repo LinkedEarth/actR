@@ -263,7 +263,8 @@ plot.shift <- function(x,
                        x.axis.label = NA,
                        x.lims = NA,
                        y.axis.label = NA,
-                       combine.plots = TRUE){
+                       combine.plots = TRUE,
+                       ...){
 
 
 
@@ -278,7 +279,7 @@ plot.shift <- function(x,
   paramTib <- createTibbleFromParameterString(x$parameters[1])
 
   #plot ensemble ribbons
-  ribbons <- geoChronR::plotTimeseriesEnsRibbons(X = x$timeEns,Y = x$valEns) + actR_ggtheme()
+  ribbons <- geoChronR::plotTimeseriesEnsRibbons(X = x$timeEns,Y = x$valEns,...) + actR_ggtheme()
 
   #get shift type
   if(grepl(pattern = "cpt.mean",paramTib$cpt.fun,ignore.case = T) & !grepl(pattern = "cpt.meanVar",paramTib$cpt.fun,ignore.case = T)){
