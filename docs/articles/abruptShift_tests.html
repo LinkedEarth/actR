@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">actR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.1</span>
       </span>
     </div>
 
@@ -111,9 +111,9 @@
                             summary.bin.step = <span class="fl">1</span>,
                             simulate.time.uncertainty = <span class="fl">FALSE</span>,
                             simulate.paleo.uncertainty = <span class="fl">FALSE</span>,
-                            null.hypothesis.n = <span class="fl">50</span>)
+                            null.hypothesis.n = <span class="fl">50</span>,n.ens = <span class="fl">50</span>)
 <span class="co">#&gt; timeVariableName is at least partially absent in the input data</span>
-<span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 100 ensemble members. </span>
+<span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. </span>
 <span class="co">#&gt; This will probably take about 1 minutes</span>
 
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="kw">ShiftHappens</span>)

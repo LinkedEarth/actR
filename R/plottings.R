@@ -61,7 +61,12 @@ plot.excursion <- function(x,
     }
 
     #pick a representative ensemble member
-    rm <- sample(which(ts$nExcusionVals == median(ts$nExcusionVals,na.rm = TRUE)),size = 1)
+    sami <- which(ts$nExcursionVals == median(ts$nExcursionVals,na.rm = TRUE))
+    if(length(sami) == 0){
+      sami <- seq_along(ts$nExcursionVals)
+    }
+    rm <- sample(sami,size = 1)
+
     em <- ts[rm,]
 
     plotout <- plot.excursionCore(em,add.to.plot = ribbons)

@@ -37,6 +37,10 @@ propagateUncertainty <- function(time,
     n.ens <- 1
   }
 
+  if(max(c(NCOL(time),NCOL(vals))) > 1 & n.ens <= 1){#at least one is an ensemble
+    stop("To simulate uncertainty with an ensemble, increasee n.ens to more than 1 (probably more than 50 at the minimum)")
+  }
+
   nca <- NCOL(time)
   #Prepare time ensemble
   if(nca == 1){#then it's not an ensemble

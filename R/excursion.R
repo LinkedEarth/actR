@@ -78,6 +78,8 @@ detectExcursion = function(ltt = NA,
   vals <- prepped$paleoData_values[[1]]
 
 
+
+
   # detect excursions while propagating time and data uncertainties
   ptm <- proc.time()
   dataEst <- propagateUncertainty(time,
@@ -207,7 +209,7 @@ detectExcursionCore <- function(time,
                           preSd = NA,
                           postMean = NA,
                           postSd = NA,
-                          nExcusionVals = NA,
+                          nExcursionVals = NA,
                           excursionMeanTime = NA,
                           excursionMaxSd = NA,
                           isExcursion = list(rep(NA,times = length(time))),
@@ -306,7 +308,7 @@ detectExcursionCore <- function(time,
                         preSd = preSD,
                         postMean = postAVG,
                         postSd = postSD,
-                        nExcusionVals = sum(isExcursion),
+                        nExcursionVals = sum(isExcursion),
                         excursionMeanTime = excursionMeanTime,
                         excursionMaxSd = excursionMaxSd,
                         isExcursion = list(isExcursion),

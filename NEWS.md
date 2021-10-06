@@ -1,6 +1,7 @@
 # actR 0.1.1
 
 * added option to pass plot options to geoChronR plotting to plot.shift()
+* Added better error handling with excursions
 
 # actR 0.1.0
 
