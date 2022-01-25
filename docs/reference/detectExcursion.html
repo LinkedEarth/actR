@@ -80,7 +80,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -136,22 +136,22 @@
     <p>Determines whether an excursion event has occurred within the specified event window. Excursion events are defined as n.consecutive values within the event window that are more extreme than the avg +/- sig.num standard deviations of the reference windows.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>detectExcursion</span>(
-  ltt = <span class='fl'>NA</span>,
-  time = <span class='fl'>NA</span>,
-  vals = <span class='fl'>NA</span>,
-  time.variable.name = <span class='fl'>NA</span>,
-  vals.variable.name = <span class='fl'>NA</span>,
-  time.units = <span class='fl'>NA</span>,
-  vals.units = <span class='fl'>NA</span>,
-  dataset.name = <span class='fl'>NA</span>,
-  n.ens = <span class='fl'>100</span>,
-  output.figure.path = <span class='fl'>NA</span>,
-  surrogate.method = <span class='st'>"isospectral"</span>,
-  null.hypothesis.n = <span class='fl'>100</span>,
-  null.quantiles = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>0.95</span>),
-  <span class='kw'>...</span>
-)</pre>
+    <pre class="usage"><span class='fu'>detectExcursion</span><span class='op'>(</span>
+  ltt <span class='op'>=</span> <span class='cn'>NA</span>,
+  time <span class='op'>=</span> <span class='cn'>NA</span>,
+  vals <span class='op'>=</span> <span class='cn'>NA</span>,
+  time.variable.name <span class='op'>=</span> <span class='cn'>NA</span>,
+  vals.variable.name <span class='op'>=</span> <span class='cn'>NA</span>,
+  time.units <span class='op'>=</span> <span class='cn'>NA</span>,
+  vals.units <span class='op'>=</span> <span class='cn'>NA</span>,
+  dataset.name <span class='op'>=</span> <span class='cn'>NA</span>,
+  n.ens <span class='op'>=</span> <span class='fl'>100</span>,
+  output.figure.path <span class='op'>=</span> <span class='cn'>NA</span>,
+  surrogate.method <span class='op'>=</span> <span class='st'>"isospectral"</span>,
+  null.hypothesis.n <span class='op'>=</span> <span class='fl'>100</span>,
+  null.quantiles <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>0.95</span><span class='op'>)</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">

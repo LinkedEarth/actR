@@ -39,7 +39,7 @@
       <ul class="nav navbar-nav">
 <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -81,7 +81,7 @@
 
       
 
-      </header><div class="row">
+      </header><script src="abruptShift_tests_files/header-attrs-2.9/header-attrs.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>abruptShift_tests</h1>
@@ -94,51 +94,48 @@
 
     
     
-<div class="sourceCode" id="cb1"><pre class="downlit">
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="kw">actR</span>)
-</pre></div>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">actR</span><span class="op">)</span></code></pre></div>
 <p>This notebook implements a test of the <code><a href="../reference/detectShiftCore.html">actR::detectShiftCore()</a></code> function on synthetic data (see data_raw/makeSyntheticData.R for their construction).</p>
 <p>The idea is to use the simplest model of a shift (linear ramp emulating either a step or gradual change) to evaluate the proportion of false negatives and false positives: how often is a gradual shift mistaken for an abrupt one, or missed altogether? How often is a shift identified when none exists? From these rates we construct receiver operating characteristic curves and their sensitivity to: - abruptness (the time over which the shift occurs, from 0 to T/2, where T is the length of the series) - noise levels. - age uncertainties.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit">
-<span class="kw">lngth</span> <span class="op">&lt;-</span> <span class="fl">400</span>
-<span class="kw">time</span> <span class="op">&lt;-</span> <span class="fl">1.0</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span>(<span class="kw">lngth</span>)
-<span class="kw">pureshift</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/linearRamp.html">linearRamp</a></span>(<span class="kw">lngth</span>,width = <span class="fl">0</span>)
-<span class="kw">ShiftHappens</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/detectShift.html">detectShift</a></span>(time = <span class="kw">time</span>,
-                            vals = <span class="kw">pureshift</span>,
-                            vals.variable.name = <span class="st">'Step Change'</span>,
-                            time.units = <span class="st">'years'</span>,
-                            vals.units = <span class="st">'unitless'</span>,
-                            summary.bin.step = <span class="fl">1</span>,
-                            simulate.time.uncertainty = <span class="fl">FALSE</span>,
-                            simulate.paleo.uncertainty = <span class="fl">FALSE</span>,
-                            null.hypothesis.n = <span class="fl">50</span>,n.ens = <span class="fl">50</span>)
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">lngth</span> <span class="op">&lt;-</span> <span class="fl">400</span>
+<span class="va">time</span> <span class="op">&lt;-</span> <span class="fl">1.0</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="va">lngth</span><span class="op">)</span>
+<span class="va">pureshift</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/linearRamp.html">linearRamp</a></span><span class="op">(</span><span class="va">lngth</span>,width <span class="op">=</span> <span class="fl">0</span><span class="op">)</span>
+<span class="va">ShiftHappens</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/detectShift.html">detectShift</a></span><span class="op">(</span>time <span class="op">=</span> <span class="va">time</span>,
+                            vals <span class="op">=</span> <span class="va">pureshift</span>,
+                            vals.variable.name <span class="op">=</span> <span class="st">'Step Change'</span>,
+                            time.units <span class="op">=</span> <span class="st">'years'</span>,
+                            vals.units <span class="op">=</span> <span class="st">'unitless'</span>,
+                            summary.bin.step <span class="op">=</span> <span class="fl">1</span>,
+                            simulate.time.uncertainty <span class="op">=</span> <span class="cn">FALSE</span>,
+                            simulate.paleo.uncertainty <span class="op">=</span> <span class="cn">FALSE</span>,
+                            null.hypothesis.n <span class="op">=</span> <span class="fl">50</span>,n.ens <span class="op">=</span> <span class="fl">50</span><span class="op">)</span>
 <span class="co">#&gt; timeVariableName is at least partially absent in the input data</span>
 <span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. </span>
 <span class="co">#&gt; This will probably take about 1 minutes</span>
 
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="kw">ShiftHappens</span>)
-</pre></div>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">ShiftHappens</span><span class="op">)</span></code></pre></div>
 <p><img src="abruptShift_tests_files/figure-html/Load%20test%20data-1.png" width="700"><img src="abruptShift_tests_files/figure-html/Load%20test%20data-2.png" width="700"></p>
 <p>Now we’ll do the same, by looping over various values of the shift</p>
-<div class="sourceCode" id="cb3"><pre class="downlit">
-<span class="kw">widths</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">0</span>, <span class="kw">lngth</span><span class="op">/</span><span class="fl">40</span>, <span class="kw">lngth</span><span class="op">/</span><span class="fl">20</span>, <span class="kw">lngth</span><span class="op">/</span><span class="fl">10</span>, <span class="kw">lngth</span><span class="op">/</span><span class="fl">5</span>, <span class="kw">lngth</span><span class="op">/</span><span class="fl">2</span>)
-<span class="kw">rampRes</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html">vector</a></span>(mode = <span class="st">"list"</span>,length = <span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span>(<span class="kw">widths</span>))
-<span class="co">for</span>(<span class="kw">w</span> <span class="co">in</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span>(<span class="kw">widths</span>)) {
-  <span class="kw">rampRes</span>[[<span class="kw">w</span>]] <span class="op">&lt;-</span> <span class="fu"><a href="../reference/detectShift.html">detectShift</a></span>(time = <span class="kw">time</span>,
-                            vals = <span class="fu"><a href="../reference/linearRamp.html">linearRamp</a></span>(<span class="kw">lngth</span>,width = <span class="kw">widths</span>[<span class="kw">w</span>]),
-                            vals.variable.name = <span class="st">'Ramp'</span>,
-                            time.units = <span class="st">'years'</span>,
-                            vals.units = <span class="st">'unitless'</span>,
-                            summary.bin.step = <span class="fl">1</span>,
-                            simulate.time.uncertainty = <span class="fl">FALSE</span>,
-                            simulate.paleo.uncertainty = <span class="fl">FALSE</span>,
-                            null.hypothesis.n = <span class="fl">50</span>)
-  <span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="kw">rampRes</span>[[<span class="kw">w</span>]])
-}
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">widths</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="va">lngth</span><span class="op">/</span><span class="fl">40</span>, <span class="va">lngth</span><span class="op">/</span><span class="fl">20</span>, <span class="va">lngth</span><span class="op">/</span><span class="fl">10</span>, <span class="va">lngth</span><span class="op">/</span><span class="fl">5</span>, <span class="va">lngth</span><span class="op">/</span><span class="fl">2</span><span class="op">)</span>
+<span class="va">rampRes</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html">vector</a></span><span class="op">(</span>mode <span class="op">=</span> <span class="st">"list"</span>,length <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">widths</span><span class="op">)</span><span class="op">)</span>
+<span class="kw">for</span><span class="op">(</span><span class="va">w</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">widths</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
+  <span class="va">rampRes</span><span class="op">[[</span><span class="va">w</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/detectShift.html">detectShift</a></span><span class="op">(</span>time <span class="op">=</span> <span class="va">time</span>,
+                            vals <span class="op">=</span> <span class="fu"><a href="../reference/linearRamp.html">linearRamp</a></span><span class="op">(</span><span class="va">lngth</span>,width <span class="op">=</span> <span class="va">widths</span><span class="op">[</span><span class="va">w</span><span class="op">]</span><span class="op">)</span>,
+                            vals.variable.name <span class="op">=</span> <span class="st">'Ramp'</span>,
+                            time.units <span class="op">=</span> <span class="st">'years'</span>,
+                            vals.units <span class="op">=</span> <span class="st">'unitless'</span>,
+                            summary.bin.step <span class="op">=</span> <span class="fl">1</span>,
+                            simulate.time.uncertainty <span class="op">=</span> <span class="cn">FALSE</span>,
+                            simulate.paleo.uncertainty <span class="op">=</span> <span class="cn">FALSE</span>,
+                            null.hypothesis.n <span class="op">=</span> <span class="fl">50</span><span class="op">)</span>
+  <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">rampRes</span><span class="op">[[</span><span class="va">w</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>
+<span class="op">}</span>
 <span class="co">#&gt; timeVariableName is at least partially absent in the input data</span>
 <span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 100 ensemble members. </span>
-<span class="co">#&gt; This will probably take about 1 minutes</span>
-</pre></div>
+<span class="co">#&gt; This will probably take about 1 minutes</span></code></pre></div>
 <p><img src="abruptShift_tests_files/figure-html/gradual%20vs%20abrupt-1.png" width="700"></p>
 <pre><code>#&gt; timeVariableName is at least partially absent in the input data
 #&gt; Testing null hypothesis with 50 simulations, each with 100 ensemble members. 

@@ -80,7 +80,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -137,17 +137,18 @@
     </div>
 
     <pre class="usage"><span class='co'># S3 method for shift</span>
-<span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span>(
-  <span class='kw'>x</span>,
-  cl.color = <span class='st'>"Reds"</span>,
-  plot.sig.vlines = <span class='fl'>TRUE</span>,
-  label.sig = <span class='fl'>TRUE</span>,
-  alpha = <span class='fl'>0.05</span>,
-  x.axis.label = <span class='fl'>NA</span>,
-  x.lims = <span class='fl'>NA</span>,
-  y.axis.label = <span class='fl'>NA</span>,
-  combine.plots = <span class='fl'>TRUE</span>
-)</pre>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span>
+  <span class='va'>x</span>,
+  cl.color <span class='op'>=</span> <span class='st'>"Reds"</span>,
+  plot.sig.vlines <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  label.sig <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  alpha <span class='op'>=</span> <span class='fl'>0.05</span>,
+  x.axis.label <span class='op'>=</span> <span class='cn'>NA</span>,
+  x.lims <span class='op'>=</span> <span class='cn'>NA</span>,
+  y.axis.label <span class='op'>=</span> <span class='cn'>NA</span>,
+  combine.plots <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -187,6 +188,26 @@
     <tr>
       <th>combine.plots</th>
       <td><p>Combine the probability and timeseries plots into a single plot (TRUE)? Or return a list with each plot as a separate object (FALSE)?</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>Arguments passed on to <code><a href='https://rdrr.io/pkg/geoChronR/man/plotTimeseriesEnsRibbons.html'>geoChronR::plotTimeseriesEnsRibbons</a></code></p><dl>
+    <dt><code>add.to.plot</code></dt><dd><p>A ggplot object to add this plot to. Default is ggplot() .</p></dd>
+    <dt><code>X</code></dt><dd><p>A LiPD variable list to plot, including values, units, names, and more</p></dd>
+    <dt><code>Y</code></dt><dd><p>A LiPD variable list to plot, including values, units, names, and more</p></dd>
+    <dt><code>alp</code></dt><dd><p>alpha (transparency) parameter for the ribbons</p></dd>
+    <dt><code>probs</code></dt><dd><p>a vector of probabilities to plot as ribbons. It will create bands as ribbons of quantiles moving inward. If there's an odd number, it plots the middle quantile as a line.</p></dd>
+    <dt><code>x.bin</code></dt><dd><p>vector of bin edges over which to bin.</p></dd>
+    <dt><code>y.bin</code></dt><dd><p>vector of bin edges over which to bin.</p></dd>
+    <dt><code>n.bins</code></dt><dd><p>number bins over which to calculate intervals. Used to calculate x.bin if not provided.</p></dd>
+    <dt><code>color.low</code></dt><dd><p>Color of the outermost band; the extreme quantiles of the distribution</p></dd>
+    <dt><code>color.high</code></dt><dd><p>Color of the innermost band; the central quantiles of the distribution</p></dd>
+    <dt><code>color.line</code></dt><dd><p>Line color (following ggplot rules)</p></dd>
+    <dt><code>color.vector</code></dt><dd><p>A vector (of length equal to the number of bands) that specifies the colors for the ribbons from the outermost band in (default = NA). Colors specified as string according to ggplot2 conventions. If present, this overrules color.high and color.low</p></dd>
+    <dt><code>line.width</code></dt><dd><p>Width of the line</p></dd>
+    <dt><code>export.quantiles</code></dt><dd><p>If TRUE, return the plotted quantiles rather than the plot</p></dd>
+  
+</dl></td>
     </tr>
     </table>
 

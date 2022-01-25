@@ -6,7 +6,6 @@ actR_ggtheme <- ggplot2::theme_bw
 #' @importFrom dplyr filter
 #' @importFrom geoChronR plotTimeseriesEnsRibbons
 #' @import ggplot2
-#'
 #' @param x The output of detectExcursion()
 #' @param alpha What significance level to use?
 #' @param print.significance Show significance on the plot?
@@ -258,6 +257,7 @@ plot.shiftCore <- function(x,line.color = "black", mean.color = "red"){
 #' @param y.axis.label Label the y-axis (default = NA, which will automatically generate from input)
 #' @param combine.plots Combine the probability and timeseries plots into a single plot (TRUE)? Or return a list with each plot as a separate object (FALSE)?
 #' @param x.lims 2-element vector to usee as x-axis limits (default = NA)
+#' @inheritDotParams geoChronR::plotTimeseriesEnsRibbons
 #' @export
 #' @return a ggplot object
 plot.shift <- function(x,

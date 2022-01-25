@@ -13,7 +13,8 @@
   x.axis.label = NA,
   x.lims = NA,
   y.axis.label = NA,
-  combine.plots = TRUE
+  combine.plots = TRUE,
+  ...
 )
 }
 \arguments{
@@ -34,6 +35,25 @@
 \item{y.axis.label}{Label the y-axis (default = NA, which will automatically generate from input)}
 
 \item{combine.plots}{Combine the probability and timeseries plots into a single plot (TRUE)? Or return a list with each plot as a separate object (FALSE)?}
+
+\item{...}{
+  Arguments passed on to \code{\link[geoChronR:plotTimeseriesEnsRibbons]{geoChronR::plotTimeseriesEnsRibbons}}
+  \describe{
+    \item{\code{add.to.plot}}{A ggplot object to add this plot to. Default is ggplot() .}
+    \item{\code{X}}{A LiPD variable list to plot, including values, units, names, and more}
+    \item{\code{Y}}{A LiPD variable list to plot, including values, units, names, and more}
+    \item{\code{alp}}{alpha (transparency) parameter for the ribbons}
+    \item{\code{probs}}{a vector of probabilities to plot as ribbons. It will create bands as ribbons of quantiles moving inward. If there's an odd number, it plots the middle quantile as a line.}
+    \item{\code{x.bin}}{vector of bin edges over which to bin.}
+    \item{\code{y.bin}}{vector of bin edges over which to bin.}
+    \item{\code{n.bins}}{number bins over which to calculate intervals. Used to calculate x.bin if not provided.}
+    \item{\code{color.low}}{Color of the outermost band; the extreme quantiles of the distribution}
+    \item{\code{color.high}}{Color of the innermost band; the central quantiles of the distribution}
+    \item{\code{color.line}}{Line color (following ggplot rules)}
+    \item{\code{color.vector}}{A vector (of length equal to the number of bands) that specifies the colors for the ribbons from the outermost band in (default = NA). Colors specified as string according to ggplot2 conventions. If present, this overrules color.high and color.low}
+    \item{\code{line.width}}{Width of the line}
+    \item{\code{export.quantiles}}{If TRUE, return the plotted quantiles rather than the plot}
+  }}
 }
 \value{
 a ggplot object
