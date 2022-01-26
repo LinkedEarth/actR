@@ -4,19 +4,12 @@
 \alias{summary.shift}
 \title{Summarize shift output}
 \usage{
-\method{summary}{shift}(
-  object,
-  alpha = 0.05,
-  params.to.print = c("cpt.fun", "minimum.segment.length", "method", "penalty",
-    "ncpts.max")
-)
+\method{summary}{shift}(object, ...)
 }
 \arguments{
 \item{object}{shift output}
 
-\item{alpha}{significance level}
-
-\item{params.to.print}{vector of paramters to print}
+\item{...}{additional inputs (see summaryShift)}
 }
 \value{
 

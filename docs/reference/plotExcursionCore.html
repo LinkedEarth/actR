@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Plot an excursion with uncertainties — plot.excursion • actR</title>
+<title>Plot a basic excursion without propagated uncertainty — plotExcursionCore • actR</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="Plot an excursion with uncertainties — plot.excursion" />
-<meta property="og:description" content="Plot an excursion with uncertainties" />
+<meta property="og:title" content="Plot a basic excursion without propagated uncertainty — plotExcursionCore" />
+<meta property="og:description" content="Plot a basic excursion without propagated uncertainty" />
 
 
 
@@ -127,34 +127,33 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Plot an excursion with uncertainties</h1>
+    <h1>Plot a basic excursion without propagated uncertainty</h1>
     
-    <div class="hidden name"><code>plot.excursion.Rd</code></div>
+    <div class="hidden name"><code>plotExcursionCore.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Plot an excursion with uncertainties</p>
+    <p>Plot a basic excursion without propagated uncertainty</p>
     </div>
 
-    <pre class="usage"><span class='co'># S3 method for excursion</span>
-<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>...</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>plotExcursionCore</span><span class='op'>(</span><span class='va'>x</span>, add.to.plot <span class='op'>=</span> <span class='fu'>ggplot2</span><span class='fu'>::</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>x</th>
-      <td><p>The output of detectExcursion()</p></td>
+      <td><p>the output of detectExcursionCore()</p></td>
     </tr>
     <tr>
-      <th>...</th>
-      <td><p>additional parameters (see plotExcursion)</p></td>
+      <th>add.to.plot</th>
+      <td><p>a ggplot object upon which to add this plot</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>a ggplot2 object</p>
+    <p>a ggplot object</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

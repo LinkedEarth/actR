@@ -1,5 +1,15 @@
 actR_ggtheme <- ggplot2::theme_bw
 
+#' Plot an excursion with uncertainties
+#'
+#' @param x The output of detectExcursion()
+#' @param ... additional parameters (see plotExcursion)
+#'
+#' @return a ggplot2 object
+#' @export
+plot.excursion <- function(x,...){
+  return(plotExcursion(x,...))
+}
 
 #' Plot an excursion with uncertainties
 #' @importFrom glue glue
@@ -15,7 +25,7 @@ actR_ggtheme <- ggplot2::theme_bw
 #'
 #' @return a ggplot2 object
 #' @export
-plot.excursion <- function(x,
+plotExcursion <- function(x,
                            alpha = 0.05,
                            print.significance = FALSE,
                            x.axis.label = NA,
@@ -108,6 +118,19 @@ plot.excursion <- function(x,
 }
 
 
+#' Plot a basic excursion without propagated uncertainty
+#'
+#' @import ggplot2
+#' @param x the output of detectExcursionCore()
+#' @param ... a ggplot object upon which to add this plot
+#'
+#' @return a ggplot object
+#' @export
+plot.excursionCore <- function(x,...){
+  return(plotExcursionCore(x,...))
+}
+
+
 
 #' Plot a basic excursion without propagated uncertainty
 #'
@@ -117,7 +140,7 @@ plot.excursion <- function(x,
 #'
 #' @return a ggplot object
 #' @export
-plot.excursionCore <- function(x,
+plotExcursionCore <- function(x,
                                add.to.plot = ggplot2::ggplot()){
 
   #spread out the list columns
@@ -197,6 +220,16 @@ plotSectionMeans <- function(x,time,vals,add.to.plot = ggplot2::ggplot(),mean.co
   return(ms)
 }
 
+#' Plot mean or variance shifts, with uncertainties and null hypothesis testing
+#'
+#' @param x Output from actR::detectShift
+#' @param ... additional inputs (see plotShiftCore)
+#' @export
+#' @return A ggplot object
+plot.shiftCore <- function(x,...){
+  return(plotShiftCore(x,...))
+}
+
 #' Plot a shift in mean or variance
 #' @import tibble ggplot2 dplyr
 #' @param line.color color of the line
@@ -204,7 +237,7 @@ plotSectionMeans <- function(x,time,vals,add.to.plot = ggplot2::ggplot(),mean.co
 #' @param x tibble with time and vals
 #' @export
 #' @return A ggplot object
-plot.shiftCore <- function(x,line.color = "black", mean.color = "red"){
+plotShiftCore <- function(x,line.color = "black", mean.color = "red"){
   if(nrow(x)==0){#how to handle this?
 
   }
@@ -247,6 +280,20 @@ plot.shiftCore <- function(x,line.color = "black", mean.color = "red"){
 #'
 #' @importFrom geoChronR plotTimeseriesEnsRibbons
 #' @import ggplot2 tidyr RColorBrewer purrr dplyr egg
+#' @param x Output from actR::detectShift
+#' @param ... more inputs, see (plotShift)
+#'
+#' @export
+#' @return a ggplot object
+plot.shift <- function(x,...){
+  return(plotShift(x,...))
+}
+
+
+#' Plot mean or variance shifts, with uncertainties and null hypothesis testing
+#'
+#' @importFrom geoChronR plotTimeseriesEnsRibbons
+#' @import ggplot2 tidyr RColorBrewer purrr dplyr egg
 #'
 #' @param x Output from actR::detectShift
 #' @param cl.color Color palette, single color, or vector of colors to use for confidence intervals (default = "Reds"s)
@@ -260,7 +307,7 @@ plot.shiftCore <- function(x,line.color = "black", mean.color = "red"){
 #' @inheritDotParams geoChronR::plotTimeseriesEnsRibbons
 #' @export
 #' @return a ggplot object
-plot.shift <- function(x,
+plotShift <- function(x,
                        cl.color = "Reds",
                        plot.sig.vlines = TRUE,
                        label.sig = TRUE,

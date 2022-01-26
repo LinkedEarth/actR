@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Plot an excursion with uncertainties — plot.excursion • actR</title>
+<title>Plot mean or variance shifts, with uncertainties and null hypothesis testing — plotShift • actR</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="Plot an excursion with uncertainties — plot.excursion" />
-<meta property="og:description" content="Plot an excursion with uncertainties" />
+<meta property="og:title" content="Plot mean or variance shifts, with uncertainties and null hypothesis testing — plotShift" />
+<meta property="og:description" content="Plot mean or variance shifts, with uncertainties and null hypothesis testing" />
 
 
 
@@ -127,34 +127,92 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Plot an excursion with uncertainties</h1>
+    <h1>Plot mean or variance shifts, with uncertainties and null hypothesis testing</h1>
     
-    <div class="hidden name"><code>plot.excursion.Rd</code></div>
+    <div class="hidden name"><code>plotShift.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Plot an excursion with uncertainties</p>
+    <p>Plot mean or variance shifts, with uncertainties and null hypothesis testing</p>
     </div>
 
-    <pre class="usage"><span class='co'># S3 method for excursion</span>
-<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>...</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>plotShift</span><span class='op'>(</span>
+  <span class='va'>x</span>,
+  cl.color <span class='op'>=</span> <span class='st'>"Reds"</span>,
+  plot.sig.vlines <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  label.sig <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  alpha <span class='op'>=</span> <span class='fl'>0.05</span>,
+  x.axis.label <span class='op'>=</span> <span class='cn'>NA</span>,
+  x.lims <span class='op'>=</span> <span class='cn'>NA</span>,
+  y.axis.label <span class='op'>=</span> <span class='cn'>NA</span>,
+  combine.plots <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>x</th>
-      <td><p>The output of detectExcursion()</p></td>
+      <td><p>Output from actR::detectShift</p></td>
+    </tr>
+    <tr>
+      <th>cl.color</th>
+      <td><p>Color palette, single color, or vector of colors to use for confidence intervals (default = "Reds"s)</p></td>
+    </tr>
+    <tr>
+      <th>plot.sig.vlines</th>
+      <td><p>Plot vertical lines at significant change points? (default = TRUE)</p></td>
+    </tr>
+    <tr>
+      <th>label.sig</th>
+      <td><p>Label significant change points (default = TRUE)</p></td>
+    </tr>
+    <tr>
+      <th>alpha</th>
+      <td><p>significance level (default = 0.05)</p></td>
+    </tr>
+    <tr>
+      <th>x.axis.label</th>
+      <td><p>Label the x-axis (default = NA, which will automatically generate from input)</p></td>
+    </tr>
+    <tr>
+      <th>x.lims</th>
+      <td><p>2-element vector to usee as x-axis limits (default = NA)</p></td>
+    </tr>
+    <tr>
+      <th>y.axis.label</th>
+      <td><p>Label the y-axis (default = NA, which will automatically generate from input)</p></td>
+    </tr>
+    <tr>
+      <th>combine.plots</th>
+      <td><p>Combine the probability and timeseries plots into a single plot (TRUE)? Or return a list with each plot as a separate object (FALSE)?</p></td>
     </tr>
     <tr>
       <th>...</th>
-      <td><p>additional parameters (see plotExcursion)</p></td>
+      <td><p>Arguments passed on to <code><a href='https://rdrr.io/pkg/geoChronR/man/plotTimeseriesEnsRibbons.html'>geoChronR::plotTimeseriesEnsRibbons</a></code></p><dl>
+    <dt><code>add.to.plot</code></dt><dd><p>A ggplot object to add this plot to. Default is ggplot() .</p></dd>
+    <dt><code>X</code></dt><dd><p>A LiPD variable list to plot, including values, units, names, and more</p></dd>
+    <dt><code>Y</code></dt><dd><p>A LiPD variable list to plot, including values, units, names, and more</p></dd>
+    <dt><code>alp</code></dt><dd><p>alpha (transparency) parameter for the ribbons</p></dd>
+    <dt><code>probs</code></dt><dd><p>a vector of probabilities to plot as ribbons. It will create bands as ribbons of quantiles moving inward. If there's an odd number, it plots the middle quantile as a line.</p></dd>
+    <dt><code>x.bin</code></dt><dd><p>vector of bin edges over which to bin.</p></dd>
+    <dt><code>y.bin</code></dt><dd><p>vector of bin edges over which to bin.</p></dd>
+    <dt><code>n.bins</code></dt><dd><p>number bins over which to calculate intervals. Used to calculate x.bin if not provided.</p></dd>
+    <dt><code>color.low</code></dt><dd><p>Color of the outermost band; the extreme quantiles of the distribution</p></dd>
+    <dt><code>color.high</code></dt><dd><p>Color of the innermost band; the central quantiles of the distribution</p></dd>
+    <dt><code>color.line</code></dt><dd><p>Line color (following ggplot rules)</p></dd>
+    <dt><code>color.vector</code></dt><dd><p>A vector (of length equal to the number of bands) that specifies the colors for the ribbons from the outermost band in (default = NA). Colors specified as string according to ggplot2 conventions. If present, this overrules color.high and color.low</p></dd>
+    <dt><code>line.width</code></dt><dd><p>Width of the line</p></dd>
+    <dt><code>export.quantiles</code></dt><dd><p>If TRUE, return the plotted quantiles rather than the plot</p></dd>
+  
+</dl></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>a ggplot2 object</p>
+    <p>a ggplot object</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

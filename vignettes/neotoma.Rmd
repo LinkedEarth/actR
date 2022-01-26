@@ -22,7 +22,8 @@ library(tidyverse)
 library(geoChronR)
 ```
 
-# Get some data from Neotoma
+# Using actR with Neotoma data
+## Get some data from Neotoma
 
 It is now quite simple to get data directly from Neotoma, using the forthcoming `neotoma2` package, either by searching a site using the `get_sites()` function, or directly with `get_downloads()` if you know the dataset number. 
 
@@ -36,18 +37,21 @@ L <- neotoma2::get_sites(sitename = "Penegor Lake") %>%
 You can then pass that "site" object into `neotoma2lipd()`, part of the `lipdR` package, (>= 0.3.0) (for now at least), to create a LiPD object. 
 
 
+## Create an ensemble age-depth model using geoChronR
+
 If that Neotoma dataset, now a LiPD object, has chronologic data, we can than run it through Bacon or another algorithm in `geoChronR`.
 
 
 ```{r bacon,message=FALSE,warning=FALSE,results='hide',fig.keep='none',fig.keep="all"}
 L <- runBacon(L,
-              bacon.dir = "~/Dropbox/MacBacon/",
+              bacon.dir = tempdir(),
               chron.num = 1,
               meas.table.num = 1,
               lab.id.var = "neotomachronconrolid",
-              reservoir.age.14c.var = NULL, 
-              reservoir.age.14c.uncertainty.var = NULL, 
-              rejected.ages.var = NULL, 
+              reservoir.age.14c.var = NULL,
+              reservoir.age.14c.uncertainty.var = NULL,
+              rejected.ages.var = NULL,
+              accept.suggestions = TRUE,
               ask = FALSE,
               plot.pdf = FALSE)
 ```

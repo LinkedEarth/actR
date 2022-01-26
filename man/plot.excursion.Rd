@@ -4,27 +4,12 @@
 \alias{plot.excursion}
 \title{Plot an excursion with uncertainties}
 \usage{
-\method{plot}{excursion}(
-  x,
-  alpha = 0.05,
-  print.significance = FALSE,
-  x.axis.label = NA,
-  y.axis.label = NA,
-  lab.mult = 0.02
-)
+\method{plot}{excursion}(x, ...)
 }
 \arguments{
 \item{x}{The output of detectExcursion()}
 
-\item{alpha}{What significance level to use?}
-
-\item{print.significance}{Show significance on the plot?}
-
-\item{x.axis.label}{Label the x-axis (default = NA, which will automatically generate from input)}
-
-\item{y.axis.label}{Label the y-axis (default = NA, which will automatically generate from input)}
-
-\item{lab.mult}{When labeling significance, how much higher than the highest point to put the label}
+\item{...}{additional parameters (see plotExcursion)}
 }
 \value{
 a ggplot2 object

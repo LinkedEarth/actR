@@ -1,9 +1,18 @@
 #' Summarize Excursion Output
 #'
 #' @param object excursion class output
+#' @param ... additional inputs
+#' @export
+summary.excursion <- function(object,...){
+  summaryExcursion(object,...)
+}
+
+#' Summarize Excursion Output
+#'
+#' @param object excursion class output
 #' @param params.to.print a vector of parameters to print
 #' @export
-summary.excursion <- function(object, params.to.print = c("sig.num","n.consecutive","exc.type","min.vals","na.rm")){
+summaryExcursion <- function(object, params.to.print = c("sig.num","n.consecutive","exc.type","min.vals","na.rm")){
 
   if(!is.na(object$dataSetName) & !is.na(object$paleoData_variableName)){
     title <- glue::glue("{object$dataSetName} - {object$paleoData_variableName}: Excursion test")
@@ -73,6 +82,18 @@ for(p in params.to.print){
 
 }
 
+#' Summarize shift output
+#'
+#' @param object shift output
+#' @param ... additional inputs (see summaryShift)
+#'
+#' @return
+#' @export
+summary.shift <- function(object,...){
+  summaryShift(object,...)
+}
+
+
 
 #' Summarize shift output
 #'
@@ -82,7 +103,7 @@ for(p in params.to.print){
 #'
 #' @return
 #' @export
-summary.shift <- function(object, alpha = 0.05, params.to.print = c("cpt.fun","minimum.segment.length","method","penalty","ncpts.max")){
+summaryShift <- function(object, alpha = 0.05, params.to.print = c("cpt.fun","minimum.segment.length","method","penalty","ncpts.max")){
 
   params <- createTibbleFromParameterString(object$parameters[1])
 

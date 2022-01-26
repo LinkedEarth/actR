@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Plot an excursion with uncertainties — plot.excursion • actR</title>
+<title>Plot an excursion with uncertainties — plotExcursion • actR</title>
 
 
 <!-- jquery -->
@@ -39,7 +39,7 @@
 
 
 
-<meta property="og:title" content="Plot an excursion with uncertainties — plot.excursion" />
+<meta property="og:title" content="Plot an excursion with uncertainties — plotExcursion" />
 <meta property="og:description" content="Plot an excursion with uncertainties" />
 
 
@@ -129,15 +129,21 @@
     <div class="page-header">
     <h1>Plot an excursion with uncertainties</h1>
     
-    <div class="hidden name"><code>plot.excursion.Rd</code></div>
+    <div class="hidden name"><code>plotExcursion.Rd</code></div>
     </div>
 
     <div class="ref-description">
     <p>Plot an excursion with uncertainties</p>
     </div>
 
-    <pre class="usage"><span class='co'># S3 method for excursion</span>
-<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>...</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>plotExcursion</span><span class='op'>(</span>
+  <span class='va'>x</span>,
+  alpha <span class='op'>=</span> <span class='fl'>0.05</span>,
+  print.significance <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  x.axis.label <span class='op'>=</span> <span class='cn'>NA</span>,
+  y.axis.label <span class='op'>=</span> <span class='cn'>NA</span>,
+  lab.mult <span class='op'>=</span> <span class='fl'>0.02</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -147,8 +153,24 @@
       <td><p>The output of detectExcursion()</p></td>
     </tr>
     <tr>
-      <th>...</th>
-      <td><p>additional parameters (see plotExcursion)</p></td>
+      <th>alpha</th>
+      <td><p>What significance level to use?</p></td>
+    </tr>
+    <tr>
+      <th>print.significance</th>
+      <td><p>Show significance on the plot?</p></td>
+    </tr>
+    <tr>
+      <th>x.axis.label</th>
+      <td><p>Label the x-axis (default = NA, which will automatically generate from input)</p></td>
+    </tr>
+    <tr>
+      <th>y.axis.label</th>
+      <td><p>Label the y-axis (default = NA, which will automatically generate from input)</p></td>
+    </tr>
+    <tr>
+      <th>lab.mult</th>
+      <td><p>When labeling significance, how much higher than the highest point to put the label</p></td>
     </tr>
     </table>
 
