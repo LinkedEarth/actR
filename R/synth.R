@@ -7,7 +7,6 @@
 #' @importFrom fBasics Ramp
 #' @return values of the function (between 0 and 1)
 #' @export
-
 linearRamp <-function(lngth,width){
   if (width>lngth/2) {stop("Ramp width cannot exceed half of the length")}
   xs = seq(lngth)/lngth-1/2
@@ -26,7 +25,7 @@ linearRamp <-function(lngth,width){
 #' @export
 
 ar1noise <- function(lngth,g,sigma){
-  ar1=sigma/sqrt(1-g^2)*arima.sim(model=list(g,0,0),n=lngth)
+  ar1=sigma/sqrt(1-g^2)*stats::arima.sim(model=list(g,0,0),n=lngth)
   return(ar1)
 }
 

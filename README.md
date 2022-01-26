@@ -5,6 +5,10 @@
 
 <!-- badges: start -->
 
+[![lifecycle](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
+[![NSF-1948926](https://img.shields.io/badge/NSF-1929460-blue.svg)](https://nsf.gov/awardsearch/showAward?AWD_ID=1929460)
+[![Belmont SEI
+ACCEDE](https://img.shields.io/badge/Belmont%20SEI-ACCEDE-blue)](https://www.belmontforum.org/archives/projects/abrupt-change-in-climate-and-ecosystems-where-are-the-tipping-points)
 [![R build
 status](https://github.com/LinkedEarth/actR/workflows/R-CMD-check/badge.svg)](https://github.com/LinkedEarth/actR/actions)
 <!-- badges: end -->
@@ -16,8 +20,8 @@ funded by the Belmont Forum as part of the “Abrupt Changes in Climate
 and Ecosystems - Data & e-Infrastructure (ACCEDE)” project, as part of
 the Science-driven e-Infrastructure Innovation program.
 
-We’re still early in the development process, but basic is now
-availables.
+We’re still early in the development process, but basic functionality is
+now available.
 
 ## actR Design and Philososphy
 
@@ -77,8 +81,8 @@ additional outputs as appropriate.
 ## Contributor guide
 
 We’re ready for interested people to start contributing Abrupt Change
-methods to actR\! [Check out the Contribrutor’s
-Guide\!](contributor_guide.html)
+methods to actR! [Check out the Contribrutor’s
+Guide!](contributor_guide.html)
 
 ## Installation
 

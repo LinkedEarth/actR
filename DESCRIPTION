@@ -39,7 +39,9 @@ Suggests:
     rmarkdown
 Remotes:
     github::nickmckay/geoChronR,
-    github::nickmckay/lipdR
+    github::nickmckay/lipdR,
+    github::NeotomaDB/neotoma2
+
 Depends:
     R (>= 2.10)
 VignetteBuilder: knitr

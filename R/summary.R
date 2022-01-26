@@ -86,8 +86,6 @@ for(p in params.to.print){
 #'
 #' @param object shift output
 #' @param ... additional inputs (see summaryShift)
-#'
-#' @return
 #' @export
 summary.shift <- function(object,...){
   summaryShift(object,...)
@@ -100,8 +98,6 @@ summary.shift <- function(object,...){
 #' @param object shift output
 #' @param alpha significance level
 #' @param params.to.print vector of paramters to print
-#'
-#' @return
 #' @export
 summaryShift <- function(object, alpha = 0.05, params.to.print = c("cpt.fun","minimum.segment.length","method","penalty","ncpts.max")){
 
