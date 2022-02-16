@@ -1,3 +1,5 @@
+# actR 0.1.2
+
 # actR 0.1.1
 
 * added option to pass plot options to geoChronR plotting to plot.shift()
