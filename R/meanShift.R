@@ -6,6 +6,7 @@
 #' @param vals a vector paleodata
 #' @param minimum.segment.length the minimum allowed length of a detected segment (in time units)
 #' @param cpt.fun which function from the changepoint package to use, changepoint::cpt.mean, changepoint::cpt.var or changepoint::cpt.meanvar
+#' @param gaussianize Force vals to gaussian distribution before analysis. Default (TRUE). Most (all?) methods in the changepoint package assume gaussian distributions, so this is strongly recommended.
 #' @param ... options to pass to cpt.fun . See changepoint function documentation for details.
 #'
 #' @return A tibble of output data and metadata
@@ -14,6 +15,7 @@ detectShiftCore = function(time,
                            vals,
                            minimum.segment.length = 1,
                            cpt.fun = changepoint::cpt.mean,
+                           gaussianize = TRUE,
                            ...){
 
   # interpolation options
@@ -25,6 +27,9 @@ detectShiftCore = function(time,
   f = approxfun(time,vals)
   X = seq(min(time,na.rm = TRUE), max(time,na.rm = TRUE), by = res)
   Y = f(X)
+  if(gaussianize){
+    Y <- geoChronR::gaussianize(Y)
+  }
 
   # pull out ... parameters
   opts <- list(...)
