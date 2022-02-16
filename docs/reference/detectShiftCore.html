@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">actR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.2</span>
       </span>
     </div>
 
@@ -141,6 +141,7 @@
   <span class='va'>vals</span>,
   minimum.segment.length <span class='op'>=</span> <span class='fl'>1</span>,
   cpt.fun <span class='op'>=</span> <span class='fu'>changepoint</span><span class='fu'>::</span><span class='va'><a href='https://rdrr.io/pkg/changepoint/man/cpt.mean.html'>cpt.mean</a></span>,
+  gaussianize <span class='op'>=</span> <span class='cn'>TRUE</span>,
   <span class='va'>...</span>
 <span class='op'>)</span></pre>
 
@@ -162,6 +163,10 @@
     <tr>
       <th>cpt.fun</th>
       <td><p>which function from the changepoint package to use, changepoint::cpt.mean, changepoint::cpt.var or changepoint::cpt.meanvar</p></td>
+    </tr>
+    <tr>
+      <th>gaussianize</th>
+      <td><p>Force vals to gaussian distribution before analysis. Default (TRUE). Most (all?) methods in the changepoint package assume gaussian distributions, so this is strongly recommended.</p></td>
     </tr>
     <tr>
       <th>...</th>

@@ -11,9 +11,6 @@
 
 \item{...}{additional inputs (see summaryShift)}
 }
-\value{
-
-}
 \description{
 Summarize shift output
 }

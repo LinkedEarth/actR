@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">actR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.2</span>
       </span>
     </div>
 
@@ -105,9 +105,10 @@
 <code class="sourceCode R"><span class="va">msGeob</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/detectShift.html">detectShift</a></span><span class="op">(</span><span class="va">geob7926_2</span>,
                     time.variable.name <span class="op">=</span> <span class="st">"ageEnsemble"</span>,
                     vals.variable.name <span class="op">=</span> <span class="st">"SST_from_uk37_ensemble"</span>,
+                    method <span class="op">=</span> <span class="st">"PELT"</span>,
                     null.hypothesis.n <span class="op">=</span> <span class="fl">50</span>,
                     summary.bin.step <span class="op">=</span> <span class="fl">500</span>,
-                    minimum.segment.length <span class="op">=</span> <span class="fl">3000</span>,
+                    minimum.segment.length <span class="op">=</span> <span class="fl">8000</span>,
                     n.ens <span class="op">=</span> <span class="fl">50</span><span class="op">)</span>
 <span class="co">#&gt; Selected SST_from_uk37_ensemble</span>
 <span class="co">#&gt; timeUnits is at least partially absent in the input data</span>
@@ -117,18 +118,17 @@
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">msGeob</span><span class="op">)</span>
 <span class="co">#&gt; GeoB7926_2.Kim.2012 - SST_from_uk37_ensemble: Shift in Mean results</span>
-<span class="co">#&gt; Searched for Shift in Mean with a minimum segment length of 3000 years, summarizing the results over windows of 500 years.</span>
+<span class="co">#&gt; Searched for Shift in Mean with a minimum segment length of 8000 years, summarizing the results over windows of 500 years.</span>
 <span class="co">#&gt; </span>
-<span class="co">#&gt; Overall result: Detected 3 Shift in Mean event(s) that were significant at the alpha &lt; 0.05 level</span>
+<span class="co">#&gt; Overall result: Detected 2 Shift in Mean event(s) that were significant at the alpha &lt; 0.05 level</span>
 <span class="co">#&gt; Registered S3 method overwritten by 'cli':</span>
 <span class="co">#&gt;   method     from         </span>
 <span class="co">#&gt;   print.boxx spatstat.geom</span>
-<span class="co">#&gt; # A tibble: 3 x 3</span>
+<span class="co">#&gt; # A tibble: 2 x 3</span>
 <span class="co">#&gt;   time_start time_end empirical_pvalue</span>
 <span class="co">#&gt;        &lt;dbl&gt;    &lt;dbl&gt;            &lt;dbl&gt;</span>
-<span class="co">#&gt; 1      9227.    9727.           0     </span>
-<span class="co">#&gt; 2      4227.    4727.           0.0200</span>
-<span class="co">#&gt; 3     25227.   25727.           0.0200</span>
+<span class="co">#&gt; 1      9727.   10227.                0</span>
+<span class="co">#&gt; 2     17727.   18227.                0</span>
 <span class="co">#&gt; Time uncertainty considered? TRUE Time ensemble supplied (n = 100)</span>
 <span class="co">#&gt; Paleo uncertainty considered? TRUE Values ensemble supplied (n = 2500)</span>
 <span class="co">#&gt; Error propagation ensemble members = 50</span>
@@ -137,10 +137,10 @@
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Parameter choices:</span>
 <span class="co">#&gt; cpt.fun = changepoint::cpt.mean</span>
-<span class="co">#&gt; minimum.segment.length = 3000</span>
-<span class="co">#&gt; method = AMOC</span>
+<span class="co">#&gt; minimum.segment.length = 8000</span>
+<span class="co">#&gt; method = PELT</span>
 <span class="co">#&gt; penalty = MBIC</span>
-<span class="co">#&gt; ncpts.max = 1</span></code></pre></div>
+<span class="co">#&gt; ncpts.max = Inf</span></code></pre></div>
 <p>and this command plots it:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">geoBplot</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">msGeob</span><span class="op">)</span></code></pre></div>
@@ -155,6 +155,7 @@
                     summary.bin.step <span class="op">=</span> <span class="fl">1</span>,
                     minimum.segment.length <span class="op">=</span> <span class="fl">50</span>,
                     simulate.time.uncertainty <span class="op">=</span> <span class="cn">FALSE</span>,
+                    method <span class="op">=</span> <span class="st">"AMOC"</span>,
                     cpt.fun <span class="op">=</span> <span class="fu">changepoint</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/changepoint/man/cpt.mean.html">cpt.mean</a></span>,
                     paleo.uncertainty <span class="op">=</span> <span class="fl">0.1</span>,
                     n.ens <span class="op">=</span> <span class="fl">50</span><span class="op">)</span>
@@ -171,10 +172,12 @@
                     vals.variable.name <span class="op">=</span> <span class="st">"trsgi"</span>,
                     null.hypothesis.n <span class="op">=</span> <span class="fl">50</span>,
                     summary.bin.step <span class="op">=</span> <span class="fl">10</span>,
-                    minimum.segment.length <span class="op">=</span> <span class="fl">50</span>,
+                    minimum.segment.length <span class="op">=</span> <span class="fl">200</span>,
                     simulate.time.uncertainty <span class="op">=</span> <span class="cn">FALSE</span>,
                     paleo.uncertainty <span class="op">=</span> <span class="fl">0.1</span>,
-                    cpt.fun <span class="op">=</span> <span class="fu">changepoint</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/changepoint/man/cpt.var.html">cpt.var</a></span>,surrogate.method <span class="op">=</span> <span class="st">"shuffle"</span>,
+                    method <span class="op">=</span> <span class="st">"PELT"</span>,
+                    cpt.fun <span class="op">=</span> <span class="fu">changepoint</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/changepoint/man/cpt.var.html">cpt.var</a></span>,
+                    surrogate.method <span class="op">=</span> <span class="st">"shuffle"</span>,
                     n.ens <span class="op">=</span> <span class="fl">50</span><span class="op">)</span>
 <span class="co">#&gt; Selected trsgi</span>
 <span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. </span>

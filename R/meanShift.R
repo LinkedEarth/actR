@@ -28,8 +28,9 @@ detectShiftCore = function(time,
   f = approxfun(time,vals)
   X = seq(min(time,na.rm = TRUE), max(time,na.rm = TRUE), by = res)
   Y = f(X)
+
   if(gaussianize){
-    Y <- geoChronR::gaussianize(Y)
+    Y <- as.numeric(geoChronR::gaussianize(Y))
   }
 
   # pull out ... parameters

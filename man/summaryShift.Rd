@@ -18,9 +18,6 @@ summaryShift(
 
 \item{params.to.print}{vector of paramters to print}
 }
-\value{
-
-}
 \description{
 Summarize shift output
 }
