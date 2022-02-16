@@ -2,6 +2,7 @@
 #'
 #' @importFrom digest digest
 #' @importFrom changepoint cpt.mean cpt.var cpt.meanvar cpts
+#' @importFrom geoChronR gaussianize
 #' @param time a vector of time data
 #' @param vals a vector paleodata
 #' @param minimum.segment.length the minimum allowed length of a detected segment (in time units)
