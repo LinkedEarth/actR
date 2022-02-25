@@ -27,7 +27,7 @@ From these rates we construct receiver operating characteristic curves and their
 - noise levels. 
 - age uncertainties.
 
-```{r Load test data }
+```{r Load-test-data}
 lngth <- 400
 time <- 1.0*seq(lngth)
 pureshift <- linearRamp(lngth,width = 0)
@@ -39,7 +39,7 @@ ShiftHappens <- detectShift(time = time,
                             summary.bin.step = 1,
                             simulate.time.uncertainty = FALSE,
                             simulate.paleo.uncertainty = FALSE,
-                            null.hypothesis.n = 50)
+                            null.hypothesis.n = 50,n.ens = 50)
 
 plot(ShiftHappens)
 ```
@@ -48,7 +48,7 @@ plot(ShiftHappens)
 Now we'll do the same, by looping over various values of the shift
 
 
-```{r gradual vs abrupt}
+```{r gradual-vs-abrupt}
 widths <- c(0, lngth/40, lngth/20, lngth/10, lngth/5, lngth/2)
 rampRes = vector(mode = "list",length = length(widths))
 for(w in 1:length(widths)) {

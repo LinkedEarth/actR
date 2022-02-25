@@ -2,20 +2,18 @@
 % Please edit documentation in R/plottings.R
 \name{plot.shiftCore}
 \alias{plot.shiftCore}
-\title{Plot a shift in mean or variance}
+\title{Plot mean or variance shifts, with uncertainties and null hypothesis testing}
 \usage{
-\method{plot}{shiftCore}(x, line.color = "black", mean.color = "red")
+\method{plot}{shiftCore}(x, ...)
 }
 \arguments{
-\item{x}{tibble with time and vals}
+\item{x}{Output from actR::detectShift}
 
-\item{line.color}{color of the line}
-
-\item{mean.color}{color of the means}
+\item{...}{additional inputs (see plotShiftCore)}
 }
 \value{
 A ggplot object
 }
 \description{
-Plot a shift in mean or variance
+Plot mean or variance shifts, with uncertainties and null hypothesis testing
 }

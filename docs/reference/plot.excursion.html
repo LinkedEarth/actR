@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">actR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.2</span>
       </span>
     </div>
 
@@ -80,7 +80,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -137,14 +137,7 @@
     </div>
 
     <pre class="usage"><span class='co'># S3 method for excursion</span>
-<span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span>(
-  <span class='kw'>x</span>,
-  alpha = <span class='fl'>0.05</span>,
-  print.significance = <span class='fl'>FALSE</span>,
-  x.axis.label = <span class='fl'>NA</span>,
-  y.axis.label = <span class='fl'>NA</span>,
-  lab.mult = <span class='fl'>0.02</span>
-)</pre>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>...</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -154,24 +147,8 @@
       <td><p>The output of detectExcursion()</p></td>
     </tr>
     <tr>
-      <th>alpha</th>
-      <td><p>What significance level to use?</p></td>
-    </tr>
-    <tr>
-      <th>print.significance</th>
-      <td><p>Show significance on the plot?</p></td>
-    </tr>
-    <tr>
-      <th>x.axis.label</th>
-      <td><p>Label the x-axis (default = NA, which will automatically generate from input)</p></td>
-    </tr>
-    <tr>
-      <th>y.axis.label</th>
-      <td><p>Label the y-axis (default = NA, which will automatically generate from input)</p></td>
-    </tr>
-    <tr>
-      <th>lab.mult</th>
-      <td><p>When labeling significance, how much higher than the highest point to put the label</p></td>
+      <th>...</th>
+      <td><p>additional parameters (see plotExcursion)</p></td>
     </tr>
     </table>
 

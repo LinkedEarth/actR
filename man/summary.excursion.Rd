@@ -4,15 +4,12 @@
 \alias{summary.excursion}
 \title{Summarize Excursion Output}
 \usage{
-\method{summary}{excursion}(
-  object,
-  params.to.print = c("sig.num", "n.consecutive", "exc.type", "min.vals", "na.rm")
-)
+\method{summary}{excursion}(object, ...)
 }
 \arguments{
 \item{object}{excursion class output}
 
-\item{params.to.print}{a vector of parameters to print}
+\item{...}{additional inputs}
 }
 \description{
 Summarize Excursion Output

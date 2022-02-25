@@ -1,12 +1,21 @@
 actR_ggtheme <- ggplot2::theme_bw
 
+#' Plot an excursion with uncertainties
+#'
+#' @param x The output of detectExcursion()
+#' @param ... additional parameters (see plotExcursion)
+#'
+#' @return a ggplot2 object
+#' @export
+plot.excursion <- function(x,...){
+  return(plotExcursion(x,...))
+}
 
 #' Plot an excursion with uncertainties
 #' @importFrom glue glue
 #' @importFrom dplyr filter
 #' @importFrom geoChronR plotTimeseriesEnsRibbons
 #' @import ggplot2
-#'
 #' @param x The output of detectExcursion()
 #' @param alpha What significance level to use?
 #' @param print.significance Show significance on the plot?
@@ -16,7 +25,7 @@ actR_ggtheme <- ggplot2::theme_bw
 #'
 #' @return a ggplot2 object
 #' @export
-plot.excursion <- function(x,
+plotExcursion <- function(x,
                            alpha = 0.05,
                            print.significance = FALSE,
                            x.axis.label = NA,
@@ -61,7 +70,12 @@ plot.excursion <- function(x,
     }
 
     #pick a representative ensemble member
-    rm <- sample(which(ts$nExcusionVals == median(ts$nExcusionVals,na.rm = TRUE)),size = 1)
+    sami <- which(ts$nExcursionVals == median(ts$nExcursionVals,na.rm = TRUE))
+    if(length(sami) == 0){
+      sami <- seq_along(ts$nExcursionVals)
+    }
+    rm <- sample(sami,size = 1)
+
     em <- ts[rm,]
 
     plotout <- plot.excursionCore(em,add.to.plot = ribbons)
@@ -104,6 +118,19 @@ plot.excursion <- function(x,
 }
 
 
+#' Plot a basic excursion without propagated uncertainty
+#'
+#' @import ggplot2
+#' @param x the output of detectExcursionCore()
+#' @param ... a ggplot object upon which to add this plot
+#'
+#' @return a ggplot object
+#' @export
+plot.excursionCore <- function(x,...){
+  return(plotExcursionCore(x,...))
+}
+
+
 
 #' Plot a basic excursion without propagated uncertainty
 #'
@@ -113,7 +140,7 @@ plot.excursion <- function(x,
 #'
 #' @return a ggplot object
 #' @export
-plot.excursionCore <- function(x,
+plotExcursionCore <- function(x,
                                add.to.plot = ggplot2::ggplot()){
 
   #spread out the list columns
@@ -193,6 +220,16 @@ plotSectionMeans <- function(x,time,vals,add.to.plot = ggplot2::ggplot(),mean.co
   return(ms)
 }
 
+#' Plot mean or variance shifts, with uncertainties and null hypothesis testing
+#'
+#' @param x Output from actR::detectShift
+#' @param ... additional inputs (see plotShiftCore)
+#' @export
+#' @return A ggplot object
+plot.shiftCore <- function(x,...){
+  return(plotShiftCore(x,...))
+}
+
 #' Plot a shift in mean or variance
 #' @import tibble ggplot2 dplyr
 #' @param line.color color of the line
@@ -200,7 +237,7 @@ plotSectionMeans <- function(x,time,vals,add.to.plot = ggplot2::ggplot(),mean.co
 #' @param x tibble with time and vals
 #' @export
 #' @return A ggplot object
-plot.shiftCore <- function(x,line.color = "black", mean.color = "red"){
+plotShiftCore <- function(x,line.color = "black", mean.color = "red"){
   if(nrow(x)==0){#how to handle this?
 
   }
@@ -243,6 +280,20 @@ plot.shiftCore <- function(x,line.color = "black", mean.color = "red"){
 #'
 #' @importFrom geoChronR plotTimeseriesEnsRibbons
 #' @import ggplot2 tidyr RColorBrewer purrr dplyr egg
+#' @param x Output from actR::detectShift
+#' @param ... more inputs, see (plotShift)
+#'
+#' @export
+#' @return a ggplot object
+plot.shift <- function(x,...){
+  return(plotShift(x,...))
+}
+
+
+#' Plot mean or variance shifts, with uncertainties and null hypothesis testing
+#'
+#' @importFrom geoChronR plotTimeseriesEnsRibbons
+#' @import ggplot2 tidyr RColorBrewer purrr dplyr egg
 #'
 #' @param x Output from actR::detectShift
 #' @param cl.color Color palette, single color, or vector of colors to use for confidence intervals (default = "Reds"s)
@@ -253,9 +304,10 @@ plot.shiftCore <- function(x,line.color = "black", mean.color = "red"){
 #' @param y.axis.label Label the y-axis (default = NA, which will automatically generate from input)
 #' @param combine.plots Combine the probability and timeseries plots into a single plot (TRUE)? Or return a list with each plot as a separate object (FALSE)?
 #' @param x.lims 2-element vector to usee as x-axis limits (default = NA)
+#' @inheritDotParams geoChronR::plotTimeseriesEnsRibbons
 #' @export
 #' @return a ggplot object
-plot.shift <- function(x,
+plotShift <- function(x,
                        cl.color = "Reds",
                        plot.sig.vlines = TRUE,
                        label.sig = TRUE,
@@ -263,7 +315,8 @@ plot.shift <- function(x,
                        x.axis.label = NA,
                        x.lims = NA,
                        y.axis.label = NA,
-                       combine.plots = TRUE){
+                       combine.plots = TRUE,
+                       ...){
 
 
 
@@ -278,7 +331,7 @@ plot.shift <- function(x,
   paramTib <- createTibbleFromParameterString(x$parameters[1])
 
   #plot ensemble ribbons
-  ribbons <- geoChronR::plotTimeseriesEnsRibbons(X = x$timeEns,Y = x$valEns) + actR_ggtheme()
+  ribbons <- geoChronR::plotTimeseriesEnsRibbons(X = x$timeEns,Y = x$valEns,...) + actR_ggtheme()
 
   #get shift type
   if(grepl(pattern = "cpt.mean",paramTib$cpt.fun,ignore.case = T) & !grepl(pattern = "cpt.meanVar",paramTib$cpt.fun,ignore.case = T)){

@@ -4,36 +4,12 @@
 \alias{plot.shift}
 \title{Plot mean or variance shifts, with uncertainties and null hypothesis testing}
 \usage{
-\method{plot}{shift}(
-  x,
-  cl.color = "Reds",
-  plot.sig.vlines = TRUE,
-  label.sig = TRUE,
-  alpha = 0.05,
-  x.axis.label = NA,
-  x.lims = NA,
-  y.axis.label = NA,
-  combine.plots = TRUE
-)
+\method{plot}{shift}(x, ...)
 }
 \arguments{
 \item{x}{Output from actR::detectShift}
 
-\item{cl.color}{Color palette, single color, or vector of colors to use for confidence intervals (default = "Reds"s)}
-
-\item{plot.sig.vlines}{Plot vertical lines at significant change points? (default = TRUE)}
-
-\item{label.sig}{Label significant change points (default = TRUE)}
-
-\item{alpha}{significance level (default = 0.05)}
-
-\item{x.axis.label}{Label the x-axis (default = NA, which will automatically generate from input)}
-
-\item{x.lims}{2-element vector to usee as x-axis limits (default = NA)}
-
-\item{y.axis.label}{Label the y-axis (default = NA, which will automatically generate from input)}
-
-\item{combine.plots}{Combine the probability and timeseries plots into a single plot (TRUE)? Or return a list with each plot as a separate object (FALSE)?}
+\item{...}{more inputs, see (plotShift)}
 }
 \value{
 a ggplot object

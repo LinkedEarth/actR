@@ -1,6 +1,6 @@
 Package: actR
 Title: Abrupt Change Toolkit in R (actR) - Detect, Quantify and Visualize Abrupt Changes
-Version: 0.1.0
+Version: 0.1.2
 Authors@R: c(
     person(given = "Nicholas",
            family = "McKay",
@@ -14,7 +14,7 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 Imports:
     ggplot2,
     stats,
@@ -32,6 +32,7 @@ Imports:
     egg,
     digest,
     crayon,
+    neotoma2,
     fBasics
 Suggests:
     testthat,
@@ -39,7 +40,8 @@ Suggests:
     rmarkdown
 Remotes:
     github::nickmckay/geoChronR,
-    github::nickmckay/lipdR
+    github::nickmckay/lipdR,
+    github::NeotomaDB/neotoma2
 Depends:
     R (>= 2.10)
 VignetteBuilder: knitr

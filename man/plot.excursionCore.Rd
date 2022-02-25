@@ -4,12 +4,12 @@
 \alias{plot.excursionCore}
 \title{Plot a basic excursion without propagated uncertainty}
 \usage{
-\method{plot}{excursionCore}(x, add.to.plot = ggplot2::ggplot())
+\method{plot}{excursionCore}(x, ...)
 }
 \arguments{
 \item{x}{the output of detectExcursionCore()}
 
-\item{add.to.plot}{a ggplot object upon which to add this plot}
+\item{...}{a ggplot object upon which to add this plot}
 }
 \value{
 a ggplot object

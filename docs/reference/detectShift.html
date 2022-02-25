@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">actR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.2</span>
       </span>
     </div>
 
@@ -80,7 +80,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -136,21 +136,21 @@
     <p>detectShift() allows you to detect a shift in the mean and/or variance of a dataset, and assess its significance given age and data uncertainty relative to a robust null hypothesis. This approach uses the function changepoint::cpt.mean(), changepoint::cpt.var(), or changepoint::cpt.meanvar()  from the changepoint package, propagates inputted or modelled time and/or value ensembles, and summarizes their likelihoods relative to a robust null hypothesis (see ?testNullHypothesis)</p>
     </div>
 
-    <pre class="usage"><span class='fu'>detectShift</span>(
-  ltt = <span class='fl'>NA</span>,
-  time = <span class='fl'>NA</span>,
-  vals = <span class='fl'>NA</span>,
-  time.variable.name = <span class='fl'>NA</span>,
-  vals.variable.name = <span class='fl'>NA</span>,
-  time.units = <span class='fl'>NA</span>,
-  vals.units = <span class='fl'>NA</span>,
-  dataset.name = <span class='fl'>NA</span>,
-  surrogate.method = <span class='st'>"isospectral"</span>,
-  summary.bin.step = <span class='fl'>100</span>,
-  null.hypothesis.n = <span class='fl'>100</span>,
-  null.quantiles = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>0.95</span>, <span class='fl'>0.9</span>),
-  <span class='kw'>...</span>
-)</pre>
+    <pre class="usage"><span class='fu'>detectShift</span><span class='op'>(</span>
+  ltt <span class='op'>=</span> <span class='cn'>NA</span>,
+  time <span class='op'>=</span> <span class='cn'>NA</span>,
+  vals <span class='op'>=</span> <span class='cn'>NA</span>,
+  time.variable.name <span class='op'>=</span> <span class='cn'>NA</span>,
+  vals.variable.name <span class='op'>=</span> <span class='cn'>NA</span>,
+  time.units <span class='op'>=</span> <span class='cn'>NA</span>,
+  vals.units <span class='op'>=</span> <span class='cn'>NA</span>,
+  dataset.name <span class='op'>=</span> <span class='cn'>NA</span>,
+  surrogate.method <span class='op'>=</span> <span class='st'>"isospectral"</span>,
+  summary.bin.step <span class='op'>=</span> <span class='fl'>100</span>,
+  null.hypothesis.n <span class='op'>=</span> <span class='fl'>100</span>,
+  null.quantiles <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>0.95</span>, <span class='fl'>0.9</span><span class='op'>)</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">

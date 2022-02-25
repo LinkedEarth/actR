@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">actR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.2</span>
       </span>
     </div>
 
@@ -80,7 +80,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -137,17 +137,7 @@
     </div>
 
     <pre class="usage"><span class='co'># S3 method for shift</span>
-<span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span>(
-  <span class='kw'>x</span>,
-  cl.color = <span class='st'>"Reds"</span>,
-  plot.sig.vlines = <span class='fl'>TRUE</span>,
-  label.sig = <span class='fl'>TRUE</span>,
-  alpha = <span class='fl'>0.05</span>,
-  x.axis.label = <span class='fl'>NA</span>,
-  x.lims = <span class='fl'>NA</span>,
-  y.axis.label = <span class='fl'>NA</span>,
-  combine.plots = <span class='fl'>TRUE</span>
-)</pre>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>...</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -157,36 +147,8 @@
       <td><p>Output from actR::detectShift</p></td>
     </tr>
     <tr>
-      <th>cl.color</th>
-      <td><p>Color palette, single color, or vector of colors to use for confidence intervals (default = "Reds"s)</p></td>
-    </tr>
-    <tr>
-      <th>plot.sig.vlines</th>
-      <td><p>Plot vertical lines at significant change points? (default = TRUE)</p></td>
-    </tr>
-    <tr>
-      <th>label.sig</th>
-      <td><p>Label significant change points (default = TRUE)</p></td>
-    </tr>
-    <tr>
-      <th>alpha</th>
-      <td><p>significance level (default = 0.05)</p></td>
-    </tr>
-    <tr>
-      <th>x.axis.label</th>
-      <td><p>Label the x-axis (default = NA, which will automatically generate from input)</p></td>
-    </tr>
-    <tr>
-      <th>x.lims</th>
-      <td><p>2-element vector to usee as x-axis limits (default = NA)</p></td>
-    </tr>
-    <tr>
-      <th>y.axis.label</th>
-      <td><p>Label the y-axis (default = NA, which will automatically generate from input)</p></td>
-    </tr>
-    <tr>
-      <th>combine.plots</th>
-      <td><p>Combine the probability and timeseries plots into a single plot (TRUE)? Or return a list with each plot as a separate object (FALSE)?</p></td>
+      <th>...</th>
+      <td><p>more inputs, see (plotShift)</p></td>
     </tr>
     </table>
 

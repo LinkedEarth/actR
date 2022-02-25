@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">actR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.2</span>
       </span>
     </div>
 
@@ -39,7 +39,7 @@
       <ul class="nav navbar-nav">
 <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -81,7 +81,7 @@
 
       
 
-      </header><div class="row">
+      </header><script src="detectShift_files/header-attrs-2.9/header-attrs.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>detectShift</h1>
@@ -94,40 +94,41 @@
 
     
     
-<div class="sourceCode" id="cb1"><pre class="downlit">
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="kw">actR</span>)
-</pre></div>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">actR</span><span class="op">)</span></code></pre></div>
 <div id="shift-detection-in-actr" class="section level2">
 <h2 class="hasAnchor">
 <a href="#shift-detection-in-actr" class="anchor"></a>Shift detection in actR</h2>
 <p>This vignette shows how actR detects shift (and their statistical significance) for 2 of our example datasets: the geob7926_2 sedimentary record of Kim et al <a href="https://www.doi.org/10.1016/j.epsl.2012.05.018">2012</a> covering the last deglaciation (roughly 28 to 9ka BP) and the Great Basin tree-ring record of Salzer et al <a href="https://www.doi.org/10.1007/s00382-013-1911-9">2013</a> covering the Common Era at annual resolution.</p>
 <p>The following code does these things: * loads the data from the provided LiPD file “geob7926_2” (available as a tibble for easier load-in). * extracts the pre-existing age ensemble (generated using <a href="https://cran.r-project.org/web/packages/rbacon/index.html">Bacon</a> within <a href="https://nickmckay.github.io/GeoChronR/">GeoChronR</a>) and the akenone-reconstructed SST. * tests significance against 50 surrogate timeseries [need to clarify difference between n.ens and null.hypothesis.n]. * specifies a minimum segment length of 3000y</p>
-<div class="sourceCode" id="cb2"><pre class="downlit">
-<span class="kw">msGeob</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/detectShift.html">detectShift</a></span>(<span class="kw">geob7926_2</span>,
-                    time.variable.name = <span class="st">"ageEnsemble"</span>,
-                    vals.variable.name = <span class="st">"SST_from_uk37_ensemble"</span>,
-                    null.hypothesis.n = <span class="fl">50</span>,
-                    summary.bin.step = <span class="fl">500</span>,
-                    minimum.segment.length = <span class="fl">3000</span>,
-                    n.ens = <span class="fl">50</span>)
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">msGeob</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/detectShift.html">detectShift</a></span><span class="op">(</span><span class="va">geob7926_2</span>,
+                    time.variable.name <span class="op">=</span> <span class="st">"ageEnsemble"</span>,
+                    vals.variable.name <span class="op">=</span> <span class="st">"SST_from_uk37_ensemble"</span>,
+                    method <span class="op">=</span> <span class="st">"PELT"</span>,
+                    null.hypothesis.n <span class="op">=</span> <span class="fl">50</span>,
+                    summary.bin.step <span class="op">=</span> <span class="fl">500</span>,
+                    minimum.segment.length <span class="op">=</span> <span class="fl">8000</span>,
+                    n.ens <span class="op">=</span> <span class="fl">50</span><span class="op">)</span>
 <span class="co">#&gt; Selected SST_from_uk37_ensemble</span>
 <span class="co">#&gt; timeUnits is at least partially absent in the input data</span>
 <span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. </span>
-<span class="co">#&gt; This will probably take about 2 minutes</span>
-</pre></div>
+<span class="co">#&gt; This will probably take about 1 minutes</span></code></pre></div>
 <p>This lines generates a textual summary of the output:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit">
-<span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>(<span class="kw">msGeob</span>)
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">msGeob</span><span class="op">)</span>
 <span class="co">#&gt; GeoB7926_2.Kim.2012 - SST_from_uk37_ensemble: Shift in Mean results</span>
-<span class="co">#&gt; Searched for Shift in Mean with a minimum segment length of 3000 years, summarizing the results over windows of 500 years.</span>
+<span class="co">#&gt; Searched for Shift in Mean with a minimum segment length of 8000 years, summarizing the results over windows of 500 years.</span>
 <span class="co">#&gt; </span>
-<span class="co">#&gt; Overall result: Detected 3 Shift in Mean event(s) that were significant at the alpha &lt; 0.05 level</span>
-<span class="co">#&gt; # A tibble: 3 x 3</span>
+<span class="co">#&gt; Overall result: Detected 2 Shift in Mean event(s) that were significant at the alpha &lt; 0.05 level</span>
+<span class="co">#&gt; Registered S3 method overwritten by 'cli':</span>
+<span class="co">#&gt;   method     from         </span>
+<span class="co">#&gt;   print.boxx spatstat.geom</span>
+<span class="co">#&gt; # A tibble: 2 x 3</span>
 <span class="co">#&gt;   time_start time_end empirical_pvalue</span>
 <span class="co">#&gt;        &lt;dbl&gt;    &lt;dbl&gt;            &lt;dbl&gt;</span>
 <span class="co">#&gt; 1      9727.   10227.                0</span>
-<span class="co">#&gt; 2     24227.   24727.                0</span>
-<span class="co">#&gt; 3     18227.   18727.                0</span>
+<span class="co">#&gt; 2     17727.   18227.                0</span>
 <span class="co">#&gt; Time uncertainty considered? TRUE Time ensemble supplied (n = 100)</span>
 <span class="co">#&gt; Paleo uncertainty considered? TRUE Values ensemble supplied (n = 2500)</span>
 <span class="co">#&gt; Error propagation ensemble members = 50</span>
@@ -136,57 +137,54 @@
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Parameter choices:</span>
 <span class="co">#&gt; cpt.fun = changepoint::cpt.mean</span>
-<span class="co">#&gt; minimum.segment.length = 3000</span>
-<span class="co">#&gt; method = AMOC</span>
+<span class="co">#&gt; minimum.segment.length = 8000</span>
+<span class="co">#&gt; method = PELT</span>
 <span class="co">#&gt; penalty = MBIC</span>
-<span class="co">#&gt; ncpts.max = 1</span>
-</pre></div>
+<span class="co">#&gt; ncpts.max = Inf</span></code></pre></div>
 <p>and this command plots it:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit">
-<span class="kw">geoBplot</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="kw">msGeob</span>)
-</pre></div>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">geoBplot</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">msGeob</span><span class="op">)</span></code></pre></div>
 <p><img src="detectShift_files/figure-html/unnamed-chunk-4-1.png" width="700"></p>
 <p>Note that, as usual with actR, the plot is a <a href="https://ggplot2.tidyverse.org">ggplot2</a> object, which is infinitely customizable (e.g. for a talk, a poster, a paper, etc).</p>
 <p>Now we repeat the same steps over the Great Basin tree-ring record of Salzer et al <a href="https://www.doi.org/10.1007/s00382-013-1911-9">2013</a>. We first attempt to detect changes in the mean.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit">
-<span class="kw">msGb</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/detectShift.html">detectShift</a></span>(<span class="kw">great_basin</span>,
-                     time.variable.name = <span class="st">"year"</span>,
-                    vals.variable.name = <span class="st">"trsgi"</span>,
-                    null.hypothesis.n = <span class="fl">50</span>,
-                    summary.bin.step = <span class="fl">1</span>,
-                    minimum.segment.length = <span class="fl">50</span>,
-                    simulate.time.uncertainty = <span class="fl">FALSE</span>,
-                    cpt.fun = <span class="kw">changepoint</span>::<span class="kw"><a href="https://rdrr.io/pkg/changepoint/man/cpt.mean.html">cpt.mean</a></span>,
-                    paleo.uncertainty = <span class="fl">0.1</span>,
-                    n.ens = <span class="fl">50</span>)
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">msGb</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/detectShift.html">detectShift</a></span><span class="op">(</span><span class="va">great_basin</span>,
+                     time.variable.name <span class="op">=</span> <span class="st">"year"</span>,
+                    vals.variable.name <span class="op">=</span> <span class="st">"trsgi"</span>,
+                    null.hypothesis.n <span class="op">=</span> <span class="fl">50</span>,
+                    summary.bin.step <span class="op">=</span> <span class="fl">1</span>,
+                    minimum.segment.length <span class="op">=</span> <span class="fl">50</span>,
+                    simulate.time.uncertainty <span class="op">=</span> <span class="cn">FALSE</span>,
+                    method <span class="op">=</span> <span class="st">"AMOC"</span>,
+                    cpt.fun <span class="op">=</span> <span class="fu">changepoint</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/changepoint/man/cpt.mean.html">cpt.mean</a></span>,
+                    paleo.uncertainty <span class="op">=</span> <span class="fl">0.1</span>,
+                    n.ens <span class="op">=</span> <span class="fl">50</span><span class="op">)</span>
 <span class="co">#&gt; Selected trsgi</span>
 <span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. </span>
-<span class="co">#&gt; This will probably take about 1 minutes</span>
-</pre></div>
-<div class="sourceCode" id="cb6"><pre class="downlit">
-<span class="kw">gbmPlot</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="kw">msGb</span>)
-</pre></div>
+<span class="co">#&gt; This will probably take about 1 minutes</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">gbmPlot</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">msGb</span><span class="op">)</span></code></pre></div>
 <p><img src="detectShift_files/figure-html/unnamed-chunk-6-1.png" width="700"></p>
 <p>As you can see, the method does not detect any on this dataset. However, one might also want to detect shifts in variance. To do so, all you have to do is specify <code>cpt.fun = changepoint::cpt.var</code> (leveraging the <a href="https://cran.r-project.org/web/packages/changepoint/index.html">changepoint</a> package).</p>
-<div class="sourceCode" id="cb7"><pre class="downlit">
-<span class="kw">vsGb</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/detectShift.html">detectShift</a></span>(<span class="kw">great_basin</span>,
-                     time.variable.name = <span class="st">"year"</span>,
-                    vals.variable.name = <span class="st">"trsgi"</span>,
-                    null.hypothesis.n = <span class="fl">50</span>,
-                    summary.bin.step = <span class="fl">10</span>,
-                    minimum.segment.length = <span class="fl">50</span>,
-                    simulate.time.uncertainty = <span class="fl">FALSE</span>,
-                    paleo.uncertainty = <span class="fl">0.1</span>,
-                    cpt.fun = <span class="kw">changepoint</span>::<span class="kw"><a href="https://rdrr.io/pkg/changepoint/man/cpt.var.html">cpt.var</a></span>,surrogate.method = <span class="st">"shuffle"</span>,
-                    n.ens = <span class="fl">50</span>)
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">vsGb</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/detectShift.html">detectShift</a></span><span class="op">(</span><span class="va">great_basin</span>,
+                     time.variable.name <span class="op">=</span> <span class="st">"year"</span>,
+                    vals.variable.name <span class="op">=</span> <span class="st">"trsgi"</span>,
+                    null.hypothesis.n <span class="op">=</span> <span class="fl">50</span>,
+                    summary.bin.step <span class="op">=</span> <span class="fl">10</span>,
+                    minimum.segment.length <span class="op">=</span> <span class="fl">200</span>,
+                    simulate.time.uncertainty <span class="op">=</span> <span class="cn">FALSE</span>,
+                    paleo.uncertainty <span class="op">=</span> <span class="fl">0.1</span>,
+                    method <span class="op">=</span> <span class="st">"PELT"</span>,
+                    cpt.fun <span class="op">=</span> <span class="fu">changepoint</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/changepoint/man/cpt.var.html">cpt.var</a></span>,
+                    surrogate.method <span class="op">=</span> <span class="st">"shuffle"</span>,
+                    n.ens <span class="op">=</span> <span class="fl">50</span><span class="op">)</span>
 <span class="co">#&gt; Selected trsgi</span>
 <span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. </span>
-<span class="co">#&gt; This will probably take about 1 minutes</span>
-</pre></div>
+<span class="co">#&gt; This will probably take about 1 minutes</span></code></pre></div>
 <p>Note also that actR offers 3 different methods to generate surrogates, as detailed in the documentation. The default is <em>isospectral</em>, which was used in the previous examples. To change that to the rEDM “shuffle” method, just specify <code>surrogate.method = "shuffle"</code>.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit">
-<span class="kw">gbvPlot</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="kw">vsGb</span>)
-</pre></div>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">gbvPlot</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">vsGb</span><span class="op">)</span></code></pre></div>
 <p><img src="detectShift_files/figure-html/unnamed-chunk-8-1.png" width="700"></p>
 <p>Now a change in variance is detected at the very end of the record. To check its robustness, we should probably inquire more about the sample depth of the dataset (number of tree cores used to make the composite in each year), as well as the technique used for removing the biological component of the signal. This is a reminder that no technique, however nifty, is a substitute for knowing your data!</p>
 </div>

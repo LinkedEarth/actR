@@ -9,6 +9,7 @@ detectShiftCore(
   vals,
   minimum.segment.length = 1,
   cpt.fun = changepoint::cpt.mean,
+  gaussianize = TRUE,
   ...
 )
 }
@@ -20,6 +21,8 @@ detectShiftCore(
 \item{minimum.segment.length}{the minimum allowed length of a detected segment (in time units)}
 
 \item{cpt.fun}{which function from the changepoint package to use, changepoint::cpt.mean, changepoint::cpt.var or changepoint::cpt.meanvar}
+
+\item{gaussianize}{Force vals to gaussian distribution before analysis. Default (TRUE). Most (all?) methods in the changepoint package assume gaussian distributions, so this is strongly recommended.}
 
 \item{...}{options to pass to cpt.fun . See changepoint function documentation for details.}
 }

@@ -33,9 +33,10 @@ The following code does these things:
 msGeob <- detectShift(geob7926_2,
                     time.variable.name = "ageEnsemble",
                     vals.variable.name = "SST_from_uk37_ensemble",
+                    method = "PELT",
                     null.hypothesis.n = 50,
                     summary.bin.step = 500,
-                    minimum.segment.length = 3000,
+                    minimum.segment.length = 8000,
                     n.ens = 50)
 ```
 
@@ -66,6 +67,7 @@ msGb <- detectShift(great_basin,
                     summary.bin.step = 1,
                     minimum.segment.length = 50,
                     simulate.time.uncertainty = FALSE,
+                    method = "AMOC",
                     cpt.fun = changepoint::cpt.mean,
                     paleo.uncertainty = 0.1,
                     n.ens = 50)
@@ -85,10 +87,12 @@ vsGb <- detectShift(great_basin,
                     vals.variable.name = "trsgi",
                     null.hypothesis.n = 50,
                     summary.bin.step = 10,
-                    minimum.segment.length = 50,
+                    minimum.segment.length = 200,
                     simulate.time.uncertainty = FALSE,
                     paleo.uncertainty = 0.1,
-                    cpt.fun = changepoint::cpt.var,surrogate.method = "shuffle",
+                    method = "PELT",
+                    cpt.fun = changepoint::cpt.var,
+                    surrogate.method = "shuffle",
                     n.ens = 50)
 ```
 
