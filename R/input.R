@@ -11,6 +11,7 @@
 #' @param expecting.one.row Are you expecting a one-row tibble? That is, one variable of interest? (default = TRUE)
 #' @param sort.by.time Do you want to arrange the output so that the time variable is increasing, while preserving the time-value relationship? (default = TRUE)
 #' @param remove.time.nas Do you want to remove observations that are NA, or otherwise not finite, in the time variable (default = TRUE)
+ #' @param time.range Optionally enter a time range (as minimum and maximum) that you'd like to restrict the analysis to. (default = NA)
 #'
 #' @return a lipd-ts-tibble ready for analysis in actR
 #' @export
@@ -24,7 +25,8 @@ prepareInput <- function(ltt = NA,
                          dataset.name = NA,
                          expecting.one.row = TRUE,
                          sort.by.time = TRUE,
-                         remove.time.nas = TRUE){
+                         remove.time.nas = TRUE,
+                         time.range = NA){
   if(!all(is.na(ltt))){#great, there's already a tibble ts
     #check to make sure it is.
     if(!is.data.frame(ltt)){#change this to class once implemented in lipdR
@@ -207,6 +209,33 @@ prepareInput <- function(ltt = NA,
 
     }
   }
+
+  #truncate by time
+  if(!is.na(time.range)){
+    for(r in 1:nrow(ltt)){
+      if(NCOL(ltt$time[r][[1]]) == 1){#not an ensemble
+        good.time <- which(ltt$time[r][[1]] >= min(time.range) & ltt$time[r][[1]] <= max(time.range))
+        if(length(good.time) < 1){stop("No values left after truncating for time.range")}
+        ltt$time[r][[1]] <- ltt$time[r][[1]][good.time]
+        if(NCOL(ltt$paleoData_values[r][[1]]) == 1){#not an ensemble
+          ltt$paleoData_values[r][[1]] <- ltt$paleoData_values[r][[1]][good.time]
+        }else{
+          ltt$paleoData_values[r][[1]] <- ltt$paleoData_values[r][[1]][good.time,]
+        }
+      }else{#is an ensemble
+        medTime <- apply(ltt$time[r][[1]],1,median,na.rm = TRUE)
+        good.time <- which(medTime >= min(time.range) & medTime <= max(time.range))
+        if(length(good.time) < 1){stop("No values left after truncating for time.range")}
+        ltt$time[r][[1]] <- ltt$time[r][[1]][good.time,]
+        if(NCOL(ltt$paleoData_values[r][[1]]) == 1){#not an ensemble
+          ltt$paleoData_values[r][[1]] <- ltt$paleoData_values[r][[1]][good.time]
+        }else{
+          ltt$paleoData_values[r][[1]] <- ltt$paleoData_values[r][[1]][good.time,]
+        }
+      }
+    }
+  }
+
 
   #check for missing metadata
   if(is.na(ltt$timeUnits)){

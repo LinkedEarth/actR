@@ -17,6 +17,7 @@ detectShift(
   summary.bin.step = 100,
   null.hypothesis.n = 100,
   null.quantiles = c(0.95, 0.9),
+  time.range = NA,
   ...
 )
 }
@@ -48,6 +49,8 @@ detectShift(
 \item{null.hypothesis.n}{How many simulations to run for null hypothesis testing (default = 100)}
 
 \item{null.quantiles}{What quantiles to report as output from null hypothesis testing (default = c(.95, .9))}
+
+\item{time.range}{Optionally enter a time range (as minimum and maximum) that you'd like to restrict the analysis to. (default = NA)}
 
 \item{...}{arguments to pass to pass to changeFun}
 }

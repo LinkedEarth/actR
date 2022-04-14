@@ -105,6 +105,7 @@ detectShift <- function(ltt = NA,
                         summary.bin.step = 100,
                         null.hypothesis.n = 100,
                         null.quantiles = c(.95,.9),
+                        time.range = NA,
                         ...){
 
 
@@ -119,7 +120,8 @@ detectShift <- function(ltt = NA,
                           dataset.name = dataset.name,
                           expecting.one.row = TRUE,
                           sort.by.time = TRUE,
-                          remove.time.nas = TRUE)
+                          remove.time.nas = TRUE,
+                          time.range = time.range)
 
   time <- prepped$time[[1]]
   vals <- prepped$paleoData_values[[1]]

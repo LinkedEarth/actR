@@ -15,7 +15,8 @@ prepareInput(
   dataset.name = NA,
   expecting.one.row = TRUE,
   sort.by.time = TRUE,
-  remove.time.nas = TRUE
+  remove.time.nas = TRUE,
+  time.range = NA
 )
 }
 \arguments{
@@ -40,6 +41,8 @@ prepareInput(
 \item{sort.by.time}{Do you want to arrange the output so that the time variable is increasing, while preserving the time-value relationship? (default = TRUE)}
 
 \item{remove.time.nas}{Do you want to remove observations that are NA, or otherwise not finite, in the time variable (default = TRUE)}
+
+\item{time.range}{Optionally enter a time range (as minimum and maximum) that you'd like to restrict the analysis to. (default = NA)}
 }
 \value{
 a lipd-ts-tibble ready for analysis in actR

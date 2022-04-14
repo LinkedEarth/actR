@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">actR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.3</span>
       </span>
     </div>
 
@@ -88,7 +88,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -147,7 +147,8 @@
   dataset.name <span class='op'>=</span> <span class='cn'>NA</span>,
   expecting.one.row <span class='op'>=</span> <span class='cn'>TRUE</span>,
   sort.by.time <span class='op'>=</span> <span class='cn'>TRUE</span>,
-  remove.time.nas <span class='op'>=</span> <span class='cn'>TRUE</span>
+  remove.time.nas <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  time.range <span class='op'>=</span> <span class='cn'>NA</span>
 <span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -196,6 +197,10 @@
     <tr>
       <th>remove.time.nas</th>
       <td><p>Do you want to remove observations that are NA, or otherwise not finite, in the time variable (default = TRUE)</p></td>
+    </tr>
+    <tr>
+      <th>time.range</th>
+      <td><p>Optionally enter a time range (as minimum and maximum) that you'd like to restrict the analysis to. (default = NA)</p></td>
     </tr>
     </table>
 
