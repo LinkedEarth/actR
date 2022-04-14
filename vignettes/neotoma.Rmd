@@ -18,8 +18,9 @@ knitr::opts_chunk$set(
 library(actR)
 library(neotoma2)
 library(lipdR)
-library(tidyverse)
+library(magrittr)
 library(geoChronR)
+library(dplyr)
 ```
 
 # Using actR with Neotoma data
@@ -29,7 +30,7 @@ It is now quite simple to get data directly from Neotoma, using the forthcoming 
 
 
 ```{r neotoma, message=FALSE,warning=FALSE}
-L <- neotoma2::get_sites(sitename = "Penegor Lake") %>% 
+L <- neotoma2::get_sites(sitename = "Bambili 2") %>% 
   get_downloads() %>% 
   neotoma2lipd()
 ```
@@ -44,15 +45,16 @@ If that Neotoma dataset, now a LiPD object, has chronologic data, we can than ru
 
 ```{r bacon,message=FALSE,warning=FALSE,results='hide',fig.keep='none',fig.keep="all"}
 L <- runBacon(L,
-              bacon.dir = tempdir(),
-              chron.num = 1,
-              meas.table.num = 1,
-              lab.id.var = "neotomachronconrolid",
+              lab.id.var = 'neotomaChronConrolId',
+              age.14c.var = NULL,
+              age.14c.uncertainty.var = NULL,
+              age.var = 'age',
+              age.uncertainty.var = 'ageUnc',
+              depth.var = 'depth',
               reservoir.age.14c.var = NULL,
               reservoir.age.14c.uncertainty.var = NULL,
               rejected.ages.var = NULL,
               accept.suggestions = TRUE,
-              ask = FALSE,
               plot.pdf = FALSE)
 ```
 
