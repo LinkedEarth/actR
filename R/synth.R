@@ -8,10 +8,11 @@
 #' @return values of the function (between 0 and 1)
 #' @export
 linearRamp <-function(lngth,width){
-  if (width>lngth/2) {stop("Ramp width cannot exceed half of the length")}
-  xs = seq(lngth)/lngth-1/2
-  ramp = 4*fBasics::Ramp(xs,a = -width/lngth)
-  ramp[xs>width/lngth] = 1.0
+  if (width>lngth) {stop("Ramp width cannot exceed the length")}
+  ramp = numeric(length=lngth)  # sets zeros everywhere
+  x = seq(lngth)
+  ramp[x>lngth/2+width/2] = 1.0
+  ramp[x>lngth/2-width/2 & x <= lngth/2+width/2] = seq(width)/width
   return(ramp)
 }
 
