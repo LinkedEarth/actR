@@ -1,3 +1,5 @@
+# actR 0.1.3
+
 # actR 0.1.2
 
 * add `gaussianize` options to `detectShiftCore()`, with a default of TRUE, following [@AndreaLemur](https://github.com/AndreaLemur) recognition that that is a requirement for many of the methods in the `changepoint` package. More details on [changepoint workshop here](https://www.youtube.com/watch?v=UfGrLJ7S3sc) 
