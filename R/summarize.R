@@ -11,7 +11,11 @@
 summarizeChangepointMeanChanges <- function(x,alpha = 0.05){
 
 
-  sig.event <- summarizeShiftSignificance(x$shiftDetection, alpha = alpha, paramTib = paramTib )
+  paramTib <- createTibbleFromParameterString(x$parameters[1])
+
+  sig.event <- summarizeShiftSignificance(x$shiftDetection,
+                                          alpha = alpha,
+                                          paramTib = paramTib)
 
 time <- apply(x$timeEns,1,median,na.rm = TRUE)
 vals <- apply(x$valEns,1,median,na.rm = TRUE)
