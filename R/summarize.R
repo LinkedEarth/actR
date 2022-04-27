@@ -1,3 +1,48 @@
+#' Summarize changepoint mean changes
+#'
+#' @param x Output of detectShiftCore()
+#' @param alpha significance level of changepoints to consider
+#' @import tibble
+#'
+#' @return a tibble of change point mean changes
+#' @export
+#'
+#' @examples
+summarizeChangepointMeanChanges <- function(x,alpha = 0.05){
+
+
+  sig.event <- summarizeShiftSignificance(x$shiftDetection, alpha = alpha, paramTib = paramTib )
+
+time <- apply(x$timeEns,1,median,na.rm = TRUE)
+vals <- apply(x$valEns,1,median,na.rm = TRUE)
+
+cpt <- sort(c(min(time,na.rm = TRUE),sig.event$time_start,max(time,na.rm = TRUE)))
+
+sds <- ind <- means <- matrix(NA,nrow = length(time))
+
+for(i in 1:(length(cpt)-1)){
+  w <- which(dplyr::between(time,cpt[i],cpt[i+1]))
+  ind[w] <- i
+  means[w] <- mean(vals[w],na.rm = TRUE)
+  sds[w] <- sd(vals[w],na.rm = TRUE)
+
+}
+
+tp <- tibble::tibble(time,
+                     vals,
+                     cpt_section = factor(ind),
+                     cpt_mean = means) %>%
+  dplyr::group_by(cpt_section) %>%
+  dplyr::summarise(interval_time_min = min(time,na.rm = TRUE),
+                   interval_time_max = max(time,na.rm = TRUE),
+                   interval_mean = mean(cpt_mean,na.rm = TRUE))
+
+tp$alpha = alpha
+
+return(tp)
+}
+
+
 summarizeEventProbability <- function(exc.out,
                                       bin.step = 10,
                                       max.time = NA,
