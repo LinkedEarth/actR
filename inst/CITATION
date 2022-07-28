@@ -1,0 +1,17 @@
+citHeader("To cite actR in publications use:")
+
+citEntry(
+  entry    = "Article",
+  title    = "The Abrupt Change Toolkit in R",
+  author   = "Nicholas McKay and Julien Emile-Geay",
+  journal  = ,
+  year     = ,
+  volume   = ,
+  number   = ,
+  pages    = ,
+  url      = ,
+  textVersion = paste(
+
+  )
+)
+
