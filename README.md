@@ -11,6 +11,8 @@
 ACCEDE](https://img.shields.io/badge/Belmont%20SEI-ACCEDE-blue)](https://www.belmontforum.org/archives/projects/abrupt-change-in-climate-and-ecosystems-where-are-the-tipping-points)
 [![R build
 status](https://github.com/LinkedEarth/actR/workflows/R-CMD-check/badge.svg)](https://github.com/LinkedEarth/actR/actions)
+[![DOI](https://zenodo.org/badge/359257314.svg)](https://zenodo.org/badge/latestdoi/359257314)
+[![R-CMD-check](https://github.com/LinkedEarth/actR/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/LinkedEarth/actR/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 The goal of actR – the Abupt Change Toolkit in R – is to streamline
