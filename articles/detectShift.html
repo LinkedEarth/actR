@@ -109,7 +109,7 @@
 <span><span class="co">#&gt; Selected SST_from_uk37_ensemble</span></span>
 <span><span class="co">#&gt; <span style="color: #BB00BB;">timeUnits is at least partially absent in the input data</span></span></span>
 <span><span class="co"><span style="color: #BB00BB;">#&gt; </span><span style="color: #00BB00;">Testing null hypothesis with 50 simulations, each with 50 ensemble members. </span></span></span>
-<span><span class="co"><span style="color: #00BB00;">#&gt; </span><span style="color: #0000BB;">This will probably take about 1 minutes</span></span></span>
+<span><span class="co"><span style="color: #00BB00;">#&gt; </span><span style="color: #0000BB;">This will probably take about 2 minutes</span></span></span>
 <span><span class="co"><span style="color: #0000BB;">#&gt; </span></span></span></code></pre></div>
 <p>This lines generates a textual summary of the output:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
@@ -117,13 +117,14 @@
 <span><span class="co">#&gt; <span style="font-weight: bold;">GeoB7926_2.Kim.2012 - SST_from_uk37_ensemble: Shift in Mean results</span></span></span>
 <span><span class="co"><span style="font-weight: bold;">#&gt; </span><span style="color: #555555;">Searched for Shift in Mean with a minimum segment length of </span><span style="color: #555555; font-weight: bold;">8000</span><span style="color: #555555;"> years, summarizing the results over windows of 500 years.</span></span></span>
 <span><span class="co"><span style="color: #555555;">#&gt; </span></span></span>
-<span><span class="co">#&gt; <span style="font-weight: bold;">Overall result: Detected </span><span style="color: #00BB00; font-weight: bold;">3</span><span style="font-weight: bold;"> </span><span style="font-weight: bold; font-style: italic;">Shift in Mean</span><span style="font-weight: bold;"> event(s) that were significant at the alpha &lt; 0.05 level</span></span></span>
-<span><span class="co"><span style="font-weight: bold;">#&gt; </span><span style="color: #949494;"># A tibble: 3 × 3</span></span></span>
+<span><span class="co">#&gt; <span style="font-weight: bold;">Overall result: Detected </span><span style="color: #00BB00; font-weight: bold;">4</span><span style="font-weight: bold;"> </span><span style="font-weight: bold; font-style: italic;">Shift in Mean</span><span style="font-weight: bold;"> event(s) that were significant at the alpha &lt; 0.05 level</span></span></span>
+<span><span class="co"><span style="font-weight: bold;">#&gt; </span><span style="color: #949494;"># A tibble: 4 × 3</span></span></span>
 <span><span class="co">#&gt;   time_start time_end empirical_pvalue</span></span>
 <span><span class="co">#&gt;        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>     <span style="text-decoration: underline;">18</span>727.   <span style="text-decoration: underline;">19</span>227.                0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>     <span style="text-decoration: underline;">26</span>727.   <span style="text-decoration: underline;">27</span>227.                0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>     <span style="text-decoration: underline;">10</span>227.   <span style="text-decoration: underline;">10</span>727.                0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>      <span style="text-decoration: underline;">9</span>727.   <span style="text-decoration: underline;">10</span>227.                0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>     <span style="text-decoration: underline;">18</span>227.   <span style="text-decoration: underline;">18</span>727.                0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>     <span style="text-decoration: underline;">26</span>727.   <span style="text-decoration: underline;">27</span>227.                0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span>     <span style="text-decoration: underline;">34</span>727.   <span style="text-decoration: underline;">35</span>227.                0</span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold;">Time uncertainty considered?</span> <span style="color: #00BB00;">TRUE</span> Time ensemble supplied (n = 100)</span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold;">Paleo uncertainty considered?</span> <span style="color: #00BB00;">TRUE</span> Values ensemble supplied (n = 2500)</span></span>
 <span><span class="co">#&gt; Error propagation ensemble members = 50</span></span>
@@ -178,7 +179,7 @@
 <span>                    n.ens <span class="op">=</span> <span class="fl">50</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Selected trsgi</span></span>
 <span><span class="co">#&gt; <span style="color: #00BB00;">Testing null hypothesis with 50 simulations, each with 50 ensemble members. </span></span></span>
-<span><span class="co"><span style="color: #00BB00;">#&gt; </span><span style="color: #0000BB;">This will probably take about 1 minutes</span></span></span>
+<span><span class="co"><span style="color: #00BB00;">#&gt; </span><span style="color: #0000BB;">This will probably take about 2 minutes</span></span></span>
 <span><span class="co"><span style="color: #0000BB;">#&gt; </span></span></span></code></pre></div>
 <p>Note also that actR offers 3 different methods to generate surrogates, as detailed in the documentation. The default is <em>isospectral</em>, which was used in the previous examples. To change that to the rEDM “shuffle” method, just specify <code>surrogate.method = "shuffle"</code>.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
