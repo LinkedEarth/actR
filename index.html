@@ -91,13 +91,13 @@
 <div class="section level3">
 <h3 id="data-input">Data input<a class="anchor" aria-label="anchor" href="#data-input"></a>
 </h3>
-<p><img src="DataInputDiagram.png" width="50%"></p>
+<p><img src="docs/DataInputDiagram.png" width="50%"></p>
 <p>actR, like most software, benefits greatly from standardized data inputs. To achieve this, actR works best with LiPD data, although users can also directly input data as matrices or vectors and metadata in R. Either way, the inputs are passed through the <code><a href="reference/prepareInput.html">prepareInput()</a></code> function, which helps to standardize the input for subsequent analysis, and includes options for simple data preprocessing for methods as needed.</p>
 </div>
 <div class="section level3">
 <h3 id="change-detection---single-site">Change detection - single site<a class="anchor" aria-label="anchor" href="#change-detection---single-site"></a>
 </h3>
-<p><img src="ChangeDetectionDiagram.png" width="50%"></p>
+<p><img src="docs/ChangeDetectionDiagram.png" width="50%"></p>
 <p>actR equips single site, time series based change detection with error propagation and robust null hypothesis testing. Change detection algorithms are often highly parametric, and don’t consider many uncertainties that are relevant to paleogeoscientific data. There are two key processes to achieve this.</p>
 <p>The first is handled by <code><a href="reference/propagateUncertainty.html">propagateUncertainty()</a></code>, which will take age and/or paleo (i.e., y-axis) uncertainties, and propagate through the analysis using an ensemble approach. Age and/or paleo ensembles can be entered directly into actR (this is typically preferred when possible), or generated internally if desired.</p>
 <p>The second, is robust null hypothesis testing, using the function <code><a href="reference/testNullHypothesis.html">testNullHypothesis()</a></code>, which generates surrogate data based on the characteristics of the input data, and the repeats the entire analysis (including error propagation) many times. This lets the user assess how plausible surrogate data perform given the data, algorithm, and parametric choices, and determine whether any detected changes are robust to those sources of uncertainty and bias.</p>
@@ -111,7 +111,7 @@
 <div class="section level3">
 <h3 id="results">Results<a class="anchor" aria-label="anchor" href="#results"></a>
 </h3>
-<p><img src="SummarizeResultsDiagram.png" width="50%"></p>
+<p><img src="docs/SummarizeResultsDiagram.png" width="50%"></p>
 <p>All change detection methods implemented in actR have two output options, <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code> (and <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code>), which provides a text summary of the test conducted and the results, and <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> which visualizes the results, including both error propagation and null hypothesis testing. Other approaches, including geospatial change detection, will include additional outputs as appropriate.</p>
 </div>
 </div>
