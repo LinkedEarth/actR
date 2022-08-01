@@ -27,7 +27,7 @@ now available.
 
 ### Data input
 
-<img src="DataInputDiagram.png" width="50%" />
+<img src="docs/DataInputDiagram.png" width="50%" />
 
 actR, like most software, benefits greatly from standardized data
 inputs. To achieve this, actR works best with LiPD data, although users
@@ -38,7 +38,7 @@ includes options for simple data preprocessing for methods as needed.
 
 ### Change detection - single site
 
-<img src="ChangeDetectionDiagram.png" width="50%" />
+<img src="docs/ChangeDetectionDiagram.png" width="50%" />
 
 actR equips single site, time series based change detection with error
 propagation and robust null hypothesis testing. Change detection
@@ -69,7 +69,7 @@ This is planned, but still in progress.
 
 ### Results
 
-<img src="SummarizeResultsDiagram.png" width="50%" />
+<img src="docs/SummarizeResultsDiagram.png" width="50%" />
 
 All change detection methods implemented in actR have two output
 options, `summary()` (and `print()`), which provides a text summary of
