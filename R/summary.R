@@ -99,7 +99,9 @@ summary.shift <- function(object,...){
 #' @param alpha significance level
 #' @param params.to.print vector of paramters to print
 #' @export
-summaryShift <- function(object, alpha = 0.05, params.to.print = c("cpt.fun","minimum.segment.length","method","penalty","ncpts.max")){
+summaryShift <- function(object,
+                         alpha = 0.05,
+                         params.to.print = c("cpt.fun","minimum.segment.length","method","penalty","ncpts.max")){
 
   params <- createTibbleFromParameterString(object$parameters[1])
 

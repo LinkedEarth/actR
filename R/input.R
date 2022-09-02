@@ -211,7 +211,7 @@ prepareInput <- function(ltt = NA,
   }
 
   #truncate by time
-  if(!is.na(time.range)){
+  if(!any(is.na(time.range))){
     for(r in 1:nrow(ltt)){
       if(NCOL(ltt$time[r][[1]]) == 1){#not an ensemble
         good.time <- which(ltt$time[r][[1]] >= min(time.range) & ltt$time[r][[1]] <= max(time.range))
@@ -234,8 +234,24 @@ prepareInput <- function(ltt = NA,
         }
       }
     }
-  }
 
+    #truncate the original age data too, to avoid issues
+    for(r in 1:nrow(ltt)){
+
+      if("ageEnsemble" %in% names(ltt)){
+        ltt$ageEnsemble[[r]]<- ltt$ageEnsemble[[r]][good.time,]
+      }
+      if("yearEnsemble" %in% names(ltt)){
+        ltt$yearEnsemble[[r]] <- ltt$yearEnsemble[[r]][good.time,]
+      }
+      if("age" %in% names(ltt)){
+        ltt$age[[r]] <- ltt$age[[r]][good.time]
+      }
+      if("year" %in% names(ltt)){
+        ltt$year[[r]] <- ltt$year[[r]][good.time]
+      }
+    }
+  }
 
   #check for missing metadata
   if(is.na(ltt$timeUnits)){

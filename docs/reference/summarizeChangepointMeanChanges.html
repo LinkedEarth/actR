@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Summarize shift output — summaryShift • actR</title>
+<title>Summarize changepoint mean changes — summarizeChangepointMeanChanges • actR</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="Summarize shift output — summaryShift" />
-<meta property="og:description" content="Summarize shift output" />
+<meta property="og:title" content="Summarize changepoint mean changes — summarizeChangepointMeanChanges" />
+<meta property="og:description" content="Summarize changepoint mean changes" />
 
 
 
@@ -127,39 +127,33 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Summarize shift output</h1>
+    <h1>Summarize changepoint mean changes</h1>
     
-    <div class="hidden name"><code>summaryShift.Rd</code></div>
+    <div class="hidden name"><code>summarizeChangepointMeanChanges.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Summarize shift output</p>
+    <p>Summarize changepoint mean changes</p>
     </div>
 
-    <pre class="usage"><span class='fu'>summaryShift</span><span class='op'>(</span>
-  <span class='va'>object</span>,
-  alpha <span class='op'>=</span> <span class='fl'>0.05</span>,
-  params.to.print <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"cpt.fun"</span>, <span class='st'>"minimum.segment.length"</span>, <span class='st'>"method"</span>, <span class='st'>"penalty"</span>,
-    <span class='st'>"ncpts.max"</span><span class='op'>)</span>
-<span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>summarizeChangepointMeanChanges</span><span class='op'>(</span><span class='va'>x</span>, alpha <span class='op'>=</span> <span class='fl'>0.05</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>object</th>
-      <td><p>shift output</p></td>
+      <th>x</th>
+      <td><p>Output of detectShiftCore()</p></td>
     </tr>
     <tr>
       <th>alpha</th>
-      <td><p>significance level</p></td>
-    </tr>
-    <tr>
-      <th>params.to.print</th>
-      <td><p>vector of paramters to print</p></td>
+      <td><p>significance level of changepoints to consider</p></td>
     </tr>
     </table>
 
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>a tibble of change point mean changes</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

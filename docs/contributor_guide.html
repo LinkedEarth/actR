@@ -71,7 +71,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">actR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.4</span>
       </span>
     </div>
 
@@ -134,76 +134,123 @@
 <div id="a-guide-to-contributing-methods-to-actr" class="section level2">
 <h2 class="hasAnchor">
 <a href="#a-guide-to-contributing-methods-to-actr" class="anchor"></a>A guide to contributing methods to actR</h2>
-<p>actR was designed to simplify adding new abrupt change detection methods, and we’re eager to work with people to add new methods into the toolkit!</p>
-<p>The bulk of this guide is intended for methods that were designed to work with single-site, time-certain values. Furthermore, the methods currently implemented in actR are built around methods that return binary (TRUE/FALSE) results for the detection of changepoints at a certain time (or over a specific window). actR has extensive functionality designed to simplify propagating time and data uncertainties, and robust hypothesis testing.</p>
-<p>As you develop your method, it’s possible that the peculiarities of your approach either require, or would benefit, new functionality in actR. Keep in touch with the actR dev team to make feature request, and report bugs.</p>
-<p>Finally, actR is being designed following most of principles outlined in the excellent <a href="https://r-pkgs.org/">r-pkg book</a>. This isn’t required reading, but you’ll probably benefit from at least skimming. Furthermore, if you’re interested in the motivation behind a lot of what we’re doing, you’ll find it here.</p>
-<p><em>Note: this guide is under active development and is not yet complete</em></p>
+<p>actR was designed to simplify adding new abrupt change detection
+methods, and we’re eager to work with people to add new methods into the
+toolkit!</p>
+<p>The bulk of this guide is intended for methods that were designed to
+work with single-site, time-certain values. Furthermore, the methods
+currently implemented in actR are built around methods that return
+binary (TRUE/FALSE) results for the detection of changepoints at a
+certain time (or over a specific window). actR has extensive
+functionality designed to simplify propagating time and data
+uncertainties, and robust hypothesis testing.</p>
+<p>As you develop your method, it’s possible that the peculiarities of
+your approach either require, or would benefit, new functionality in
+actR. Keep in touch with the actR dev team to make feature request, and
+report bugs.</p>
+<p>Finally, actR is being designed following most of principles outlined
+in the excellent <a href="https://r-pkgs.org/">r-pkg book</a>. This
+isn’t required reading, but you’ll probably benefit from at least
+skimming. Furthermore, if you’re interested in the motivation behind a
+lot of what we’re doing, you’ll find it here.</p>
+<p><em>Note: this guide is under active development and is not yet
+complete</em></p>
 </div>
 <div id="conceptual-overview-of-actr-workflows" class="section level2">
 <h2 class="hasAnchor">
 <a href="#conceptual-overview-of-actr-workflows" class="anchor"></a>Conceptual overview of actR workflows</h2>
-<p>Before digging into the details below, let’s go over the conceptual design of an actR workflow.</p>
-<p>An actR workflow typically starts with a user entering data into a detect*() function. These are high level functions that coordinate many steps of the analysis process. Typically, these functions</p>
+<p>Before digging into the details below, let’s go over the conceptual
+design of an actR workflow.</p>
+<p>An actR workflow typically starts with a user entering data into a
+detect*() function. These are high level functions that coordinate many
+steps of the analysis process. Typically, these functions</p>
 <ol>
-<li><p>Use the actR::prepareInput() function to take the LiPD or time/value pairings + metadata and structure for subsequent analysis</p></li>
-<li><p>Use the actR::propagateUncertainties() function to pass and/or generate age and value uncertainties, and then propagate them through your core method.</p></li>
+<li><p>Use the actR::prepareInput() function to take the LiPD or
+time/value pairings + metadata and structure for subsequent
+analysis</p></li>
+<li><p>Use the actR::propagateUncertainties() function to pass and/or
+generate age and value uncertainties, and then propagate them through
+your core method.</p></li>
 </ol>
-<p>The core method function (detect*Core()) is the base function that takes time and value inputs and typically returns either a binary result of whether an abrupt change was detected. Probabilistic outcomes are also possible here, but should be based on theory (not monte carlo or other brute force testing). Because robust uncertainy propagation and null hypothesis testing is handled elsewhere in actR, it’s best to make the core function as simple as possible (while retaining it’s key functionality and features of course.)</p>
+<p>The core method function (detect*Core()) is the base function that
+takes time and value inputs and typically returns either a binary result
+of whether an abrupt change was detected. Probabilistic outcomes are
+also possible here, but should be based on theory (not monte carlo or
+other brute force testing). Because robust uncertainy propagation and
+null hypothesis testing is handled elsewhere in actR, it’s best to make
+the core function as simple as possible (while retaining it’s key
+functionality and features of course.)</p>
 <ol>
-<li><p>Use the actR::testNullHypothesis() function to repeat the analysis on surrogate datasets.</p></li>
-<li><p>Combine the outputs of 2. and 3. into an output that estimates an empirical p-value (potentially p-values for many time windows), and return these results as a single object.</p></li>
+<li><p>Use the actR::testNullHypothesis() function to repeat the
+analysis on surrogate datasets.</p></li>
+<li><p>Combine the outputs of 2. and 3. into an output that estimates an
+empirical p-value (potentially p-values for many time windows), and
+return these results as a single object.</p></li>
 </ol>
-<p>After running the detect*() function, the user can then use custom-built print, summary, and plot functions to see, summarize and visualize the outcome of the result.</p>
-<p>For a user-facing example of this process, check out the vignette for detectShift() (after it’s written, sorry).</p>
+<p>After running the detect*() function, the user can then use
+custom-built print, summary, and plot functions to see, summarize and
+visualize the outcome of the result.</p>
+<p>For a user-facing example of this process, check out the vignette for
+detectShift() (after it’s written, sorry).</p>
 </div>
 <div id="step-by-step-guide-for-contributors" class="section level2">
 <h2 class="hasAnchor">
 <a href="#step-by-step-guide-for-contributors" class="anchor"></a>Step by step guide for contributors</h2>
-<div id="1-make-a-branch-of-the-github-repo" class="section level3">
+<div id="id_1-make-a-branch-of-the-github-repo" class="section level3">
 <h3 class="hasAnchor">
-<a href="#1-make-a-branch-of-the-github-repo" class="anchor"></a>1. Make a branch of the github repo</h3>
+<a href="#id_1-make-a-branch-of-the-github-repo" class="anchor"></a>1. Make a branch of the github repo</h3>
 </div>
-<div id="2-create-a-new-r-in-actrr-file-for-your-functions-basic-code" class="section level3">
+<div id="id_2-create-a-new-r-in-actrr-file-for-your-functions-basic-code" class="section level3">
 <h3 class="hasAnchor">
-<a href="#2-create-a-new-r-in-actrr-file-for-your-functions-basic-code" class="anchor"></a>2. Create a new R in actR/R file for your function’s basic code</h3>
+<a href="#id_2-create-a-new-r-in-actrr-file-for-your-functions-basic-code" class="anchor"></a>2. Create a new R in actR/R file for your function’s basic code</h3>
 <p><code><a href="https://usethis.r-lib.org/reference/use_r.html">usethis::use_r("newMethod")</a></code></p>
 </div>
-<div id="3-write-a-core-function-and-unit_test" class="section level3">
+<div id="id_3-write-a-core-function-and-unit_test" class="section level3">
 <h3 class="hasAnchor">
-<a href="#3-write-a-core-function-and-unit_test" class="anchor"></a>3. Write a *Core() function and unit_test</h3>
+<a href="#id_3-write-a-core-function-and-unit_test" class="anchor"></a>3. Write a *Core() function and unit_test</h3>
 <p>As you go, document your function.</p>
 <p>Good time to try check()</p>
 <p>some useful test data for this are found</p>
 </div>
-<div id="4-write-a-wrapper-function-that-uses-your-core-function-propagateuncertainty-and-testnullhypothesis-to-analyze-and-then-synthesize-those-results" class="section level3">
+<div id="id_4-write-a-wrapper-function-that-uses-your-core-function-propagateuncertainty-and-testnullhypothesis-to-analyze-and-then-synthesize-those-results" class="section level3">
 <h3 class="hasAnchor">
-<a href="#4-write-a-wrapper-function-that-uses-your-core-function-propagateuncertainty-and-testnullhypothesis-to-analyze-and-then-synthesize-those-results" class="anchor"></a>4. Write a wrapper function that uses *your Core() function, propagateUncertainty() and testNullHypothesis() to analyze and then synthesize those results.</h3>
-<p>For single dataset analyses, the input should be structured as a LiPD-ts-tibble</p>
-<p>The core output should be a tibble with each null hypothesis result as a row. It is often appropriate to return a list, with the tibble as one output.</p>
+<a href="#id_4-write-a-wrapper-function-that-uses-your-core-function-propagateuncertainty-and-testnullhypothesis-to-analyze-and-then-synthesize-those-results" class="anchor"></a>4. Write a wrapper function that uses *your Core() function,
+propagateUncertainty() and testNullHypothesis() to analyze and then
+synthesize those results.</h3>
+<p>For single dataset analyses, the input should be structured as a
+LiPD-ts-tibble</p>
+<p>The core output should be a tibble with each null hypothesis result
+as a row. It is often appropriate to return a list, with the tibble as
+one output.</p>
 <p>Define a class for this output.</p>
 </div>
-<div id="5-write-a-plotyourclass-function-that-takes-only-the-output-from-the-wrapper-along-with-plotting-arguments-and-produces-a-ggplot-object" class="section level3">
+<div id="id_5-write-a-plotyourclass-function-that-takes-only-the-output-from-the-wrapper-along-with-plotting-arguments-and-produces-a-ggplot-object" class="section level3">
 <h3 class="hasAnchor">
-<a href="#5-write-a-plotyourclass-function-that-takes-only-the-output-from-the-wrapper-along-with-plotting-arguments-and-produces-a-ggplot-object" class="anchor"></a>5. Write a plot.yourClass() function that takes only the output from the wrapper, along with plotting arguments, and produces a ggplot object.</h3>
+<a href="#id_5-write-a-plotyourclass-function-that-takes-only-the-output-from-the-wrapper-along-with-plotting-arguments-and-produces-a-ggplot-object" class="anchor"></a>5. Write a plot.yourClass() function that takes only the output from
+the wrapper, along with plotting arguments, and produces a ggplot
+object.</h3>
 <p>This code should go in the plottings.R file</p>
 </div>
-<div id="6-write-a-summaryyourclass-function-that-prints-out-key-results" class="section level3">
+<div id="id_6-write-a-summaryyourclass-function-that-prints-out-key-results" class="section level3">
 <h3 class="hasAnchor">
-<a href="#6-write-a-summaryyourclass-function-that-prints-out-key-results" class="anchor"></a>6. Write a summary.yourClass() function that prints out key results.</h3>
+<a href="#id_6-write-a-summaryyourclass-function-that-prints-out-key-results" class="anchor"></a>6. Write a summary.yourClass() function that prints out key
+results.</h3>
 <p>This code should go in the summary.R file.</p>
-<p>Also create a print.yourClass() function in the print.R file. So far, all the classes just reuse their summary methods as their print methods.</p>
+<p>Also create a print.yourClass() function in the print.R file. So far,
+all the classes just reuse their summary methods as their print
+methods.</p>
 </div>
-<div id="7-thats-it-but-lets-make-sure-everything-is-working-properly" class="section level3">
+<div id="id_7-thats-it-but-lets-make-sure-everything-is-working-properly" class="section level3">
 <h3 class="hasAnchor">
-<a href="#7-thats-it-but-lets-make-sure-everything-is-working-properly" class="anchor"></a>7. That’s it! But let’s make sure everything is working properly</h3>
+<a href="#id_7-thats-it-but-lets-make-sure-everything-is-working-properly" class="anchor"></a>7. That’s it! But let’s make sure everything is working
+properly</h3>
 <p>Make sure your R cmd-check is passing:</p>
 <p>devtools::check()</p>
 <p>devtools::test()</p>
 </div>
-<div id="8-now-were-set-lets-add-it-into-to-actr" class="section level3">
+<div id="id_8-now-were-set-lets-add-it-into-to-actr" class="section level3">
 <h3 class="hasAnchor">
-<a href="#8-now-were-set-lets-add-it-into-to-actr" class="anchor"></a>8. Now we’re set, let’s add it into to actR!</h3>
+<a href="#id_8-now-were-set-lets-add-it-into-to-actr" class="anchor"></a>8. Now we’re set, let’s add it into to actR!</h3>
 <p>Pull request</p>
 </div>
 </div>

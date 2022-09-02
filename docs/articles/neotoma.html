@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">actR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.4</span>
       </span>
     </div>
 
@@ -47,7 +47,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -81,7 +81,7 @@
 
       
 
-      </header><script src="neotoma_files/header-attrs-2.9/header-attrs.js"></script><div class="row">
+      </header><script src="neotoma_files/header-attrs-2.14/header-attrs.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>neotoma</h1>
@@ -98,39 +98,49 @@
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">actR</span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">neotoma2</span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">lipdR</span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org">tidyverse</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://magrittr.tidyverse.org">magrittr</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/nickmckay/GeoChronR">geoChronR</a></span><span class="op">)</span>
-<span class="co">#&gt; Welcome to geoChronR version 1.1.3!</span></code></pre></div>
+<span class="co">#&gt; Welcome to geoChronR version 1.1.6!</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span><span class="op">)</span></code></pre></div>
 <div id="using-actr-with-neotoma-data" class="section level1">
 <h1 class="hasAnchor">
 <a href="#using-actr-with-neotoma-data" class="anchor"></a>Using actR with Neotoma data</h1>
 <div id="get-some-data-from-neotoma" class="section level2">
 <h2 class="hasAnchor">
 <a href="#get-some-data-from-neotoma" class="anchor"></a>Get some data from Neotoma</h2>
-<p>It is now quite simple to get data directly from Neotoma, using the forthcoming <code>neotoma2</code> package, either by searching a site using the <code><a href="https://rdrr.io/pkg/neotoma2/man/get_sites.html">get_sites()</a></code> function, or directly with <code><a href="https://rdrr.io/pkg/neotoma2/man/get_downloads.html">get_downloads()</a></code> if you know the dataset number.</p>
+<p>It is now quite simple to get data directly from Neotoma, using the
+forthcoming <code>neotoma2</code> package, either by searching a site
+using the <code><a href="https://rdrr.io/pkg/neotoma2/man/get_sites.html">get_sites()</a></code> function, or directly with
+<code><a href="https://rdrr.io/pkg/neotoma2/man/get_downloads.html">get_downloads()</a></code> if you know the dataset number.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">L</span> <span class="op">&lt;-</span> <span class="fu">neotoma2</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/neotoma2/man/get_sites.html">get_sites</a></span><span class="op">(</span>sitename <span class="op">=</span> <span class="st">"Penegor Lake"</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+<code class="sourceCode R"><span class="va">L</span> <span class="op">&lt;-</span> <span class="fu">neotoma2</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/neotoma2/man/get_sites.html">get_sites</a></span><span class="op">(</span>sitename <span class="op">=</span> <span class="st">"Bambili 2"</span><span class="op">)</span> <span class="op">%&gt;%</span> 
   <span class="fu"><a href="https://rdrr.io/pkg/neotoma2/man/get_downloads.html">get_downloads</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span> 
-  <span class="fu"><a href="https://rdrr.io/pkg/lipdR/man/neotoma2lipd.html">neotoma2lipd</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<p>You can then pass that “site” object into <code><a href="https://rdrr.io/pkg/lipdR/man/neotoma2lipd.html">neotoma2lipd()</a></code>, part of the <code>lipdR</code> package, (&gt;= 0.3.0) (for now at least), to create a LiPD object.</p>
+  <span class="fu"><a href="https://rdrr.io/pkg/lipdR/man/neotoma2lipd.html">neotoma2lipd</a></span><span class="op">(</span><span class="op">)</span>
+<span class="co">#&gt; ..</span></code></pre></div>
+<p>You can then pass that “site” object into
+<code><a href="https://rdrr.io/pkg/lipdR/man/neotoma2lipd.html">neotoma2lipd()</a></code>, part of the <code>lipdR</code> package,
+(&gt;= 0.3.0) (for now at least), to create a LiPD object.</p>
 </div>
 <div id="create-an-ensemble-age-depth-model-using-geochronr" class="section level2">
 <h2 class="hasAnchor">
 <a href="#create-an-ensemble-age-depth-model-using-geochronr" class="anchor"></a>Create an ensemble age-depth model using geoChronR</h2>
-<p>If that Neotoma dataset, now a LiPD object, has chronologic data, we can than run it through Bacon or another algorithm in <code>geoChronR</code>.</p>
+<p>If that Neotoma dataset, now a LiPD object, has chronologic data, we
+can than run it through Bacon or another algorithm in
+<code>geoChronR</code>.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">L</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/geoChronR/man/runBacon.html">runBacon</a></span><span class="op">(</span><span class="va">L</span>,
-              bacon.dir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html">tempdir</a></span><span class="op">(</span><span class="op">)</span>,
-              chron.num <span class="op">=</span> <span class="fl">1</span>,
-              meas.table.num <span class="op">=</span> <span class="fl">1</span>,
-              lab.id.var <span class="op">=</span> <span class="st">"neotomachronconrolid"</span>,
+              lab.id.var <span class="op">=</span> <span class="st">'neotomaChronConrolId'</span>,
+              age.14c.var <span class="op">=</span> <span class="cn">NULL</span>,
+              age.14c.uncertainty.var <span class="op">=</span> <span class="cn">NULL</span>,
+              age.var <span class="op">=</span> <span class="st">'age'</span>,
+              age.uncertainty.var <span class="op">=</span> <span class="st">'ageUnc'</span>,
+              depth.var <span class="op">=</span> <span class="st">'depth'</span>,
               reservoir.age.14c.var <span class="op">=</span> <span class="cn">NULL</span>,
               reservoir.age.14c.uncertainty.var <span class="op">=</span> <span class="cn">NULL</span>,
               rejected.ages.var <span class="op">=</span> <span class="cn">NULL</span>,
               accept.suggestions <span class="op">=</span> <span class="cn">TRUE</span>,
-              ask <span class="op">=</span> <span class="cn">FALSE</span>,
               plot.pdf <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></code></pre></div>
-<p><img src="neotoma_files/figure-html/bacon-1.png" width="700"></p>
+<p><img src="neotoma_files/figure-html/bacon-1.png" width="700"><img src="neotoma_files/figure-html/bacon-2.png" width="700"></p>
 <p>Let’s take a look at the age model we created.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R">

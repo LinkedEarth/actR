@@ -14,7 +14,7 @@ summarizeEventProbability <- function(exc.out,
     dplyr::mutate(time_mid = (time_start + time_end)/2)
 
 
-  eventSums <- eventsInWindow(good.exc$time_mid,start.vec = timeBins[-length(timeBins)],end.vec = timeBins[-1])
+  eventSums <- eventsInWindow(na.omit(good.exc$time_mid),start.vec = timeBins[-length(timeBins)],end.vec = timeBins[-1])
 
   out <- tibble::tibble(time_start = timeBins[-length(timeBins)],
                         time_end = timeBins[-1],
@@ -30,6 +30,13 @@ summarizeEventProbability <- function(exc.out,
 
 
 eventsInWindow <- function(val,start.vec,end.vec){
+  isna <- which(is.na(val))
+  if(length(isna) > 0){
+    if(length(isna) == length(val)){#if they're all NAs then 0 events
+      return(matrix(0,nrow = length(start.vec)))
+    }
+    val <- val[-isna]#remove NAs
+  }
   totalEvents <- purrr::map2(start.vec,end.vec,.f = ~ dplyr::between(val,.x,.y)) %>%
     unlist() %>%
     matrix(nrow = length(start.vec),byrow = TRUE) %>%
