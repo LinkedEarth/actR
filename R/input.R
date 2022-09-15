@@ -11,7 +11,7 @@
 #' @param expecting.one.row Are you expecting a one-row tibble? That is, one variable of interest? (default = TRUE)
 #' @param sort.by.time Do you want to arrange the output so that the time variable is increasing, while preserving the time-value relationship? (default = TRUE)
 #' @param remove.time.nas Do you want to remove observations that are NA, or otherwise not finite, in the time variable (default = TRUE)
- #' @param time.range Optionally enter a time range (as minimum and maximum) that you'd like to restrict the analysis to. (default = NA)
+#' @param time.range Optionally enter a time range (as minimum and maximum) that you'd like to restrict the analysis to. (default = NA)
 #'
 #' @return a lipd-ts-tibble ready for analysis in actR
 #' @export
@@ -100,12 +100,24 @@ prepareInput <- function(ltt = NA,
 
       if(hasAgeEnsemble){
         ltt$time <- ltt$ageEnsemble
-        ltt$timeUnits <- ltt$ageUnits
+        ltt$timeUnits <- ltt$ageEnsembleUnits
+        if(is.null(ltt$timeUnits)){
+          ltt$timeUnits <- ltt$ageUnits
+        }
+        if(is.null(ltt$timeUnits)){
+          ltt$timeUnits <- "yr BP"
+        }
         ltt$timeVariableName <- "age"
       }else if(hasYearEnsemble){
         ltt$time <- ltt$yearEnsemble
-        ltt$timeUnits <- ltt$yearUnits
+        ltt$timeUnits <- ltt$yearEnsembleUnits
         ltt$timeVariableName <- "year"
+        if(is.null(ltt$timeUnits)){
+          ltt$timeUnits <- ltt$yearUnits
+        }
+        if(is.null(ltt$timeUnits)){
+          ltt$timeUnits <- "yr AD"
+        }
       }else if(hasAge){
         ltt$time <- ltt$age
         ltt$timeUnits <- ltt$ageUnits
