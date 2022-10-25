@@ -1,0 +1,413 @@
+---
+title: "Introduction to Abrupt Change Detection in the Presence of Noise"
+output: html_notebook
+---
+
+This notebook is intended as a holistic introduction to the basic types of abrupt shifts one might come across in the study of paleoclimate records and the noise that may accompany them.
+
+The first part of this notebook will be dedicated to introducing pure shapes one that represent the fundamental behavior of abrupt shifts one might encounter. Primarily we'll look at:
+
+- Jumps
+- Ramps
+- Spikes
+- Boxes
+
+The second part of this notebook will look at types of noise. The main types of noise we'll see are:
+
+- White noise
+- Colored noise (mostly red noise)
+- AR(1) Processes
+
+Finally we'll look at examples of noise layered on top of signal, and when the noise begins to obfuscate the shift.
+
+### **Types of Shifts**
+
+#### **Jumps and Ramps**
+
+Jumps as they're defined in this notebook are abrupt shifts from one stable state to another. Stable state here is defined as any pseudo-constant behavior. That could mean a time series with a steady average amplitude or it could mean a steady oscillatory pattern. Ramps are jumps that occur over a period of time. Here we'll take the simplest case of a jump and ramp between two flat steady states. Creating a jump is a function of just one parameter, the jump amplitude  𝑎 . The jump amplitude will determine the amplitude of change. The piecewise equation for a simple jump is shown below:
+
+\begin{equation}
+y(t) = 
+\begin{cases} 
+\ y_0 & \text{if } t \le t_{start} \\
+a         & \text{if } t_{start} \le t
+\end{cases}
+\end{equation}
+
+\begin{equation}
+ t_{end} = d + t_{start}
+ \end{equation}
+
+Where t_{start} in this case is just the location in time of the jump. Note that this is essentially just a Heaviside function, where the system is divided by a threshold into two "regimes". A ramp is the more general case of jump, where the shift from one state to another occurs over time. These shapes have one additional parameter, duration, *d*. Duration describes the amount of time it takes for the jump to occur. The piecewise equation for a ramp is as follows:
+
+\begin{equation}
+y(t) = 
+\begin{cases} 
+\ y_0 & \text{if } t \le t_{start} \\
+y_0 + \frac{a}{d} (t-t_{start}) & \text{if } t_{start} \le t \le t_{end}\\
+a         & \text{if } t_{end} \le t
+\end{cases}
+\end{equation}
+
+\begin{equation}
+t_{end} = d + t_{start}
+\end{equation}
+
+For convenience we will group jumps and ramps as "Transitions", as the system transitions from one state to another. We'll create a function to make the generation of either of these shapes straightforward.
+
+```{r}
+#Note that we include additional parameters start, length, and shift for convenience
+#These aren't crucial to the definition of jump but they are useful
+make_transition <- function(length, amp, start, dur=0, shift=0, ...)
+{
+  #Initialize our time axis
+  time <- 0:(length-1)
+  
+  #Initialize values
+  values <- integer(length)
+  
+  if (dur != 0)
+  {
+    jump_axis <- 0:dur
+    jump_values <- (amp/dur)*jump_axis
+    end <- dur + start
+    values[start:end] <- jump_values
+    values[end:length(values)] <- amp
+  }
+  else 
+  {
+    values[start:length(values)] <- amp
+  }
+  
+  series <- values + shift
+  df = data.frame(time=time, values=series)
+  return(df)
+}
+```
+
+Note that the function above can create either a ramp or a jump depending on what duration is passed. If zero duration is passed, then we get a jump. If non-zero duration is passed, we get a ramp. We can also create inverted jumps and ramps (drops and slides) by passing negative amplitude.
+
+```{r}
+#noise function
+ar1.noise <- function(n=100,ncol=1,gamma=0.7,sigma=1){
+  # THIS NEEDS A DOCSTRING
+  ar1 = matrix(NA,nrow=n,ncol=ncol)
+  for(j in 1:ncol){
+    X <- arima.sim(model=list("ar"=gamma),n=n)
+    ar1[,j] <- sigma*scale(X)
+  }
+  return(ar1)
+}
+```
+
+
+```{r}
+#Creating and plotting a simple instantaneous jump
+library(ggplot2)
+library(ggpubr)
+df <- make_transition(length=1000, amp=1, start=500)
+ggplot(df) + geom_line(aes(x=time,y=values)) + ggtitle('Jump Example')
+```
+
+```{r}
+#Noise
+noise <- ar1.noise(n=nrow(df), gamma=.9, sigma=.1)
+noisydf <- df + noise
+ggplot(noisydf) + geom_line(aes(x=time,y=values)) + ggtitle('Noisy Jump Example', subtitle='gamma = 0.9; sigma = 0.1')
+```
+
+```{r}
+#Creating an extended jump in the negative direction
+df <- make_transition(length=1000,amp=-1,start=300, dur=300)
+ggplot(df) + geom_line(aes(x=time,y=values)) + ggtitle('Ramp Example')
+```
+```{r}
+#Noise
+noise <- ar1.noise(n=nrow(df), gamma=.9, sigma=.1)
+noisydf <- df + noise
+ggplot(noisydf) + geom_line(aes(x=time,y=values)) + ggtitle('Noisy Ramp Example',subtitle='gamma = 0.9; sigma = 0.1')
+```
+
+#### **Spikes**
+
+Spikes are typically defined by an abrupt change followed by a gradual return to the baseline state. They can technically be defined the other way around (a gradual change followed by an abrupt return to baseline) but this is rare in paleoclimate records. The equation for a spike is similar to that of a ramp. Spikes are also defined by similar parameters to the ramp, amplitude  𝑎  and duration  𝑑 . The piecewise equation for a spike is defined below:
+
+\begin{equation}
+y(t) = 
+\begin{cases} 
+\ y_0 & \text{if } t \le t_{start} \\
+a - \frac{a}{d} (t-t_{start}) & \text{if } t_{start} \le t \le t_{end}\\
+y_0        & \text{if } t_{end} \le t
+\end{cases}
+\end{equation}
+
+\begin{equation}
+t_{end} = d + t_{start}
+\end{equation}
+
+#### **Boxes and Skew-Boxes**
+
+A box is defined as being an excursion from one stable state to a flat stable state, followed by a return to the initial baseline state. This type of shift is called a box because in pure signal form it resembles a box. Box type shifts are characterized by the same parameters as a ramp, amplitude  𝑎  and duration  𝑑 . The piecewise equation for a box shift is two Heaviside functions stitched together, formalized below:
+
+\begin{equation}
+y(t) = 
+\begin{cases} 
+\ y_0 & \text{if } t \le t_{start} \\
+a  & \text{if } t_{start} \le t \le t_{end}\\
+y_0        & \text{if } t_{end} \le t
+\end{cases}
+\end{equation}
+
+\begin{equation}
+t_{end} = d + t_{start}
+\end{equation}
+
+A skew-box is a more general case of box wherein the state that is shifted to itself has a trend. It has one more parameter, the change in amplitude  Δ𝑎 . This change in amplitude parameter describes how much the amplitude changes over the duration of the shift. The equation for a skew-box using these parameters is shown below.
+
+\begin{equation}
+y(t) = 
+\begin{cases} 
+\ y_0 & \text{if } t \le t_{start} \\
+a - \frac{\Delta a}{d} (t-t_{start})  & \text{if } t_{start} \le t \le t_{end}\\
+y_0        & \text{if } t_{end} \le t
+\end{cases}
+\end{equation}
+
+\begin{equation}
+t_{end} = d + t_{start}
+\end{equation}
+
+For convenience we'll group spikes, boxes, and skew-boxes as "Excursions", as they all ultimately result in a return to a baseline state.
+
+```{r}
+make_excursion <- function(length=1000, amp=1, del_amp=0, start=400, dur=200, shift=0)
+{
+  #Set the time axis
+  time <- 0:(length-1)
+  
+  #Set the value axis
+  values <- numeric(length)
+  
+  #Compute the excursion line
+  skew_axis <- seq(from=0,to=1, length.out=dur)
+  skew_values <- amp + del_amp*skew_axis
+  end <- start + (dur-1)
+  values[start:end] <- skew_values
+  
+  #Create series
+  series <- values
+  series = data.frame(time=time, values=series)
+  return(series)
+}
+```
+
+Note that the function above can create boxes, skew-boxes, and spikes depening on what change in amplitude is passed. If zero change in amplitude is passed, we get a box. If change in amplitude is nonzero, we get a skew-box. If change in amplitude is exactly opposite the passed amplitude, we get a spike. We can again invert all of these shapes by passing negative amplitude.
+
+```{r}
+#Create a simple box excursion
+df <- make_excursion(length=1000,start=400, dur=200, amp=1)
+ggplot(df) + geom_line(aes(x=time,y=values)) + ggtitle('Box Example')
+```
+```{r}
+#Noise
+noise <- ar1.noise(n=nrow(df), gamma=.9, sigma=.1)
+noisydf <- df + noise
+ggplot(noisydf) + geom_line(aes(x=time,y=values)) + ggtitle('Noisy Box Example',subtitle='gamma = 0.9; sigma = 0.1')
+```
+
+```{r}
+#Create a skew-box excursion
+df <- make_excursion(length=100, start=40, dur=20, amp=1, del_amp=-.2)
+ggplot(df) + geom_line(aes(x=time,y=values)) + ggtitle('Skew-Box Example')
+```
+```{r}
+# Add Noise
+noise <- ar1.noise(n=nrow(df), gamma=.9, sigma=.1, length(df$time))
+noisydf <- df + noise
+ggplot(noisydf) + geom_line(aes(x=time,y=values)) + ggtitle('Noisy Skew-Box Example',subtitle='gamma = 0.9; sigma = 0.1')
+```
+
+```{r}
+#Create a spike excursion
+df <- make_excursion(length=100, start=40, amp=1, del_amp=-.99, dur=8)
+ggplot(df) + geom_line(aes(x=time,y=values)) + ggtitle('Spike Example')
+```
+```{r}
+#Noise
+noise <- ar1.noise(n=nrow(df), gamma=.9, sigma=.1)
+noisydf <- df + noise
+ggplot(noisydf) + geom_line(aes(x=time,y=values)) + ggtitle('Noisy Spike Example',subtitle='gamma = 0.9; sigma = 0.1')
+```
+
+### **Bayesian Change Point Detection**
+
+```{r,include=FALSE}
+source("bayes_chgpt.R", local = knitr::knit_global() )
+```
+
+```{r}
+#applying to noisy jump data
+
+data <- make_transition(length=100, amp=1, start=50)
+noise <- ar1.noise(n=nrow(data),gamma=.9,sigma=.1)
+noisydata <- data + noise
+Y = noisydata$values
+year = noisydata$time
+ggplot(noisydata) + geom_line(aes(x=time,y=values))
+N <- length(Y)
+X <- matrix(c(rep(1,N), seq(1,N)), ncol=2)   # A linear function
+m <- dim(X)[2]    # Number of predictor variables
+t = seq(1,N)
+
+d_min <- 5      # minimum distance between change points
+
+k_0 <- c(0.001, 0.1)     # Hyper parameter for the prior on the regression coefficients
+beta0 <- rep(0,m)        # Mean of multivariate normal prior on regression coefficients
+
+v_0 <- 1; sig_0 = var(Y)  # You can also use: sig_0 = var(Y)  
+# Hyperparameters for the scaled-inverse chi-square distribution
+
+k_max <- 10        # Maximum number of change points
+num_samp <- 1000   # number of sampled solutions
+
+
+# Function call for the Bayesian Change Point Algorithm
+result = Bayes_Chgpt(Y, X, t, k_max, d_min, k_0, v_0, sig_0, num_samp)
+```
+```{r}
+plt <-do.call(bayes_chgpt_plot,list(chgpt_loc=result$chgpt_loc,model=result$model,year=result$year,Y=result$Y, size=result$size))
+p1 <- plt[[1]] + ggtitle('Change Points in Noisy Jump Data Set', subtitle = 'gamma = 0.9; sigma = 0.1') + geom_line(data=data,mapping=aes(x=time,y=values,colour='Signal')) +  xlab("")
+ggarrange(p1,plt[[2]], nrow=2, heights=c(2,1))
+```
+```{r}
+#applying to noisy ramp data
+data <- make_transition(length=100, amp=-1, start=30, dur=30)
+noise <- ar1.noise(n=nrow(data),gamma=.9,sigma=.1)
+noisydata <- data + noise
+Y = noisydata$values
+year = noisydata$time
+ggplot(noisydata) + geom_line(aes(x=time,y=values))
+N <- length(Y)
+X <- matrix(c(rep(1,N), seq(1,N)), ncol=2)   # A linear function
+m <- dim(X)[2]    # Number of predictor variables
+t = seq(1,N)
+
+d_min <- 5      # minimum distance between change points
+
+k_0 <- c(0.001, 0.1)     # Hyper parameter for the prior on the regression coefficients
+beta0 <- rep(0,m)        # Mean of multivariate normal prior on regression coefficients
+
+v_0 <- 1; sig_0 = var(Y)  # You can also use: sig_0 = var(Y)  
+# Hyperparameters for the scaled-inverse chi-square distribution
+
+k_max <- 10        # Maximum number of change points
+num_samp <- 1000   # number of sampled solutions
+
+
+# Function call for the Bayesian Change Point Algorithm
+result = Bayes_Chgpt(Y, X, t, k_max, d_min, k_0, v_0, sig_0, num_samp)
+```
+```{r}
+plt <- do.call(bayes_chgpt_plot,list(chgpt_loc=result$chgpt_loc,model=result$model,year=result$year,Y=result$Y, size=result$size))
+p1 <- plt[[1]] + ggtitle('Change Points in Noisy Ramp Data Set', subtitle = 'gamma = 0.9; sigma = 0.1') + geom_line(data=data,mapping=aes(x=time,y=values,colour='Signal')) +  xlab("")
+ggarrange(p1,plt[[2]], nrow=2, heights=c(2,1))
+```
+```{r}
+#applying to noisy box data
+data <- make_excursion(length=100, amp=1, start=40, dur=20)
+noise <- ar1.noise(n=nrow(data),gamma=.9,sigma=0.1)
+noisydata <- data + noise
+Y = noisydata$values
+year = noisydata$time
+ggplot(noisydata) + geom_line(aes(x=time,y=values))
+N <- length(Y)
+t <-  seq(1,N)
+X <- matrix(c(rep(1,N), t), ncol=2)   # A linear function
+m <- dim(X)[2]    # Number of predictor variables
+
+
+d_min <- 5      # minimum distance between change points
+
+k_0 <- c(0.001, 0.1)     # Hyper parameter for the prior on the regression coefficients
+beta0 <- rep(0,m)        # Mean of multivariate normal prior on regression coefficients
+
+v_0 <- 1; sig_0 = var(Y)  # You can also use: sig_0 = var(Y)  
+# Hyperparameters for the scaled-inverse chi-square distribution
+
+k_max <- 10        # Maximum number of change points
+num_samp <- 1000   # number of sampled solutions
+
+
+# Function call for the Bayesian Change Point Algorithm
+result = Bayes_Chgpt(Y, X, t, k_max, d_min, k_0, v_0, sig_0, num_samp)
+```
+```{r}
+plt <- do.call(bayes_chgpt_plot,list(chgpt_loc=result$chgpt_loc,model=result$model,year=result$year,Y=result$Y, size=result$size))
+p1 <- plt[[1]] + ggtitle('Change Points in Noisy Box Data Set', subtitle = 'gamma = 0.9; sigma = 0.1') + geom_line(data=data,mapping=aes(x=time,y=values,colour='Signal')) +  xlab("")
+ggarrange(p1,plt[[2]], nrow=2, heights=c(2,1))
+```
+```{r}
+#applying to noisy skew-box data
+data <- make_excursion(length=100, amp=1, del_amp=-.2, dur=20, start=40)
+noise <- ar1.noise(n=nrow(data),gamma=.9,sigma=0.1)
+noisydata <- data + noise
+Y = noisydata$values
+year = noisydata$time
+ggplot(noisydata) + geom_line(aes(x=time,y=values))
+N <- length(Y)
+X <- matrix(c(rep(1,N), seq(1,N)), ncol=2)   # A linear function
+m <- dim(X)[2]    # Number of predictor variables
+t = seq(1,N)
+
+d_min <- 5      # minimum distance between change points
+
+k_0 <- c(0.001, 0.1)     # Hyper parameter for the prior on the regression coefficients
+beta0 <- rep(0,m)        # Mean of multivariate normal prior on regression coefficients
+
+v_0 <- 1; sig_0 = var(Y)  # You can also use: sig_0 = var(Y)  
+# Hyperparameters for the scaled-inverse chi-square distribution
+
+k_max <- 10        # Maximum number of change points
+num_samp <- 1000   # number of sampled solutions
+
+
+# Function call for the Bayesian Change Point Algorithm
+result = Bayes_Chgpt(Y, X, t, k_max, d_min, k_0, v_0, sig_0, num_samp)
+```
+```{r}
+plt <- do.call(bayes_chgpt_plot,list(chgpt_loc=result$chgpt_loc,model=result$model,year=result$year,Y=result$Y, size=result$size))
+p1 <- plt[[1]] + ggtitle('Change Points in Noisy Skew-Box Data Set', subtitle = 'gamma = 0.9; sigma = 0.1') + geom_line(data=data,mapping=aes(x=time,y=values,colour='Signal')) +  xlab("")
+ggarrange(p1,plt[[2]], nrow=2, heights=c(2,1))
+```
+```{r}
+#applying to noisy spike data
+data <- make_excursion(length=100, amp=1, del_amp=-.99, dur=8, start=40)
+noise <- ar1.noise(n=nrow(data),gamma=.9,sigma=0.1)
+noisydata <- data + noise
+Y = noisydata$values
+year = noisydata$time
+ggplot(noisydata) + geom_line(aes(x=time,y=values))
+N <- length(Y)
+X <- matrix(c(rep(1,N), seq(1,N)), ncol=2)   # A linear function
+m <- dim(X)[2]    # Number of predictor variables
+t = seq(1,N)
+
+d_min <- 5      # minimum distance between change points
+
+k_0 <- c(0.001, 0.1)     # Hyper parameter for the prior on the regression coefficients
+beta0 <- rep(0,m)        # Mean of multivariate normal prior on regression coefficients
+
+v_0 <- 1; sig_0 = var(Y)  # You can also use: sig_0 = var(Y)  
+# Hyperparameters for the scaled-inverse chi-square distribution
+
+k_max <- 10        # Maximum number of change points
+num_samp <- 1000   # number of sampled solutions
+
+# Function call for the Bayesian Change Point Algorithm
+result = Bayes_Chgpt(Y, X, t, k_max, d_min, k_0, v_0, sig_0, num_samp)
+```
+```{r}
+plt <- do.call(bayes_chgpt_plot,list(chgpt_loc=result$chgpt_loc,model=result$model,year=result$year,Y=result$Y, size=result$size))
+p1 <- plt[[1]] + ggtitle('Change Points in Noisy Spike Data Set', subtitle = 'gamma = 0.9; sigma = 0.1') + geom_line(data=data,mapping=aes(x=time,y=values,colour='Signal')) +  xlab("")
+ggarrange(p1,plt[[2]], nrow=2, heights=c(2,1))
+```
