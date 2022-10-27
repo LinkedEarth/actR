@@ -81,6 +81,22 @@ detectShiftCore = function(time,
 
 } # end function
 
+#
+#
+# ltt = syntheticTransition
+# time = NA
+# vals = NA
+# time.variable.name = NA
+# vals.variable.name = NA
+# time.units = NA
+# vals.units = NA
+# dataset.name = NA
+# surrogate.method = "isospectral"
+# summary.bin.step = 100
+# null.hypothesis.n = 100
+# null.quantiles = c(.95,.9)
+# time.range = NA
+
 #' Detect a shift in the mean and/or variance of a dataset
 #' @description detectShift() allows you to detect a shift in the mean and/or variance of a dataset, and assess its significance given age and data uncertainty relative to a robust null hypothesis. This approach uses the function changepoint::cpt.mean(), changepoint::cpt.var(), or changepoint::cpt.meanvar()  from the changepoint package, propagates inputted or modelled time and/or value ensembles, and summarizes their likelihoods relative to a robust null hypothesis (see ?testNullHypothesis)
 #' @inheritParams prepareInput
