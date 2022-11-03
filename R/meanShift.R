@@ -17,6 +17,7 @@ detectShiftCore = function(time,
                            minimum.segment.length = 1,
                            cpt.fun = changepoint::cpt.mean,
                            gaussianize = TRUE,
+                           calc.deltas = FALSE,
                            ...){
 
   # interpolation options
@@ -65,11 +66,42 @@ detectShiftCore = function(time,
     change.end <- NA
   }
 
+  #calculate differences in stats before and after.
+
+  if(calc.deltas){
+
+    #get all the indices
+    if(nrow(changes) > 0){
+      allInd <- vector(mode = "list",length = length(change.start)+1)
+
+      for(nr in 1:(length(change.start) + 1)){
+        if(nr == 1){
+          allInd[[nr]] <- which(time <= change.start[nr])
+        }else if(nr == length(change.start)+1){
+          allInd[[nr]] <- which(time > change.end[nr-1])
+        }else{
+          allInd[[nr]] <- which(time <= change.start[nr] & time > change.end[nr-1])
+        }
+      }
+
+      delta.mean <- delta.sd <- c()
+      for(nr in 1:length(change.start)){
+        delta.mean[nr] <- mean(vals[allInd[[nr+1]]],na.rm = TRUE) - mean(vals[allInd[[nr]]],na.rm = TRUE)
+        delta.sd[nr] <- sd(vals[allInd[[nr+1]]],na.rm = TRUE) - sd(vals[allInd[[nr]]],na.rm = TRUE)
+      }
+
+    }
+  }else{
+    delta.mean <- delta.sd <- NA
+  }
+
   # create a hash for each unique time-value pair
   it.hash <- digest::digest(list(time,vals))
   #report out to tibble
   out <- tibble::tibble(time_start = change.start,
                         time_end = change.end,
+                        delta_mean = delta.mean,
+                        delta_sd = delta.sd,
                         eventDetected = TRUE,
                         eventProbability = NA,
                         time = list(time),
