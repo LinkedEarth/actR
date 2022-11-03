@@ -6,8 +6,6 @@
 #'
 #' @return a tibble of change point mean changes
 #' @export
-#'
-#' @examples
 summarizeChangepointMeanChanges <- function(x,alpha = 0.05){
 
 

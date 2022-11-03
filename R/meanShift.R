@@ -8,6 +8,7 @@
 #' @param minimum.segment.length the minimum allowed length of a detected segment (in time units)
 #' @param cpt.fun which function from the changepoint package to use, changepoint::cpt.mean, changepoint::cpt.var or changepoint::cpt.meanvar
 #' @param gaussianize Force vals to gaussian distribution before analysis. Default (TRUE). Most (all?) methods in the changepoint package assume gaussian distributions, so this is strongly recommended.
+#' @param calc.deltas Calculate the difference in means between change point sections. Default FALSE
 #' @param ... options to pass to cpt.fun . See changepoint function documentation for details.
 #'
 #' @return A tibble of output data and metadata

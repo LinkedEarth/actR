@@ -1,4 +1,14 @@
-actR_ggtheme <- ggplot2::theme_bw
+#' @export
+#' @family plot help
+#' @title Define a plot theme for actR
+#' @description Use this to define a theme across actR
+#' @import ggplot2
+#' @param font.family Specify a font family to use for the theme (default = "Helvetica")
+#' @param ... parameters to pass to theme function
+actR_ggtheme <- function(font.family = "Helvetica",...){
+  ggplot2::theme_bw(base_family = font.family,...)
+}
+
 
 #' Plot an excursion with uncertainties
 #'
@@ -320,10 +330,10 @@ plotShift <- function(x,
 
 
 
-  if(is.na(x.axis.label)){
+  if(any(is.na(x.axis.label))){
     x.axis.label <- glue::glue("{x$input$timeVariableName} ({x$input$timeUnits})")
   }
-  if(is.na(y.axis.label)){
+  if(any(is.na(y.axis.label))){
     y.axis.label <- glue::glue("{x$input$paleoData_variableName} ({x$input$paleoData_units})")
   }
 
@@ -344,11 +354,11 @@ plotShift <- function(x,
     shift.type <- paramTib$cpt.fun
   }
   #title
-  if(!is.na(x$input$dataSetName) & !is.na(x$input$paleoData_variableName)){
+  if(!any(is.na(x$input$dataSetName)) & !any(is.na(x$input$paleoData_variableName))){
     title <- glue::glue("{x$input$dataSetName} - {x$input$paleoData_variableName}: {shift.type}")
-  }else if(is.na(x$input$dataSetName) & !is.na(x$input$paleoData_variableName)){
+  }else if(any(is.na(x$input$dataSetName)) & !any(is.na(x$input$paleoData_variableName))){
     title <- glue::glue("{x$input$paleoData_variableName}: {shift.type}")
-  }else if(!is.na(x$input$dataSetName) & is.na(x$paleoData_variableName)){
+  }else if(!any(is.na(x$input$dataSetName)) & any(is.na(x$paleoData_variableName))){
     title <- glue::glue("{x$input$dataSetName}: {shift.type}")
   }else{
     title <- glue::glue("{shift.type}")
@@ -370,7 +380,7 @@ plotShift <- function(x,
     dplyr::arrange(time_edges)
 
   #get x.range
-  if(is.na(x.lims)){
+  if(any(is.na(x.lims))){
     x.lims <- range(cpp$time_edges)
   }
 
