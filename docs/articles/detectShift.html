@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">actR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.4</span>
       </span>
     </div>
 
@@ -81,7 +81,7 @@
 
       
 
-      </header><script src="detectShift_files/header-attrs-2.13/header-attrs.js"></script><div class="row">
+      </header><script src="detectShift_files/header-attrs-2.14/header-attrs.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>detectShift</h1>
@@ -99,8 +99,19 @@
 <div id="shift-detection-in-actr" class="section level2">
 <h2 class="hasAnchor">
 <a href="#shift-detection-in-actr" class="anchor"></a>Shift detection in actR</h2>
-<p>This vignette shows how actR detects shift (and their statistical significance) for 2 of our example datasets: the geob7926_2 sedimentary record of Kim et al <a href="https://www.doi.org/10.1016/j.epsl.2012.05.018">2012</a> covering the last deglaciation (roughly 28 to 9ka BP) and the Great Basin tree-ring record of Salzer et al <a href="https://www.doi.org/10.1007/s00382-013-1911-9">2013</a> covering the Common Era at annual resolution.</p>
-<p>The following code does these things: * loads the data from the provided LiPD file “geob7926_2” (available as a tibble for easier load-in). * extracts the pre-existing age ensemble (generated using <a href="https://cran.r-project.org/web/packages/rbacon/index.html">Bacon</a> within <a href="https://nickmckay.github.io/GeoChronR/">GeoChronR</a>) and the akenone-reconstructed SST. * tests significance against 50 surrogate timeseries [need to clarify difference between n.ens and null.hypothesis.n]. * specifies a minimum segment length of 3000y</p>
+<p>This vignette shows how actR detects shift (and their statistical
+significance) for 2 of our example datasets: the geob7926_2 sedimentary
+record of Kim et al <a href="https://www.doi.org/10.1016/j.epsl.2012.05.018">2012</a> covering
+the last deglaciation (roughly 28 to 9ka BP) and the Great Basin
+tree-ring record of Salzer et al <a href="https://www.doi.org/10.1007/s00382-013-1911-9">2013</a> covering
+the Common Era at annual resolution.</p>
+<p>The following code does these things: * loads the data from the
+provided LiPD file “geob7926_2” (available as a tibble for easier
+load-in). * extracts the pre-existing age ensemble (generated using <a href="https://cran.r-project.org/web/packages/rbacon/index.html">Bacon</a>
+within <a href="https://nickmckay.github.io/GeoChronR/">GeoChronR</a>)
+and the akenone-reconstructed SST. * tests significance against 50
+surrogate timeseries [need to clarify difference between n.ens and
+null.hypothesis.n]. * specifies a minimum segment length of 3000y</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">msGeob</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/detectShift.html">detectShift</a></span><span class="op">(</span><span class="va">geob7926_2</span>,
                     time.variable.name <span class="op">=</span> <span class="st">"ageEnsemble"</span>,
@@ -120,13 +131,12 @@
 <span class="co">#&gt; GeoB7926_2.Kim.2012 - SST_from_uk37_ensemble: Shift in Mean results</span>
 <span class="co">#&gt; Searched for Shift in Mean with a minimum segment length of 8000 years, summarizing the results over windows of 500 years.</span>
 <span class="co">#&gt; </span>
-<span class="co">#&gt; Overall result: Detected 3 Shift in Mean event(s) that were significant at the alpha &lt; 0.05 level</span>
-<span class="co">#&gt; # A tibble: 3 × 3</span>
+<span class="co">#&gt; Overall result: Detected 2 Shift in Mean event(s) that were significant at the alpha &lt; 0.05 level</span>
+<span class="co">#&gt; # A tibble: 2 × 3</span>
 <span class="co">#&gt;   time_start time_end empirical_pvalue</span>
 <span class="co">#&gt;        &lt;dbl&gt;    &lt;dbl&gt;            &lt;dbl&gt;</span>
 <span class="co">#&gt; 1     26727.   27227.                0</span>
 <span class="co">#&gt; 2     17727.   18227.                0</span>
-<span class="co">#&gt; 3      9727.   10227.                0</span>
 <span class="co">#&gt; Time uncertainty considered? TRUE Time ensemble supplied (n = 100)</span>
 <span class="co">#&gt; Paleo uncertainty considered? TRUE Values ensemble supplied (n = 2500)</span>
 <span class="co">#&gt; Error propagation ensemble members = 50</span>
@@ -143,8 +153,11 @@
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">geoBplot</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">msGeob</span><span class="op">)</span></code></pre></div>
 <p><img src="detectShift_files/figure-html/unnamed-chunk-4-1.png" width="700"></p>
-<p>Note that, as usual with actR, the plot is a <a href="https://ggplot2.tidyverse.org">ggplot2</a> object, which is infinitely customizable (e.g. for a talk, a poster, a paper, etc).</p>
-<p>Now we repeat the same steps over the Great Basin tree-ring record of Salzer et al <a href="https://www.doi.org/10.1007/s00382-013-1911-9">2013</a>. We first attempt to detect changes in the mean.</p>
+<p>Note that, as usual with actR, the plot is a <a href="https://ggplot2.tidyverse.org">ggplot2</a> object, which is
+infinitely customizable (e.g. for a talk, a poster, a paper, etc).</p>
+<p>Now we repeat the same steps over the Great Basin tree-ring record of
+Salzer et al <a href="https://www.doi.org/10.1007/s00382-013-1911-9">2013</a>. We first
+attempt to detect changes in the mean.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">msGb</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/detectShift.html">detectShift</a></span><span class="op">(</span><span class="va">great_basin</span>,
                      time.variable.name <span class="op">=</span> <span class="st">"year"</span>,
@@ -163,7 +176,11 @@
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">gbmPlot</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">msGb</span><span class="op">)</span></code></pre></div>
 <p><img src="detectShift_files/figure-html/unnamed-chunk-6-1.png" width="700"></p>
-<p>As you can see, the method does not detect any on this dataset. However, one might also want to detect shifts in variance. To do so, all you have to do is specify <code>cpt.fun = changepoint::cpt.var</code> (leveraging the <a href="https://cran.r-project.org/web/packages/changepoint/index.html">changepoint</a> package).</p>
+<p>As you can see, the method does not detect any on this dataset.
+However, one might also want to detect shifts in variance. To do so, all
+you have to do is specify <code>cpt.fun = changepoint::cpt.var</code>
+(leveraging the <a href="https://cran.r-project.org/web/packages/changepoint/index.html">changepoint</a>
+package).</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">vsGb</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/detectShift.html">detectShift</a></span><span class="op">(</span><span class="va">great_basin</span>,
                      time.variable.name <span class="op">=</span> <span class="st">"year"</span>,
@@ -180,11 +197,20 @@
 <span class="co">#&gt; Selected trsgi</span>
 <span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. </span>
 <span class="co">#&gt; This will probably take about 1 minutes</span></code></pre></div>
-<p>Note also that actR offers 3 different methods to generate surrogates, as detailed in the documentation. The default is <em>isospectral</em>, which was used in the previous examples. To change that to the rEDM “shuffle” method, just specify <code>surrogate.method = "shuffle"</code>.</p>
+<p>Note also that actR offers 3 different methods to generate
+surrogates, as detailed in the documentation. The default is
+<em>isospectral</em>, which was used in the previous examples. To change
+that to the rEDM “shuffle” method, just specify
+<code>surrogate.method = "shuffle"</code>.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">gbvPlot</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">vsGb</span><span class="op">)</span></code></pre></div>
 <p><img src="detectShift_files/figure-html/unnamed-chunk-8-1.png" width="700"></p>
-<p>Now a change in variance is detected at the very end of the record. To check its robustness, we should probably inquire more about the sample depth of the dataset (number of tree cores used to make the composite in each year), as well as the technique used for removing the biological component of the signal. This is a reminder that no technique, however nifty, is a substitute for knowing your data!</p>
+<p>Now a change in variance is detected at the very end of the record.
+To check its robustness, we should probably inquire more about the
+sample depth of the dataset (number of tree cores used to make the
+composite in each year), as well as the technique used for removing the
+biological component of the signal. This is a reminder that no
+technique, however nifty, is a substitute for knowing your data!</p>
 </div>
   </div>
 

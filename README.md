@@ -9,8 +9,8 @@
 [![NSF-1948926](https://img.shields.io/badge/NSF-1929460-blue.svg)](https://nsf.gov/awardsearch/showAward?AWD_ID=1929460)
 [![Belmont SEI
 ACCEDE](https://img.shields.io/badge/Belmont%20SEI-ACCEDE-blue)](https://www.belmontforum.org/archives/projects/abrupt-change-in-climate-and-ecosystems-where-are-the-tipping-points)
-[![R build
-status](https://github.com/LinkedEarth/actR/workflows/R-CMD-check/badge.svg)](https://github.com/LinkedEarth/actR/actions)
+[![DOI](https://zenodo.org/badge/359257314.svg)](https://zenodo.org/badge/latestdoi/359257314)
+[![R-CMD-check](https://github.com/LinkedEarth/actR/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/LinkedEarth/actR/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 The goal of actR – the Abupt Change Toolkit in R – is to streamline
@@ -27,7 +27,7 @@ now available.
 
 ### Data input
 
-<img src="DataInputDiagram.png" width="50%" />
+<img src="docs/DataInputDiagram.png" width="50%" />
 
 actR, like most software, benefits greatly from standardized data
 inputs. To achieve this, actR works best with LiPD data, although users
@@ -38,7 +38,7 @@ includes options for simple data preprocessing for methods as needed.
 
 ### Change detection - single site
 
-<img src="ChangeDetectionDiagram.png" width="50%" />
+<img src="docs/ChangeDetectionDiagram.png" width="50%" />
 
 actR equips single site, time series based change detection with error
 propagation and robust null hypothesis testing. Change detection
@@ -69,7 +69,7 @@ This is planned, but still in progress.
 
 ### Results
 
-<img src="SummarizeResultsDiagram.png" width="50%" />
+<img src="docs/SummarizeResultsDiagram.png" width="50%" />
 
 All change detection methods implemented in actR have two output
 options, `summary()` (and `print()`), which provides a text summary of

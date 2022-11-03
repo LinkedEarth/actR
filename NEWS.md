@@ -1,5 +1,8 @@
 # actR 0.1.4
 
+* Fix timeUnits bug in `prepareInput()` 
+* Update `time.range` option for R >=4.2.0 sensitivity to multiple conditionals.
+
 # actR 0.1.3
 
 * added a `time.range` option to `prepareInput()` and `detectShift()` to optionally restrict the range of the analysis. Thanks to [@AndreaLemur](https://github.com/AndreaLemur) for the suggestion. 

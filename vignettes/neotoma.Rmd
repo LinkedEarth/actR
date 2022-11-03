@@ -62,7 +62,7 @@ Let's take a look at the age model we created.
 
 ```{r plotChron, fig.retina=TRUE}
 
-plotChronEns(L)
+plotChronEns(L) 
 
 ```
 

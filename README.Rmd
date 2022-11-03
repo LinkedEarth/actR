@@ -19,7 +19,8 @@ knitr::opts_chunk$set(
   [![lifecycle](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
   [![NSF-1948926](https://img.shields.io/badge/NSF-1929460-blue.svg)](https://nsf.gov/awardsearch/showAward?AWD_ID=1929460)
   [![Belmont SEI ACCEDE](https://img.shields.io/badge/Belmont%20SEI-ACCEDE-blue)](https://www.belmontforum.org/archives/projects/abrupt-change-in-climate-and-ecosystems-where-are-the-tipping-points)
-  [![R build status](https://github.com/LinkedEarth/actR/workflows/R-CMD-check/badge.svg)](https://github.com/LinkedEarth/actR/actions)
+  [![DOI](https://zenodo.org/badge/359257314.svg)](https://zenodo.org/badge/latestdoi/359257314)
+[![R-CMD-check](https://github.com/LinkedEarth/actR/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/LinkedEarth/actR/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 The goal of actR -- the Abupt Change Toolkit in R -- is to streamline abrupt change detection, signficance testing, uncertainty quantification and visualization for paleogeoscientific datasets. This project is funded by the Belmont Forum as part of the "Abrupt Changes in Climate and Ecosystems - Data & e-Infrastructure (ACCEDE)" project, as part of the Science-driven e-Infrastructure Innovation program.
@@ -30,7 +31,7 @@ We're still early in the development process, but basic functionality is now ava
 
 ### Data input
 ```{r,out.width="50%",echo = FALSE}
-knitr::include_graphics("DataInputDiagram.png")
+knitr::include_graphics("docs/DataInputDiagram.png")
 ```
 
 actR, like most software, benefits greatly from standardized data inputs. To achieve this, actR works best with LiPD data, although users can also directly input data as matrices or vectors and metadata in R. Either way, the inputs are passed through the `prepareInput()` function, which helps to standardize the input for subsequent analysis, and includes options for simple data preprocessing for methods as needed.
@@ -38,7 +39,7 @@ actR, like most software, benefits greatly from standardized data inputs. To ach
 
 ### Change detection - single site
 ```{r,out.width="50%",echo = FALSE}
-knitr::include_graphics("ChangeDetectionDiagram.png")
+knitr::include_graphics("docs/ChangeDetectionDiagram.png")
 ```
 
 actR equips single site, time series based change detection with error propagation and robust null hypothesis testing. Change detection algorithms are often highly parametric, and don't consider many uncertainties that are relevant to paleogeoscientific data. There are two key processes to achieve this. 
@@ -57,7 +58,7 @@ This is planned, but still in progress.
 
 ### Results
 ```{r,out.width="50%",echo = FALSE}
-knitr::include_graphics("SummarizeResultsDiagram.png")
+knitr::include_graphics("docs/SummarizeResultsDiagram.png")
 ```
 
 All change detection methods implemented in actR have two output options, `summary()` (and `print()`), which provides a text summary of the test conducted and the results, and `plot()` which visualizes the results, including both error propagation and null hypothesis testing. Other approaches, including geospatial change detection, will include additional outputs as appropriate.
