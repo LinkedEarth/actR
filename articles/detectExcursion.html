@@ -93,15 +93,27 @@
 <div class="section level2">
 <h2 id="excursion-detection-in-actr">Excursion detection in actR<a class="anchor" aria-label="anchor" href="#excursion-detection-in-actr"></a>
 </h2>
-<p>This (in development) vignette will showcase a simple example of detecting an excursion – defined in actR as a short term deviation from a baseline – using the classic NGRIP d18O record. This dataset comes preloaded in actR, and you can learn more about it with <code><a href="../reference/ngrip.html">?ngrip</a></code>.</p>
-<p>actR uses an excursion detection algorithm developed and used by <a href="https://cp.copernicus.org/articles/9/423/2013/cp-9-423-2013.pdf" class="external-link">Morrill et al. (2013)</a>.</p>
+<p>This (in development) vignette will showcase a simple example of
+detecting an excursion – defined in actR as a short term deviation from
+a baseline – using the classic NGRIP d18O record. This dataset comes
+preloaded in actR, and you can learn more about it with
+<code><a href="../reference/ngrip.html">?ngrip</a></code>.</p>
+<p>actR uses an excursion detection algorithm developed and used by <a href="https://cp.copernicus.org/articles/9/423/2013/cp-9-423-2013.pdf" class="external-link">Morrill
+et al. (2013)</a>.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">actR</span><span class="op">)</span></span></code></pre></div>
 <div class="section level3">
 <h3 id="excursion-detection-with-no-uncertainties">Excursion detection with no uncertainties<a class="anchor" aria-label="anchor" href="#excursion-detection-with-no-uncertainties"></a>
 </h3>
-<p>First, let’s take a look at the excursion in the NGRIP d18O dataset near 8200 yr BP (the 8.2 ka event). First, we’ll tell it not to simulate any uncertainties. We’re using the <code><a href="../reference/detectExcursion.html">detectExcursion()</a></code> function, a high-level function for this approach.</p>
-<p>We’ll need to give it some key parameters, in this case, we need to define the center and width of the event window (8200 and 200 yr, respectively). We also need to define the reference intervals (400 yrs on each side), and how many standard deviations to use for the baseline (sig.num = 2). We’re only looking for cold (negative excursions).</p>
+<p>First, let’s take a look at the excursion in the NGRIP d18O dataset
+near 8200 yr BP (the 8.2 ka event). First, we’ll tell it not to simulate
+any uncertainties. We’re using the <code><a href="../reference/detectExcursion.html">detectExcursion()</a></code>
+function, a high-level function for this approach.</p>
+<p>We’ll need to give it some key parameters, in this case, we need to
+define the center and width of the event window (8200 and 200 yr,
+respectively). We also need to define the reference intervals (400 yrs
+on each side), and how many standard deviations to use for the baseline
+(sig.num = 2). We’re only looking for cold (negative excursions).</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">excOutNoUnc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/detectExcursion.html">detectExcursion</a></span><span class="op">(</span><span class="va">ngrip</span>, </span>
 <span>                          vals.variable.name <span class="op">=</span> <span class="st">"d18O"</span>,</span>
@@ -118,7 +130,8 @@
 <span><span class="co">#&gt; <span style="color: #00BB00;">Testing null hypothesis with 1 simulations, each with 1 ensemble members. </span></span></span>
 <span><span class="co"><span style="color: #00BB00;">#&gt; </span><span style="color: #0000BB;">This will probably take about 1 minutes</span></span></span>
 <span><span class="co"><span style="color: #0000BB;">#&gt; </span></span></span></code></pre></div>
-<p>After it runs, the <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code> or <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code> functions will summarize the results.</p>
+<p>After it runs, the <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code> or <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code>
+functions will summarize the results.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">excOutNoUnc</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold;">NGRIP.NGRIP.2004 - d18O: Excursion test results</span></span></span>
@@ -137,18 +150,37 @@
 <span><span class="co"><span style="color: #555555;">#&gt; min.vals = 8</span></span></span>
 <span><span class="co"><span style="color: #555555;">#&gt; na.rm = TRUE</span></span></span>
 <span><span class="co"><span style="color: #555555;">#&gt; </span></span></span></code></pre></div>
-<p>Here we see the results, but it’s easier to see the results, especially without uncertainties, as a plot:</p>
+<p>Here we see the results, but it’s easier to see the results,
+especially without uncertainties, as a plot:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">excOutNoUnc</span><span class="op">)</span></span></code></pre></div>
 <p><img src="detectExcursion_files/figure-html/unnamed-chunk-3-1.png" width="700"></p>
-<p>Here we see the baselines defined as red lines, with the excursions and the points that exceed the threshhold as red dots. The method requires a minimum number of consecutive points to pass the threshold, the default is 2, this parameters is <code>n.consecutive</code>.</p>
+<p>Here we see the baselines defined as red lines, with the excursions
+and the points that exceed the threshhold as red dots. The method
+requires a minimum number of consecutive points to pass the threshold,
+the default is 2, this parameters is <code>n.consecutive</code>.</p>
 </div>
 <div class="section level3">
 <h3 id="excursion-detection-with-d18o-uncertainties">Excursion detection with d18O uncertainties<a class="anchor" aria-label="anchor" href="#excursion-detection-with-d18o-uncertainties"></a>
 </h3>
-<p>So there’s clearly and excursion centered on 8.2 ka, but how much might this be affected by uncertainty in the y-axis? In this case we’re not really thinking of measurement error, but of the myriad uncertainties that complicate the relationship between d18O and climate (in this case, we’re thinking mostly of cooling). actR propagates these uncertainties as ensembles, and works best if you pass a full ensemble as input. However most datasets don’t have paleo ensembles, so actR will simulate an ensemble based on an uncertainty estimate (0.2) and uncertainty AR1 coefficient (0.8).</p>
-<p>Now, because we’re working with ensembles, this will run multiple times to propagate the error. We specify the number of error propagation ensemble members in <code>n.ens</code>. To keep this vignette snappy, we’re only using 50, but you probably want 100 or more.</p>
-<p>We’re also going to take advantage of actR’s robust null hypothesis testing, which will repeat the full analysis for synthetic data that mirrors the characteristics of the input data. Check out this (TBD) to learn more about null hypothesis testing in actR. We’ll also run the null hypothesis simulation 50 times.</p>
+<p>So there’s clearly and excursion centered on 8.2 ka, but how much
+might this be affected by uncertainty in the y-axis? In this case we’re
+not really thinking of measurement error, but of the myriad
+uncertainties that complicate the relationship between d18O and climate
+(in this case, we’re thinking mostly of cooling). actR propagates these
+uncertainties as ensembles, and works best if you pass a full ensemble
+as input. However most datasets don’t have paleo ensembles, so actR will
+simulate an ensemble based on an uncertainty estimate (0.2) and
+uncertainty AR1 coefficient (0.8).</p>
+<p>Now, because we’re working with ensembles, this will run multiple
+times to propagate the error. We specify the number of error propagation
+ensemble members in <code>n.ens</code>. To keep this vignette snappy,
+we’re only using 50, but you probably want 100 or more.</p>
+<p>We’re also going to take advantage of actR’s robust null hypothesis
+testing, which will repeat the full analysis for synthetic data that
+mirrors the characteristics of the input data. Check out this (TBD) to
+learn more about null hypothesis testing in actR. We’ll also run the
+null hypothesis simulation 50 times.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">excOutUncY</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/detectExcursion.html">detectExcursion</a></span><span class="op">(</span><span class="va">ngrip</span>, </span>
 <span>                          vals.variable.name <span class="op">=</span> <span class="st">"d18O"</span>,</span>
@@ -166,13 +198,17 @@
 <span><span class="co">#&gt; <span style="color: #00BB00;">Testing null hypothesis with 50 simulations, each with 50 ensemble members. </span></span></span>
 <span><span class="co"><span style="color: #00BB00;">#&gt; </span><span style="color: #0000BB;">This will probably take about 1 minutes</span></span></span>
 <span><span class="co"><span style="color: #0000BB;">#&gt; </span></span></span></code></pre></div>
-<p>This time, when we summarize the results, we get more interesting output, including an empirical p-value, which is the fraction of null hypothesis simulations that exceed the positivity rate in the actual data. Typically, empirical p-values less than 0.05 are considered significant.</p>
+<p>This time, when we summarize the results, we get more interesting
+output, including an empirical p-value, which is the fraction of null
+hypothesis simulations that exceed the positivity rate in the actual
+data. Typically, empirical p-values less than 0.05 are considered
+significant.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">excOutUncY</span><span class="op">)</span> </span>
 <span><span class="co">#&gt; <span style="font-weight: bold;">NGRIP.NGRIP.2004 - d18O: Excursion test results</span></span></span>
 <span><span class="co"><span style="font-weight: bold;">#&gt; </span><span style="color: #555555;">Searched for </span><span style="color: #555555; font-weight: bold;">negative</span><span style="color: #555555;"> excursions in a </span><span style="color: #555555; font-weight: bold;">200</span><span style="color: #555555;"> year window around </span><span style="color: #555555; font-weight: bold;">8200</span><span style="color: #555555;"> BP, with reference windows of </span><span style="color: #555555; font-weight: bold;">400</span><span style="color: #555555;"> years on either side.</span></span></span>
 <span><span class="co"><span style="color: #555555;">#&gt; </span></span></span>
-<span><span class="co">#&gt; <span style="font-weight: bold;">Overall result: Empirical p-value = </span><span style="color: #00BB00; font-weight: bold;">0</span></span></span>
+<span><span class="co">#&gt; <span style="font-weight: bold;">Overall result: Empirical p-value = </span><span style="color: #BB0000; font-weight: bold;">0.0600000000000001</span></span></span>
 <span><span class="co"><span style="font-weight: bold;">#&gt; </span>Time uncertainty considered? <span style="color: #BB0000;">FALSE</span></span></span>
 <span><span class="co">#&gt; Paleo uncertainty considered? <span style="color: #00BB00;">TRUE</span></span></span>
 <span><span class="co">#&gt; Error propagation ensemble members = 50</span></span>
@@ -185,18 +221,35 @@
 <span><span class="co"><span style="color: #555555;">#&gt; min.vals = 8</span></span></span>
 <span><span class="co"><span style="color: #555555;">#&gt; na.rm = TRUE</span></span></span>
 <span><span class="co"><span style="color: #555555;">#&gt; </span></span></span></code></pre></div>
-<p>We also get a bit more information when plotting with uncertainties. This plotting routine will show the data with uncertainty bands in the back, and a representative ensemble member illustrating the excursion.</p>
+<p>We also get a bit more information when plotting with uncertainties.
+This plotting routine will show the data with uncertainty bands in the
+back, and a representative ensemble member illustrating the
+excursion.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">excOutUncY</span><span class="op">)</span> </span></code></pre></div>
 <p><img src="detectExcursion_files/figure-html/unnamed-chunk-5-1.png" width="700"></p>
-<p>Including d18O uncertainty muddies the water a bit, but this feature is still clearly robust to uncertainties in the paleo data. But what about age uncertainty?</p>
+<p>Including d18O uncertainty muddies the water a bit, but this feature
+is still clearly robust to uncertainties in the paleo data. But what
+about age uncertainty?</p>
 </div>
 <div class="section level3">
 <h3 id="excursion-detection-with-d18o-uncertainties-and-age-uncertainty">Excursion detection with d18O uncertainties and age uncertainty<a class="anchor" aria-label="anchor" href="#excursion-detection-with-d18o-uncertainties-and-age-uncertainty"></a>
 </h3>
-<p>In addition to d18O uncertainty, age uncertainty has the potential to obscure abrupt changes in datasets. When we’re testing an excursion to see if it’s robust to age uncertainty, we’re examining the likelihood that, given age uncertainty, the excursion occurred during this specific 200 year window, NOT whether the excursion occurred at all. Age uncertainty is unlikely to destroy an excursion this pronounced, but may be able to move it from 8.2 to 8.5 ka.</p>
-<p>Again, actR is designed to work with ensembles, so entering an age ensemble in to <code><a href="../reference/detectExcursion.html">detectExcursion()</a></code> is ideal. But as is often the case, this NGRIP dataset doesn’t come with ensembles. In this case, actR can reasonably simulate age uncertainties (especially for layer counted records) using BAM (Comboul et al. 2015). Here we’ll use BAM with a Bernoulli model and symmetric 0.02 over/undercounting rates.</p>
-<p>Once again, we’ll run all of this, including the age uncertainties, through our robust null hypothesis testing.</p>
+<p>In addition to d18O uncertainty, age uncertainty has the potential to
+obscure abrupt changes in datasets. When we’re testing an excursion to
+see if it’s robust to age uncertainty, we’re examining the likelihood
+that, given age uncertainty, the excursion occurred during this specific
+200 year window, NOT whether the excursion occurred at all. Age
+uncertainty is unlikely to destroy an excursion this pronounced, but may
+be able to move it from 8.2 to 8.5 ka.</p>
+<p>Again, actR is designed to work with ensembles, so entering an age
+ensemble in to <code><a href="../reference/detectExcursion.html">detectExcursion()</a></code> is ideal. But as is often
+the case, this NGRIP dataset doesn’t come with ensembles. In this case,
+actR can reasonably simulate age uncertainties (especially for layer
+counted records) using BAM (Comboul et al. 2015). Here we’ll use BAM
+with a Bernoulli model and symmetric 0.02 over/undercounting rates.</p>
+<p>Once again, we’ll run all of this, including the age uncertainties,
+through our robust null hypothesis testing.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">excOutUncXY</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/detectExcursion.html">detectExcursion</a></span><span class="op">(</span><span class="va">ngrip</span>, </span>
 <span>                          vals.variable.name <span class="op">=</span> <span class="st">"d18O"</span>,</span>
@@ -238,7 +291,8 @@
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">excOutUncXY</span><span class="op">)</span></span></code></pre></div>
 <p><img src="detectExcursion_files/figure-html/unnamed-chunk-7-1.png" width="700"></p>
-<p>Given these uncertainties, and all of our parametric choices, we rest assured that this excursion is robust to our uncertainties.</p>
+<p>Given these uncertainties, and all of our parametric choices, we rest
+assured that this excursion is robust to our uncertainties.</p>
 </div>
 </div>
   </div>

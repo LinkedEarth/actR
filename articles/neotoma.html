@@ -104,18 +104,25 @@
 <div class="section level3">
 <h3 id="get-some-data-from-neotoma">Get some data from Neotoma<a class="anchor" aria-label="anchor" href="#get-some-data-from-neotoma"></a>
 </h3>
-<p>It is now quite simple to get data directly from Neotoma, using the forthcoming <code>neotoma2</code> package, either by searching a site using the <code><a href="https://rdrr.io/pkg/neotoma2/man/get_sites.html" class="external-link">get_sites()</a></code> function, or directly with <code><a href="https://rdrr.io/pkg/neotoma2/man/get_downloads.html" class="external-link">get_downloads()</a></code> if you know the dataset number.</p>
+<p>It is now quite simple to get data directly from Neotoma, using the
+forthcoming <code>neotoma2</code> package, either by searching a site
+using the <code><a href="https://rdrr.io/pkg/neotoma2/man/get_sites.html" class="external-link">get_sites()</a></code> function, or directly with
+<code><a href="https://rdrr.io/pkg/neotoma2/man/get_downloads.html" class="external-link">get_downloads()</a></code> if you know the dataset number.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">L</span> <span class="op">&lt;-</span> <span class="fu">neotoma2</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/neotoma2/man/get_sites.html" class="external-link">get_sites</a></span><span class="op">(</span>sitename <span class="op">=</span> <span class="st">"Bambili 2"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://rdrr.io/pkg/neotoma2/man/get_downloads.html" class="external-link">get_downloads</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://rdrr.io/pkg/lipdR/man/neotoma2lipd.html" class="external-link">neotoma2lipd</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; .</span></span></code></pre></div>
-<p>You can then pass that “site” object into <code><a href="https://rdrr.io/pkg/lipdR/man/neotoma2lipd.html" class="external-link">neotoma2lipd()</a></code>, part of the <code>lipdR</code> package, (&gt;= 0.3.0) (for now at least), to create a LiPD object.</p>
+<p>You can then pass that “site” object into
+<code><a href="https://rdrr.io/pkg/lipdR/man/neotoma2lipd.html" class="external-link">neotoma2lipd()</a></code>, part of the <code>lipdR</code> package,
+(&gt;= 0.3.0) (for now at least), to create a LiPD object.</p>
 </div>
 <div class="section level3">
 <h3 id="create-an-ensemble-age-depth-model-using-geochronr">Create an ensemble age-depth model using geoChronR<a class="anchor" aria-label="anchor" href="#create-an-ensemble-age-depth-model-using-geochronr"></a>
 </h3>
-<p>If that Neotoma dataset, now a LiPD object, has chronologic data, we can than run it through Bacon or another algorithm in <code>geoChronR</code>.</p>
+<p>If that Neotoma dataset, now a LiPD object, has chronologic data, we
+can than run it through Bacon or another algorithm in
+<code>geoChronR</code>.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">L</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/geoChronR/man/runBacon.html" class="external-link">runBacon</a></span><span class="op">(</span><span class="va">L</span>,</span>
 <span>              lab.id.var <span class="op">=</span> <span class="st">'neotomaChronConrolId'</span>,</span>

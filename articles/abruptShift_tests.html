@@ -92,8 +92,17 @@
     
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">actR</span><span class="op">)</span></span></code></pre></div>
-<p>This notebook implements a test of the <code><a href="../reference/detectShiftCore.html">actR::detectShiftCore()</a></code> function on synthetic data (see data_raw/makeSyntheticData.R for their construction).</p>
-<p>The idea is to use the simplest model of a shift (linear ramp emulating either a step or gradual change) to evaluate the proportion of false negatives and false positives: how often is a gradual shift mistaken for an abrupt one, or missed altogether? How often is a shift identified when none exists? From these rates we construct receiver operating characteristic curves and their sensitivity to: - abruptness (the time over which the shift occurs, from 0 to T/2, where T is the length of the series) - noise levels. - age uncertainties.</p>
+<p>This notebook implements a test of the
+<code><a href="../reference/detectShiftCore.html">actR::detectShiftCore()</a></code> function on synthetic data (see
+data_raw/makeSyntheticData.R for their construction).</p>
+<p>The idea is to use the simplest model of a shift (linear ramp
+emulating either a step or gradual change) to evaluate the proportion of
+false negatives and false positives: how often is a gradual shift
+mistaken for an abrupt one, or missed altogether? How often is a shift
+identified when none exists? From these rates we construct receiver
+operating characteristic curves and their sensitivity to: - abruptness
+(the time over which the shift occurs, from 0 to T/2, where T is the
+length of the series) - noise levels. - age uncertainties.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">lngth</span> <span class="op">&lt;-</span> <span class="fl">400</span></span>
 <span><span class="va">time</span> <span class="op">&lt;-</span> <span class="fl">1.0</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="va">lngth</span><span class="op">)</span></span>
@@ -114,7 +123,8 @@
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">ShiftHappens</span><span class="op">)</span></span></code></pre></div>
 <p><img src="abruptShift_tests_files/figure-html/Load-test-data-1.png" width="700"><img src="abruptShift_tests_files/figure-html/Load-test-data-2.png" width="700"></p>
-<p>Now we’ll do the same, by looping over various values of the shift</p>
+<p>Now we’ll do the same, by looping over various values of the
+shift</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">widths</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="va">lngth</span><span class="op">/</span><span class="fl">40</span>, <span class="va">lngth</span><span class="op">/</span><span class="fl">20</span>, <span class="va">lngth</span><span class="op">/</span><span class="fl">10</span>, <span class="va">lngth</span><span class="op">/</span><span class="fl">5</span>, <span class="va">lngth</span><span class="op">/</span><span class="fl">2</span><span class="op">)</span></span>
 <span><span class="va">rampRes</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html" class="external-link">vector</a></span><span class="op">(</span>mode <span class="op">=</span> <span class="st">"list"</span>,length <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">widths</span><span class="op">)</span><span class="op">)</span></span>

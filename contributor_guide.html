@@ -60,6 +60,7 @@
     </div>
 
 <div id="contributor_guide" class="section level1">
+
 <div class="section level2">
 <h2 id="a-guide-to-contributing-methods-to-actr">A guide to contributing methods to actR<a class="anchor" aria-label="anchor" href="#a-guide-to-contributing-methods-to-actr"></a></h2>
 <p>actR was designed to simplify adding new abrupt change detection methods, and we’re eager to work with people to add new methods into the toolkit!</p>
@@ -82,40 +83,42 @@
 </div>
 <div class="section level2">
 <h2 id="step-by-step-guide-for-contributors">Step by step guide for contributors<a class="anchor" aria-label="anchor" href="#step-by-step-guide-for-contributors"></a></h2>
-<div class="section level3"><h3 id="1-make-a-branch-of-the-github-repo">1. Make a branch of the github repo<a class="anchor" aria-label="anchor" href="#1-make-a-branch-of-the-github-repo"></a></h3></div>
 <div class="section level3">
-<h3 id="2-create-a-new-r-in-actrr-file-for-your-functions-basic-code">2. Create a new R in actR/R file for your function’s basic code<a class="anchor" aria-label="anchor" href="#2-create-a-new-r-in-actrr-file-for-your-functions-basic-code"></a></h3>
+<h3 id="id_1-make-a-branch-of-the-github-repo">1. Make a branch of the github repo<a class="anchor" aria-label="anchor" href="#id_1-make-a-branch-of-the-github-repo"></a></h3>
+</div>
+<div class="section level3">
+<h3 id="id_2-create-a-new-r-in-actrr-file-for-your-functions-basic-code">2. Create a new R in actR/R file for your function’s basic code<a class="anchor" aria-label="anchor" href="#id_2-create-a-new-r-in-actrr-file-for-your-functions-basic-code"></a></h3>
 <p><code>usethis::use_r("newMethod")</code></p>
 </div>
 <div class="section level3">
-<h3 id="3-write-a-core-function-and-unit_test">3. Write a *Core() function and unit_test<a class="anchor" aria-label="anchor" href="#3-write-a-core-function-and-unit_test"></a></h3>
+<h3 id="id_3-write-a-core-function-and-unit_test">3. Write a *Core() function and unit_test<a class="anchor" aria-label="anchor" href="#id_3-write-a-core-function-and-unit_test"></a></h3>
 <p>As you go, document your function.</p>
 <p>Good time to try check()</p>
 <p>some useful test data for this are found</p>
 </div>
 <div class="section level3">
-<h3 id="4-write-a-wrapper-function-that-uses-your-core-function-propagateuncertainty-and-testnullhypothesis-to-analyze-and-then-synthesize-those-results">4. Write a wrapper function that uses *your Core() function, propagateUncertainty() and testNullHypothesis() to analyze and then synthesize those results.<a class="anchor" aria-label="anchor" href="#4-write-a-wrapper-function-that-uses-your-core-function-propagateuncertainty-and-testnullhypothesis-to-analyze-and-then-synthesize-those-results"></a></h3>
+<h3 id="id_4-write-a-wrapper-function-that-uses-your-core-function-propagateuncertainty-and-testnullhypothesis-to-analyze-and-then-synthesize-those-results">4. Write a wrapper function that uses *your Core() function, propagateUncertainty() and testNullHypothesis() to analyze and then synthesize those results.<a class="anchor" aria-label="anchor" href="#id_4-write-a-wrapper-function-that-uses-your-core-function-propagateuncertainty-and-testnullhypothesis-to-analyze-and-then-synthesize-those-results"></a></h3>
 <p>For single dataset analyses, the input should be structured as a LiPD-ts-tibble</p>
 <p>The core output should be a tibble with each null hypothesis result as a row. It is often appropriate to return a list, with the tibble as one output.</p>
 <p>Define a class for this output.</p>
 </div>
 <div class="section level3">
-<h3 id="5-write-a-plotyourclass-function-that-takes-only-the-output-from-the-wrapper-along-with-plotting-arguments-and-produces-a-ggplot-object">5. Write a plot.yourClass() function that takes only the output from the wrapper, along with plotting arguments, and produces a ggplot object.<a class="anchor" aria-label="anchor" href="#5-write-a-plotyourclass-function-that-takes-only-the-output-from-the-wrapper-along-with-plotting-arguments-and-produces-a-ggplot-object"></a></h3>
+<h3 id="id_5-write-a-plotyourclass-function-that-takes-only-the-output-from-the-wrapper-along-with-plotting-arguments-and-produces-a-ggplot-object">5. Write a plot.yourClass() function that takes only the output from the wrapper, along with plotting arguments, and produces a ggplot object.<a class="anchor" aria-label="anchor" href="#id_5-write-a-plotyourclass-function-that-takes-only-the-output-from-the-wrapper-along-with-plotting-arguments-and-produces-a-ggplot-object"></a></h3>
 <p>This code should go in the plottings.R file</p>
 </div>
 <div class="section level3">
-<h3 id="6-write-a-summaryyourclass-function-that-prints-out-key-results">6. Write a summary.yourClass() function that prints out key results.<a class="anchor" aria-label="anchor" href="#6-write-a-summaryyourclass-function-that-prints-out-key-results"></a></h3>
+<h3 id="id_6-write-a-summaryyourclass-function-that-prints-out-key-results">6. Write a summary.yourClass() function that prints out key results.<a class="anchor" aria-label="anchor" href="#id_6-write-a-summaryyourclass-function-that-prints-out-key-results"></a></h3>
 <p>This code should go in the summary.R file.</p>
 <p>Also create a print.yourClass() function in the print.R file. So far, all the classes just reuse their summary methods as their print methods.</p>
 </div>
 <div class="section level3">
-<h3 id="7-thats-it-but-lets-make-sure-everything-is-working-properly">7. That’s it! But let’s make sure everything is working properly<a class="anchor" aria-label="anchor" href="#7-thats-it-but-lets-make-sure-everything-is-working-properly"></a></h3>
+<h3 id="id_7-thats-it-but-lets-make-sure-everything-is-working-properly">7. That’s it! But let’s make sure everything is working properly<a class="anchor" aria-label="anchor" href="#id_7-thats-it-but-lets-make-sure-everything-is-working-properly"></a></h3>
 <p>Make sure your R cmd-check is passing:</p>
 <p>devtools::check()</p>
 <p>devtools::test()</p>
 </div>
 <div class="section level3">
-<h3 id="8-now-were-set-lets-add-it-into-to-actr">8. Now we’re set, let’s add it into to actR!<a class="anchor" aria-label="anchor" href="#8-now-were-set-lets-add-it-into-to-actr"></a></h3>
+<h3 id="id_8-now-were-set-lets-add-it-into-to-actr">8. Now we’re set, let’s add it into to actR!<a class="anchor" aria-label="anchor" href="#id_8-now-were-set-lets-add-it-into-to-actr"></a></h3>
 <p>Pull request</p>
 </div>
 </div>
