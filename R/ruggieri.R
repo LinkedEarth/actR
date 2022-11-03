@@ -196,7 +196,8 @@ probability <- function(i,j, Y, X, d_min, k_0, sig_0, beta0, v_0)
     # Should be matrix multiplication, but R does vector multiplication by components
 
     # Calculate v_n and s_n
-    a = j-i+1    # "a" is the number of data points, not the distance between them, which becomes
+    #a = j-i+1    # "a" is the number of data points, not the distance between them, which becomes
+    a <- X[j,2]-X[i,2] #make this distance in time
     # relevant if the data points are not equally spaced
     v_n = v_0 + a  # a is the number of data points in the segment
     s_n = v_0*sig_0 + sum(k_0*(beta0-beta_hat)^2) + sum((Y[i:j]-X[i:j,]%*%beta_hat)^2)
