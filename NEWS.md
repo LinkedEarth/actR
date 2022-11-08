@@ -1,6 +1,6 @@
 # actR 0.1.5
 
-* merged in calcualte deltas - introducing the `summarizeChangepointMeanChanges()`
+* merged in calculate deltas - introducing the `summarizeChangepointMeanChanges()`
 * More fixes for R >=4.2.0 sensitivity to multiple conditionals.
 
 # actR 0.1.4
