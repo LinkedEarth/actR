@@ -53,7 +53,12 @@ plot(msGb)
 The time series will have 1000 time steps, an excursion amplitude of 1 starting at step 400 and ending at step 600
 
 ```{r}
-syntheticExcursion <- make_excursion(length=1000, amp=1, del_amp=0, start=400, dur=200)
+syntheticExcursion <- make_excursion(length = 10000,
+                                     amplitude = 1, 
+                                     delta.amplitude = 0,
+                                     start.time = 4000, 
+                                     duration=200,
+                                     sample.spacing.frac = 0.05)
 ```
 
 ### Detect Excursion
@@ -64,15 +69,15 @@ The `event.yr` is 600
 
 ```{r}
 excOutNoUnc <- detectExcursion(syntheticExcursion,
-                          event.yr = 500,
-                          event.window = 200,
-                          ref.window = 100,
+                          event.yr = 4100,
+                          event.window = 400,
+                          ref.window = 400,
                           sig.num = 2,
                           exc.type = "positive",
-                          n.ens = 1,
-                          null.hypothesis.n = 1,
-                          simulate.time.uncertainty = FALSE,
-                          simulate.paleo.uncertainty = FALSE)
+                          n.ens = 50,
+                          null.hypothesis.n = 50,
+                          simulate.time.uncertainty = TRUE,
+                          simulate.paleo.uncertainty = TRUE)
 ```
 
 

@@ -3,31 +3,64 @@
 #' @param length number of time steps in series
 #' @param amp amplitude of excursion
 #' @param del_amp amplitude of change during excursion
-#' @param start begining time step of excursion
+#' @param start beginning time step of excursion
 #' @param dur duration of excursion
 #'
 #' @return ltt
 #' @export
 #'
-make_excursion <- function(length=1000, amp=1, del_amp=0, start=400, dur=200)
+make_excursion <- function(time = NA,
+                           length=1000,
+                           amplitude=1,
+                           delta.amplitude=0,
+                           start.time=400,
+                           duration=200,
+                           snr = 1,
+                           sample.spacing.frac = 1,
+                           noise.ar1 = 0.5,
+                           ...)
 {
-  #Set the time axis
-  time <- 0:length
 
+  if(all(is.na(time))){
+  #Set the time axis
+  time <- 1:length
+  }
+
+  length <- min(length,length(time))
   #Set the value axis
   values <- numeric(length)
 
+  start <- which.min(abs(time - start.time))
+  end <- which.min(abs(time - (start.time + duration)))
+
   #Compute the excursion line
-  skew_axis <- seq(from=0,to=1, length.out=dur)
+  skew_axis <- seq(from=0,to=1, length.out=abs(end-start)+1)
   skew_values <- amp + del_amp*skew_axis
-  end <- start + (dur-1)
   values[start:end] <- skew_values
 
   #Create series
   series <- values
 
-  #time will be read as BP, so we will reverse the series
-  ltt <- prepareInput(vals = rev(series), time = 1:length(series))
+  #subsample?
+  if(sample.spacing.frac < 1){
+    nsamps <- round(sample.spacing.frac * length)
+    to.keep <- sort(sample(1:length,size = nsamps,replace = FALSE))
+    series <- series[to.keep]
+    time <- time[to.keep]
+  }
+
+
+  #Add noise
+  if(is.finite(snr)){
+    signal <- sd(series)
+    noise <- simulateAutoCorrelatedUncertainty(sd = signal/snr, mean = 0, ar = noise.ar1,n = length(series))
+    series <- noise + series
+  }
+
+
+
+
+  ltt <- prepareInput(vals = series, time = time,...)
 
   return(ltt)
 }
