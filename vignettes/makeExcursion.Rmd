@@ -1,0 +1,93 @@
+---
+title: "Synthetic Data in  meanShift and excursion"
+author: "Dave Edge"
+date: "2022-10-27"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+devtools::load_all()
+```
+
+
+# Synthetic excursions
+
+## Build a synthetic time series with an excursion
+
+Let's create a synthetic excursion centered on the 4.2 event
+```{r}
+syntheticExcursion <- makeExcursion(time = seq(3000,5000,by = 20), #specify the time
+                                     amplitude = 1, #the amplitude of the excursion
+                                     delta.amplitude = 0, #the change in amplitude, for asymmetrical excursions
+                                     start.time = 4100, #when does the excursion start
+                                     duration=200, #how long is the excusion
+                                     snr = 1, #the signal to noise ratio
+                                    time.variable.name = "Age",
+                                    time.units = "yr BP") #signal to noise ratio.
+                                    
+```
+
+Now, we can use `detectExcursion()` to test it. We'll plot the results after that.
+
+## Detect Excursion
+
+In `detectExcursion()` we need to specify a number of parameters. Check out the detectExcursion vignette for more details on how this works.
+
+First, let's just test the excursion with now uncertainty or null hypothesis testing.
+
+```{r}
+detectedExcusion <- detectExcursion(syntheticExcursion,
+                          event.yr = 4200,
+                          event.window = 400,
+                          ref.window = 400,
+                          sig.num = 2,
+                          exc.type = "positive",
+                          n.ens = 1,
+                          null.hypothesis.n = 1,
+                          simulate.time.uncertainty = FALSE,
+                          simulate.paleo.uncertainty = FALSE)
+```
+
+Now we can use `print()` and plot to check out the results
+
+```{r}
+print(detectedExcusion)
+```
+
+Let's plot the results
+
+```{r}
+plot(detectedExcusion)
+```
+
+
+## Excursion testing with uncertainty
+
+Typically, we'll want to consider uncertainty when detecting excursions. This could be done with age or paleo ensembles included in the data, but for our synthetic experiment, we'll simulate age and paleo uncertainty. 
+
+```{r}
+detectedExcusionEns <- detectExcursion(syntheticExcursion,
+                          event.yr = 4200,
+                          event.window = 400,
+                          ref.window = 400,
+                          sig.num = 2,
+                          exc.type = "positive",
+                          n.ens = 50, #need to test excursions for a number of ensemble member
+                          null.hypothesis.n = 50, #how many null hypothesis members to test
+                          simulate.time.uncertainty = TRUE,
+                          simulate.paleo.uncertainty = TRUE)
+```
+
+Now let's look at the results
+```{r, warning=FALSE}
+print(detectedExcusionEns)
+```
+
+and make a plot
+
+```{r}
+plot(detectedExcusionEns)
+```
+
+

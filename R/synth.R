@@ -21,7 +21,7 @@ linearRamp <-function(lngth,width){
 #' @param lngth number of samples
 #' @param sigma standard deviation of the Gaussian innovations
 #' @param g lab-1 autocorrelation (short-term memory parameter)
-#' @ImportFrom stats arima.sim
+#' @importFrom stats arima.sim
 #' @return  lngth samples of the process (vector)
 #' @export
 
