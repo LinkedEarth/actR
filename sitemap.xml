@@ -10,9 +10,6 @@
     <loc>/LICENSE.html</loc>
   </url>
   <url>
-    <loc>/articles/abruptShift_tests.html</loc>
-  </url>
-  <url>
     <loc>/articles/detectExcursion.html</loc>
   </url>
   <url>
@@ -22,7 +19,10 @@
     <loc>/articles/index.html</loc>
   </url>
   <url>
-    <loc>/articles/neotoma.html</loc>
+    <loc>/articles/makeExcursion.html</loc>
+  </url>
+  <url>
+    <loc>/articles/makeShift.html</loc>
   </url>
   <url>
     <loc>/authors.html</loc>
@@ -35,6 +35,9 @@
   </url>
   <url>
     <loc>/news/index.html</loc>
+  </url>
+  <url>
+    <loc>/reference/actR_ggtheme.html</loc>
   </url>
   <url>
     <loc>/reference/ar1noise.html</loc>
@@ -62,6 +65,12 @@
   </url>
   <url>
     <loc>/reference/linearRamp.html</loc>
+  </url>
+  <url>
+    <loc>/reference/makeExcursion.html</loc>
+  </url>
+  <url>
+    <loc>/reference/makeShift.html</loc>
   </url>
   <url>
     <loc>/reference/maxConsecutive.html</loc>
