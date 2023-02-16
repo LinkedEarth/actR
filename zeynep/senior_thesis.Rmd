@@ -1,0 +1,592 @@
+---
+title: "Applications of Bayesian Change Point Detection to Abrupt Climate Events"
+output:
+  html_document:
+    df_print: paged
+---
+## Introduction
+
+The Earth's climate system exhibits chaotic, nonlinear behavior which correlate to abrupt and overarching shifts within the state of the system. Abrupt climate events have contributed to the decline of several human civilizations (ex: collapse of the Old Kingdom in ancient Egypt during the 4.2k event, decline of prehistoric paleoamerican cultures during the Younger Dryas, etc.) (Stanley et al., 2016; Brakenridge, 2011). Therefore, change point detection is particularly relevant when analyzing climate records.  
+
+Bayesian change point analyses detects change points within a dataset through evaluating variances in the rate of change of events. The Bayesian change point detection method as outlined in Ruggieri, 2012, incorporates all possible partitions of the data set for change point location, instead of using a common MCMC approach which would only consider a small number of potential solutions. Conversely, this algorithm can produce a high false-alarm rate in the presence of auto correlated data--which is the case for the majority of climate records.  
+
+The purpose of this notebook is to analyze the effectiveness of Bayesian change point detection in its applications to synthesized basic abrupt shifts commonly found in climate records and a real-world temperature anomaly data set through conducting a sensitivity analysis on each result. 
+
+## Some Results + Interpretation
+
+This section will look at various different transitions and excursions that are common in climate records. 
+
+```{r}
+source("helper_functions.R", local = knitr::knit_global())
+source("bayes_chgpt.R", local = knitr::knit_global())
+library(pracma)
+library(dplyr)
+library(ggpubr)
+```
+### Jumps and Ramps
+
+Jumps are abrupt shifts from one stable state to another. The piecewise equation for a jump transition is shown below:
+
+\begin{equation}
+y(t) = 
+\begin{cases} 
+\ y_0 & \text{if } t \le t_{start} \\
+a         & \text{if } t_{start} \le t
+\end{cases}
+\end{equation}
+
+\begin{equation}
+ t_{end} = d + t_{start}
+ \end{equation}
+ 
+Ramps are jumps that occur over a period of time. The piecewise equation for a ramp transition is shown below:
+
+\begin{equation}
+y(t) = 
+\begin{cases} 
+\ y_0 & \text{if } t \le t_{start} \\
+y_0 + \frac{a}{d} (t-t_{start}) & \text{if } t_{start} \le t \le t_{end}\\
+a         & \text{if } t_{end} \le t
+\end{cases}
+\end{equation}
+
+\begin{equation}
+t_{end} = d + t_{start}
+\end{equation}
+
+In this section, we will apply the Bayesian change point algorithm on synthesized noisy jump and ramp data.
+
+```{r}
+#applying to noisy jump data
+data <- make_transition(length=100, amp=1, start=50)
+noise <- ar1.noise(n=nrow(data),gamma=.9,sigma=.1)
+noisydata <- data + noise
+Y = noisydata$values
+year = noisydata$time
+N <- length(Y)
+X <- matrix(c(rep(1,N), seq(1,N)), ncol=2)   # A linear function
+m <- dim(X)[2]    # Number of predictor variables
+t = seq(1,N)
+d_min <- 5      # minimum distance between change points
+k_0 <- c(0.001, 0.1)     # Hyper parameter for the prior on the regression coefficients
+beta0 <- rep(0,m)        # Mean of multivariate normal prior on regression coefficients
+v_0 <- 1; sig_0=var(Y)   # You can also use: sig_0 = var(Y)  
+# Hyperparameters for the scaled-inverse chi-square distribution
+k_max <- 10        # Maximum number of change points
+num_samp <- 1000   # number of sampled solutions
+# Function call for the Bayesian Change Point Algorithm
+result = bayes_chgpt_compute(Y, X, t, k_max, d_min, k_0, v_0, sig_0, num_samp)
+```
+```{r}
+#plotting
+plt <- do.call(bayes_chgpt_plot,list(chgpt_prob=result$chgpt_prob,model=result$model,year=result$year,Y=result$Y, size=result$size))
+p1 <- plt[[1]] + ggtitle('Change Points in Noisy Jump Data Set', subtitle = 'gamma = 0.9; sigma = 0.1') + geom_line(data=data,mapping=aes(x=time,y=values,colour='Signal')) +  xlab("")
+ggarrange(p1,plt[[2]], nrow=2, heights=c(2,1))
+```
+The algorithm correctly predicts a change point at roughly Year = 50 for the synthesized jump.
+
+```{r}
+#applying to noisy ramp data
+data <- make_transition(length=100, amp=-1, start=30, dur=30)
+noise <- ar1.noise(n=nrow(data),gamma=.9,sigma=.1)
+noisydata <- data + noise
+Y = noisydata$values
+year = noisydata$time
+N <- length(Y)
+X <- matrix(c(rep(1,N), seq(1,N)), ncol=2)   # A linear function
+m <- dim(X)[2]    # Number of predictor variables
+t = seq(1,N)
+d_min <- 5      # minimum distance between change points
+k_0 <- c(0.001, 0.1)     # Hyper parameter for the prior on the regression coefficients
+beta0 <- rep(0,m)        # Mean of multivariate normal prior on regression coefficients
+v_0 <- 1; sig_0 = var(Y)  # You can also use: sig_0 = var(Y)  
+# Hyperparameters for the scaled-inverse chi-square distribution
+k_max <- 10        # Maximum number of change points
+num_samp <- 1000   # number of sampled solutions
+# Function call for the Bayesian Change Point Algorithm
+result = bayes_chgpt_compute(Y, X, t, k_max, d_min, k_0, v_0, sig_0, num_samp)
+```
+```{r}
+#plotting
+plt <- do.call(bayes_chgpt_plot,list(chgpt_prob=result$chgpt_prob,model=result$model,year=result$year,Y=result$Y, size=result$size))
+p1 <- plt[[1]] + ggtitle('Change Points in Noisy Ramp Data Set', subtitle = 'gamma = 0.9; sigma = 0.1') + geom_line(data=data,mapping=aes(x=time,y=values,colour='Signal')) +  xlab("")
+ggarrange(p1,plt[[2]], nrow=2, heights=c(2,1))
+```
+The algorithm is close to predicting both the initial and final change points.
+
+### Boxes, Skew-Boxes, and Spikes
+
+A box is defined as an excursion from a baseline stable state to a flat stable state, followed by a return to the baseline state. The piecewise equation for a box shift is two Heaviside functions stitched together, formalized below:
+
+\begin{equation}
+y(t) = 
+\begin{cases} 
+\ y_0 & \text{if } t \le t_{start} \\
+a  & \text{if } t_{start} \le t \le t_{end}\\
+y_0        & \text{if } t_{end} \le t
+\end{cases}
+\end{equation}
+
+\begin{equation}
+t_{end} = d + t_{start}
+\end{equation}
+
+A skew-box is similar, however the state being shifted to has it's own trend. The equation for a skew-box using is shown below:
+
+\begin{equation}
+y(t) = 
+\begin{cases} 
+\ y_0 & \text{if } t \le t_{start} \\
+a - \frac{\Delta a}{d} (t-t_{start})  & \text{if } t_{start} \le t \le t_{end}\\
+y_0        & \text{if } t_{end} \le t
+\end{cases}
+\end{equation}
+
+\begin{equation}
+t_{end} = d + t_{start}
+\end{equation}
+
+Spikes are defined as an abrupt change, followed by a gradual return to the baseline state. The piecewise equation for a spike is defined below:
+
+\begin{equation}
+y(t) = 
+\begin{cases} 
+\ y_0 & \text{if } t \le t_{start} \\
+a - \frac{a}{d} (t-t_{start}) & \text{if } t_{start} \le t \le t_{end}\\
+y_0        & \text{if } t_{end} \le t
+\end{cases}
+\end{equation}
+
+\begin{equation}
+t_{end} = d + t_{start}
+\end{equation}
+
+In this section, we will apply the Bayesian change point algorithm on synthesized box, skew-box, and spike data.
+
+```{r}
+#applying to noisy box data
+data <- make_excursion(length=100, amp=1, start=40, dur=20)
+noise <- ar1.noise(n=nrow(data),gamma=.9,sigma=0.1)
+noisydata <- data + noise
+Y = noisydata$values
+year = noisydata$time
+N <- length(Y)
+X <- matrix(c(rep(1,N), seq(1,N)), ncol=2)   # A linear function
+m <- dim(X)[2]    # Number of predictor variables
+t = seq(1,N)
+d_min <- 5      # minimum distance between change points
+k_0 <- c(0.001, 0.1)     # Hyper parameter for the prior on the regression coefficients
+beta0 <- rep(0,m)        # Mean of multivariate normal prior on regression coefficients
+v_0 <- 1; sig_0 =var(Y) # You can also use: sig_0 = var(Y)  
+# Hyperparameters for the scaled-inverse chi-square distribution
+k_max <- 10        # Maximum number of change points
+num_samp <- 1000   # number of sampled solutions
+# Function call for the Bayesian Change Point Algorithm
+result = bayes_chgpt_compute(Y, X, t, k_max, d_min, k_0, v_0, sig_0, num_samp)
+```
+```{r}
+#plotting
+plt <- do.call(bayes_chgpt_plot,list(chgpt_prob=result$chgpt_prob,model=result$model,year=result$year,Y=result$Y, size=result$size))
+p1 <- plt[[1]] + ggtitle('Change Points in Noisy Box Data Set', subtitle = 'gamma = 0.9; sigma = 0.1') + geom_line(data=data,mapping=aes(x=time,y=values,colour='Signal')) +  xlab("")
+ggarrange(p1,plt[[2]], nrow=2, heights=c(2,1))
+```
+The algorithm correctly predicts change points at Year = 40 and Year = 60.
+
+```{r}
+#applying to noisy skew-box data
+data <- make_excursion(length=100, amp=1, del_amp=-.2, dur=20, start=40)
+noise <- ar1.noise(n=nrow(data),gamma=.85,sigma=0.1)
+noisydata <- data + noise
+Y = noisydata$values
+year = noisydata$time
+N <- length(Y)
+X <- matrix(c(rep(1,N), seq(1,N)), ncol=2)   # A linear function
+m <- dim(X)[2]    # Number of predictor variables
+t = seq(1,N)
+d_min <- 5      # minimum distance between change points
+k_0 <- c(0.001, 0.1)     # Hyper parameter for the prior on the regression coefficients
+beta0 <- rep(0,m)        # Mean of multivariate normal prior on regression coefficients
+v_0 <- 1; sig_0 = var(Y) # You can also use: sig_0 = var(Y)  
+# Hyperparameters for the scaled-inverse chi-square distribution
+k_max <- 10        # Maximum number of change points
+num_samp <- 1000   # number of sampled solutions
+# Function call for the Bayesian Change Point Algorithm
+result = bayes_chgpt_compute(Y, X, t, k_max, d_min, k_0, v_0, sig_0, num_samp)
+```
+```{r}
+plt <- do.call(bayes_chgpt_plot,list(chgpt_prob=result$chgpt_prob,model=result$model,year=result$year,Y=result$Y, size=result$size))
+p1 <- plt[[1]] + ggtitle('Change Points in Noisy Skew-Box Data Set', subtitle = 'gamma = 0.9; sigma = 0.1') + geom_line(data=data,mapping=aes(x=time,y=values,colour='Signal')) +  xlab("")
+ggarrange(p1,plt[[2]], nrow=2, heights=c(2,1))
+```
+The algorithm correctly predicts change points at Year = 40 and Year = 60.
+
+```{r}
+#applying to noisy spike data
+data <- make_excursion(length=100, amp=1, del_amp=-.99, dur=8, start=40)
+noise <- ar1.noise(n=nrow(data),gamma=.9,sigma=0.1)
+noisydata <- data + noise
+Y = noisydata$values
+year = noisydata$time
+N <- length(Y)
+X <- matrix(c(rep(1,N), seq(1,N)), ncol=2)   # A linear function
+m <- dim(X)[2]    # Number of predictor variables
+t = seq(1,N)
+d_min <- 5      # minimum distance between change points
+k_0 <- c(0.001, 0.1)     # Hyper parameter for the prior on the regression coefficients
+beta0 <- rep(0,m)        # Mean of multivariate normal prior on regression coefficients
+v_0 <- 1; sig_0 = var(Y)  # You can also use: sig_0 = var(Y)  
+# Hyperparameters for the scaled-inverse chi-square distribution
+k_max <- 10        # Maximum number of change points
+num_samp <- 1000   # number of sampled solutions
+# Function call for the Bayesian Change Point Algorithm
+result = bayes_chgpt_compute(Y, X, t, k_max, d_min, k_0, v_0, sig_0, num_samp)
+```
+```{r}
+#plotting
+plt <- do.call(bayes_chgpt_plot,list(chgpt_prob=result$chgpt_prob,model=result$model,year=result$year,Y=result$Y, size=result$size))
+p1 <- plt[[1]] + ggtitle('Change Points in Noisy Spike Data Set', subtitle = 'gamma = 0.9; sigma = 0.1') + geom_line(data=data,mapping=aes(x=time,y=values,colour='Signal')) +  xlab("")
+ggarrange(p1,plt[[2]], nrow=2, heights=c(2,1))
+```
+The algorithm correctly predicts the initial change point at Year = 40 and is close to predicting the change point at Year = 48. However, there is also a small false alarm around Year = 62 and Year = 80.
+
+
+Overall, the algorithm is able to best detect change points within the jump, box, and skew-box data and has some difficulty with predicting change points for the ramp and spike data. This may be due to the jump, box, and skew-box having very defined transitions between states. The gradual change of the ramp and spike could lead to difficulties with change point detection, especially when noise is added.
+
+### Application to Global Surface Temperature Anomalies
+```{r}
+#applying to HadCRUT.5.0.1.0. data
+
+data <- readr::read_csv("HadCRUT.5.0.1.0.analysis.summary_series.global.annual.csv")
+year = data$Time
+Y = data$`Anomaly (deg C)`
+N <- length(Y)
+X <- matrix(c(rep(1,N), seq(1,N)), ncol=2)   # A linear function
+m <- dim(X)[2]    # Number of predictor variables
+t = seq(1,N)
+d_min <- 5      # minimum distance between change points
+k_0 <- c(0.001, 0.1)     # Hyper parameter for the prior on the regression coefficients
+beta0 <- rep(0,m)        # Mean of multivariate normal prior on regression coefficients
+v_0 <- 1; sig_0 = var(Y)  # You can also use: sig_0 = var(Y)  
+# Hyperparameters for the scaled-inverse chi-square distribution
+k_max <- 10        # Maximum number of change points
+num_samp <- 1000   # number of sampled solutions
+# Function call for the Bayesian Change Point Algorithm
+result = bayes_chgpt_compute(Y, X, t, k_max, d_min, k_0, v_0, sig_0, num_samp)
+```
+```{r}
+#plotting
+df <- data.frame(chgpt_prob=result$chgpt_prob,model=result$model,year=result$year,Y=result$Y, size=result$size)
+p1 <- ggplot(df) + geom_line(mapping=aes(x=year,y=Y,colour='Temperature Anomalies')) + geom_line(mapping=aes(x=year,y=model,colour='Model')) + scale_color_manual(name = " ", breaks = c('Temperature Anomalies',  'Model'), values=c('Temperature Anomalies'='blue','Model'='darkgoldenrod2')) + theme(legend.position="top",axis.text.x=element_blank(),axis.ticks.x=element_blank(),plot.margin=unit(c(1,1,0,1), "cm")) + ggtitle('Change Points in HadCRUT.5.0.1.0.') + xlab("")
+p2 <- ggplot(df) + geom_line(mapping=aes(x=year,y=chgpt_prob,colour='red')) + ylab("P(Change Point)") + xlab("Year") + theme(legend.position="none", plot.margin=unit(c(0,1,1,1), "cm"))
+ggarrange(p1,p2, nrow=2, heights=c(2,1))
+```
+The algorithm predicts a change point in temperature anomalies at ~1964--consistent with the assumption that global warming accelerated in the last half of the 20th century, after decades of unregulated industrialization.
+
+## Sensitivity Analysis + Interpretation
+
+This section of the notebook will analyze the performance of the Bayesian change point detection algorithm by constructing a Receiver operating characteristic (ROC) curve for each synthesized transition/excursion. The ROC plot illustrates the relationship between sensitivity and specificity of a particular method through plotting the true positive rate (TPR) against the false positive rate (FPR). The baseline for an ROC curve are the points lying along the plot's diagonal, where FPR=TPR. High performing methods would lie well above the diagonal, whereas lower performing methods would be positioned below the diagonal.
+
+Each test will iterate over 1000 noise realizations and analyze sensitivity of the algorithm to variances in two parameters of the AR(1) process: Sigma and Gamma. It will also loop through 10 different probability thresholds. Values in an autoregressive process depend linearly on its own previous values. In an AR(1) process, the current value is based on the previous value.
+
+### Sensitivity to Changes in Sigma
+
+Sigma is the standard deviation of the noise values added to the synthesized data sets. This section will analyze the sensitivity of the algorithm to 6 different sigma values (0.2, 0.25, 0.3, 0.4, 0.5, 1) as it is applied to the transitions/excursions. The hypothesis is that the algorithm's performance will degrade as sigma increases, since it is adding more variation to the noise which obscures the original signal.
+
+#### Jump Analysis
+
+```{r}
+# define signal and noise characteristics
+N <- 100
+M <- 1000
+start <- 50
+amp <- 1.0
+signal <- make_transition(length=N, amp=amp, start=start)
+sigma <- c(0.2, 0.3, 0.4, 0.5, 1) # noise levels
+# define vector of probability thresholds 
+nprob = 10  
+prob_thresh <- linspace(0.2, 0.9, nprob)
+for (i in seq_along(sigma)){
+  noise <- ar1.noise(n=N, ncol = M, gamma=0.7, sigma=sigma[i])  # define noise
+  roc.res <- bayes_chgpt_roc(signal, noise, prob_thresh, loc = start, tol = 5, k_max = 2)
+  nam <- paste("tpr", i, sep="" )
+  assign(nam, rowMeans(roc.res$true_pos)/(rowMeans(roc.res$true_pos) + rowMeans(roc.res$false_neg)))
+  nam1 <-  paste("fpr", i, sep="" )
+  assign(nam1, rowMeans(roc.res$false_pos)/(rowMeans(roc.res$false_pos) + rowMeans(roc.res$true_neg)))
+}
+```
+```{r}
+roc <- data.frame(tpr1, fpr1, tpr2, fpr2, tpr3, fpr3, tpr4, fpr4, tpr5, fpr5)
+ggplot(roc) + geom_line(mapping=aes(y=tpr1,x=fpr1, colour='Sigma = 0.2')) + geom_point(mapping=aes(y=tpr1,x=fpr1, colour='Sigma = 0.2')) + geom_line(mapping=aes(y=tpr2,x=fpr2, colour='Sigma = 0.3')) + geom_point(mapping=aes(y=tpr2,x=fpr2, colour='Sigma = 0.3')) + geom_line(mapping=aes(y=tpr3,x=fpr3, colour='Sigma = 0.4')) + geom_point(mapping=aes(y=tpr3,x=fpr3, colour='Sigma = 0.4')) + geom_line(mapping=aes(y=tpr4,x=fpr4, colour='Sigma = 0.5')) + geom_point(mapping=aes(y=tpr4,x=fpr4, colour='Sigma = 0.5')) + geom_line(mapping=aes(y=tpr5,x=fpr5, colour='Sigma = 1')) + geom_point(mapping=aes(y=tpr5,x=fpr5, colour='Sigma = 1')) + scale_color_manual(name = " ", breaks = c('Sigma = 0.2', 'Sigma = 0.3', 'Sigma = 0.4', 'Sigma = 0.5', 'Sigma = 1' ), values=c('Sigma = 0.2'='blue', 'Sigma = 0.3'='red', 'Sigma = 0.4'='darkviolet', 'Sigma = 0.5'='chartreuse4', 'Sigma = 1'='darkcyan'))  + ggtitle('Sensitivity Analysis for Jump') + geom_segment(x=0,xend=1,y=0,yend=1) + xlim(0,1) + ylim(0,1) + xlab("False Positive Rate") + ylab("True Positive Rate") 
+```
+The sensitivity analysis for the jump follows the expected trend, and performance clearly degrades as sigma is increased.
+
+#### Ramp Analysis
+```{r}
+# define signal and noise characteristics
+N <- 100
+M <- 1000
+start <- 50
+dur <- 20
+amp <- 1.0
+del_amp <- -.2
+signal <- make_transition(length=N, amp=amp, dur=dur, del_amp=del_amp, start=start)
+sigma <- c(0.2, 0.3, 0.4, 0.5, 1) # noise levels
+# define vector of probability thresholds 
+nprob = 10  
+prob_thresh <- linspace(0.2, 0.9, nprob)
+for (i in seq_along(sigma)){
+  noise <- ar1.noise(n=N, ncol = M, gamma=0.7, sigma=sigma[i])  # define noise
+  roc.res <- bayes_chgpt_roc(signal, noise, prob_thresh, loc = start, tol = 5, k_max = 2)
+  nam <- paste("tpr", i, sep="" )
+  assign(nam, rowMeans(roc.res$true_pos)/(rowMeans(roc.res$true_pos) + rowMeans(roc.res$false_neg)))
+  nam1 <-  paste("fpr", i, sep="" )
+  assign(nam1, rowMeans(roc.res$false_pos)/(rowMeans(roc.res$false_pos) + rowMeans(roc.res$true_neg)))
+}
+```
+```{r}
+roc <- data.frame(tpr1, fpr1, tpr2, fpr2, tpr3, fpr3, tpr4, fpr4, tpr5, fpr5)
+ggplot(roc) + geom_line(mapping=aes(y=tpr1,x=fpr1, colour='Sigma = 0.2')) + geom_point(mapping=aes(y=tpr1,x=fpr1, colour='Sigma = 0.2')) + geom_line(mapping=aes(y=tpr2,x=fpr2, colour='Sigma = 0.3')) + geom_point(mapping=aes(y=tpr2,x=fpr2, colour='Sigma = 0.3')) + geom_line(mapping=aes(y=tpr3,x=fpr3, colour='Sigma = 0.4')) + geom_point(mapping=aes(y=tpr3,x=fpr3, colour='Sigma = 0.4')) + geom_line(mapping=aes(y=tpr4,x=fpr4, colour='Sigma = 0.5')) + geom_point(mapping=aes(y=tpr4,x=fpr4, colour='Sigma = 0.5')) + geom_line(mapping=aes(y=tpr5,x=fpr5, colour='Sigma = 1')) + geom_point(mapping=aes(y=tpr5,x=fpr5, colour='Sigma = 1')) + scale_color_manual(name = " ", breaks = c('Sigma = 0.2', 'Sigma = 0.3', 'Sigma = 0.4', 'Sigma = 0.5', 'Sigma = 1' ), values=c('Sigma = 0.2'='blue', 'Sigma = 0.3'='red', 'Sigma = 0.4'='darkviolet', 'Sigma = 0.5'='chartreuse4', 'Sigma = 1'='darkcyan'))  + ggtitle('Sensitivity Analysis for Ramp') + geom_segment(x=0,xend=1,y=0,yend=1) + xlim(0,1) + ylim(0,1) + xlab("False Positive Rate") + ylab("True Positive Rate") 
+```
+The sensitivity analysis for the ramp roughly follows the predicted pattern. Highest performance was at Sigma = 0.2; however, the other results are very clustered but generally performance degrades as Sigma increases.
+
+#### Box Analysis
+```{r}
+# define signal and noise characteristics
+N <- 100
+M <- 1000
+start <- 40
+dur <- 20
+amp <- 1.0
+signal <- make_excursion(length=N, start=start, dur=dur, amp=amp)
+sigma <- c(0.2, 0.3, 0.4, 0.5, 1) # noise levels
+# define vector of probability thresholds 
+nprob = 10  
+prob_thresh <- linspace(0.2, 0.9, nprob)
+for (i in seq_along(sigma)){
+  noise <- ar1.noise(n=N, ncol = M, gamma=0.7, sigma=sigma[i])  # define noise
+  roc.res <- bayes_chgpt_roc(signal, noise, prob_thresh, loc = start, tol = 5, k_max = 2)
+  nam <- paste("tpr", i, sep="" )
+  assign(nam, rowMeans(roc.res$true_pos)/(rowMeans(roc.res$true_pos) + rowMeans(roc.res$false_neg)))
+  nam1 <-  paste("fpr", i, sep="" )
+  assign(nam1, rowMeans(roc.res$false_pos)/(rowMeans(roc.res$false_pos) + rowMeans(roc.res$true_neg)))
+}
+```
+```{r}
+roc <- data.frame(tpr1, fpr1, tpr2, fpr2, tpr3, fpr3, tpr4, fpr4, tpr5, fpr5)
+ggplot(roc) + geom_line(mapping=aes(y=tpr1,x=fpr1, colour='Sigma = 0.2')) + geom_point(mapping=aes(y=tpr1,x=fpr1, colour='Sigma = 0.2')) + geom_line(mapping=aes(y=tpr2,x=fpr2, colour='Sigma = 0.3')) + geom_point(mapping=aes(y=tpr2,x=fpr2, colour='Sigma = 0.3')) + geom_line(mapping=aes(y=tpr3,x=fpr3, colour='Sigma = 0.4')) + geom_point(mapping=aes(y=tpr3,x=fpr3, colour='Sigma = 0.4')) + geom_line(mapping=aes(y=tpr4,x=fpr4, colour='Sigma = 0.5')) + geom_point(mapping=aes(y=tpr4,x=fpr4, colour='Sigma = 0.5')) + geom_line(mapping=aes(y=tpr5,x=fpr5, colour='Sigma = 1')) + geom_point(mapping=aes(y=tpr5,x=fpr5, colour='Sigma = 1')) + scale_color_manual(name = " ", breaks = c('Sigma = 0.2', 'Sigma = 0.3', 'Sigma = 0.4', 'Sigma = 0.5', 'Sigma = 1' ), values=c('Sigma = 0.2'='blue', 'Sigma = 0.3'='red', 'Sigma = 0.4'='darkviolet', 'Sigma = 0.5'='chartreuse4', 'Sigma = 1'='darkcyan'))  + ggtitle('Sensitivity Analysis for Box') + geom_segment(x=0,xend=1,y=0,yend=1) + xlim(0,1) + ylim(0,1) + xlab("False Positive Rate") + ylab("True Positive Rate") 
+```
+The sensitivity analysis for the box roughly follows the predicted pattern. However, it seems that Sigma = 0.3 has the best performance since it has lower false positive rates associated with its true positive rate. While Sigma = 0.2 has consistently high true positive rates, it is also correlated with higher false positive rates.
+
+#### Skew-Box Analysis
+```{r}
+N <- 100
+M <- 1000
+start <- 40
+dur <- 20
+amp <- 1.0
+del_amp <- -.2
+signal <- make_excursion(length=N, start=start, dur=dur, amp=amp, del_amp=del_amp)
+sigma <- c(0.2, 0.3, 0.4, 0.5, 1) # noise levels
+# define vector of probability thresholds 
+nprob <- 10  
+prob_thresh <- linspace(0.2, 0.9, nprob)
+for (i in seq_along(sigma)){
+  noise <- ar1.noise(n=N, ncol = M, gamma=0.7, sigma=sigma[i])  # define noise
+  roc.res <- bayes_chgpt_roc(signal, noise, prob_thresh, loc = start, tol = 5, k_max = 2)
+  nam <- paste("tpr", i, sep="" )
+  assign(nam, rowMeans(roc.res$true_pos)/(rowMeans(roc.res$true_pos) + rowMeans(roc.res$false_neg)))
+  nam1 <-  paste("fpr", i, sep="" )
+  assign(nam1, rowMeans(roc.res$false_pos)/(rowMeans(roc.res$false_pos) + rowMeans(roc.res$true_neg)))
+}
+```
+```{r}
+roc <- data.frame(tpr1, fpr1, tpr2, fpr2, tpr3, fpr3, tpr4, fpr4, tpr5, fpr5)
+ggplot(roc) + geom_line(mapping=aes(y=tpr1,x=fpr1, colour='Sigma = 0.2')) + geom_point(mapping=aes(y=tpr1,x=fpr1, colour='Sigma = 0.2')) + geom_line(mapping=aes(y=tpr2,x=fpr2, colour='Sigma = 0.3')) + geom_point(mapping=aes(y=tpr2,x=fpr2, colour='Sigma = 0.3')) + geom_line(mapping=aes(y=tpr3,x=fpr3, colour='Sigma = 0.4')) + geom_point(mapping=aes(y=tpr3,x=fpr3, colour='Sigma = 0.4')) + geom_line(mapping=aes(y=tpr4,x=fpr4, colour='Sigma = 0.5')) + geom_point(mapping=aes(y=tpr4,x=fpr4, colour='Sigma = 0.5')) + geom_line(mapping=aes(y=tpr5,x=fpr5, colour='Sigma = 1')) + geom_point(mapping=aes(y=tpr5,x=fpr5, colour='Sigma = 1')) + scale_color_manual(name = " ", breaks = c('Sigma = 0.2', 'Sigma = 0.3', 'Sigma = 0.4', 'Sigma = 0.5', 'Sigma = 1' ), values=c('Sigma = 0.2'='blue', 'Sigma = 0.3'='red', 'Sigma = 0.4'='darkviolet', 'Sigma = 0.5'='chartreuse4', 'Sigma = 1'='darkcyan'))  + ggtitle('Sensitivity Analysis for Skew-Box') + geom_segment(x=0,xend=1,y=0,yend=1) + xlim(0,1) + ylim(0,1) + xlab("False Positive Rate") + ylab("True Positive Rate")   
+```
+The sensitivity analysis for the skew-box has a clear pattern and performance degrades as sigma increases. However, Sigma = 0.3 seems to show the best performance due to its proximity to the upper left corner of the graph. Sigma = 0.2 has consistently high true positive rates, but it is also correlated with higher false positive rates. 
+
+#### Spike Analysis
+```{r}
+N <- 100
+M <- 1000
+start <- 40
+dur <- 8
+amp <- 1.0
+del_amp=-.99
+signal <- make_excursion(length=N, start=start, dur=dur, amp=amp, del_amp=del_amp)
+sigma <- c(0.2, 0.3, 0.4, 0.5, 1) # noise levels
+# define vector of probability thresholds 
+nprob = 10  
+prob_thresh <- linspace(0.2, 0.9, nprob)
+for (i in seq_along(sigma)){
+  noise <- ar1.noise(n=N, ncol = M, gamma=0.7, sigma=sigma[i])  # define noise
+  roc.res <- bayes_chgpt_roc(signal, noise, prob_thresh, loc = start, tol = 5, k_max = 2)
+  nam <- paste("tpr", i, sep="" )
+  assign(nam, rowMeans(roc.res$true_pos)/(rowMeans(roc.res$true_pos) + rowMeans(roc.res$false_neg)))
+  nam1 <-  paste("fpr", i, sep="" )
+  assign(nam1, rowMeans(roc.res$false_pos)/(rowMeans(roc.res$false_pos) + rowMeans(roc.res$true_neg)))
+}
+```
+```{r}
+roc <- data.frame(tpr1, fpr1, tpr2, fpr2, tpr3, fpr3, tpr4, fpr4, tpr5, fpr5)
+ggplot(roc) + geom_line(mapping=aes(y=tpr1,x=fpr1, colour='Sigma = 0.2')) + geom_point(mapping=aes(y=tpr1,x=fpr1, colour='Sigma = 0.2')) + geom_line(mapping=aes(y=tpr2,x=fpr2, colour='Sigma = 0.3')) + geom_point(mapping=aes(y=tpr2,x=fpr2, colour='Sigma = 0.3')) + geom_line(mapping=aes(y=tpr3,x=fpr3, colour='Sigma = 0.4')) + geom_point(mapping=aes(y=tpr3,x=fpr3, colour='Sigma = 0.4')) + geom_line(mapping=aes(y=tpr4,x=fpr4, colour='Sigma = 0.5')) + geom_point(mapping=aes(y=tpr4,x=fpr4, colour='Sigma = 0.5')) + geom_line(mapping=aes(y=tpr5,x=fpr5, colour='Sigma = 1')) + geom_point(mapping=aes(y=tpr5,x=fpr5, colour='Sigma = 1')) + scale_color_manual(name = " ", breaks = c('Sigma = 0.2', 'Sigma = 0.3', 'Sigma = 0.4', 'Sigma = 0.5', 'Sigma = 1' ), values=c('Sigma = 0.2'='blue', 'Sigma = 0.3'='red', 'Sigma = 0.4'='darkviolet', 'Sigma = 0.5'='chartreuse4', 'Sigma = 1'='darkcyan'))  + ggtitle('Sensitivity Analysis for Spike') + geom_segment(x=0,xend=1,y=0,yend=1) + xlim(0,1) + ylim(0,1) + xlab("False Positive Rate") + ylab("True Positive Rate") 
+```
+The results of sensitivity analysis for the spike seem very clustered together, but it does follow the predicted pattern, more or less. The best performance seems to be at Sigma = 0.2 and Sigma = 0.4.
+
+Overall, the algorithm generally degrades as sigma increases, which is expected since optimal performance occurs when there is no noise. However, the spike and ramp examples deviate the most from this pattern--consistent with the results from the previous section of this notebook. Additionally, most of the ROC curves are very clustered towards the bottom left of the graph, and gradually separate. This is due to a lower probability threshold that is less selective when choosing true positives.
+
+### Sensitivity to Changes in Gamma
+
+Gamma represents the degree of persistence between neighboring values. As Gamma increases, the time series become "smoother" (Emile-Geay, 2020) This section will analyze the sensitivity of the Bayesian change point algorithm to variations in gamma (0.04, 0.6, 0.8, 0.9, 0.99) at a fixed sigma level (in this case, 0.4). It is predicted that performance will improve as gamma decreases.
+
+#### Jump Analyses
+```{r}
+N <- 100
+M <- 1000
+start <- 50
+amp <- 1.0
+sigma <- 0.4 # noise levels
+signal <- make_transition(length=N, amp=amp, start=start)
+gamma <- c(0, 0.4, 0.6, 0.8, 0.9, 0.99)
+for (i in seq_along(gamma)){
+  noise <- ar1.noise(n=N, ncol = M, gamma=gamma[i], sigma=sigma)  # define noise
+  roc.res <- bayes_chgpt_roc(signal, noise, prob_thresh, loc = start, tol = 5, k_max = 2)
+  nam <- paste("tpr", i, sep="" )
+  assign(nam, rowMeans(roc.res$true_pos)/(rowMeans(roc.res$true_pos) + rowMeans(roc.res$false_neg)))
+  nam1 <-  paste("fpr", i, sep="" )
+  assign(nam1, rowMeans(roc.res$false_pos)/(rowMeans(roc.res$false_pos) + rowMeans(roc.res$true_neg)))
+}
+```
+```{r}
+roc <- data.frame(tpr1, fpr1, tpr2, fpr2, tpr3, fpr3, tpr4, fpr4, tpr5, fpr5, tpr6, fpr6)
+ggplot(roc) + geom_line(mapping=aes(y=tpr1,x=fpr1, colour='Gamma = 0')) + geom_point(mapping=aes(y=tpr1,x=fpr1, colour='Gamma = 0')) + geom_line(mapping=aes(y=tpr2,x=fpr2, colour='Gamma = 0.4')) + geom_point(mapping=aes(y=tpr2,x=fpr2, colour='Gamma = 0.4')) +  geom_line(mapping=aes(y=tpr3,x=fpr3, colour='Gamma = 0.6')) +  geom_point(mapping=aes(y=tpr3,x=fpr3, colour='Gamma = 0.6')) + geom_line(mapping=aes(y=tpr4,x=fpr4, colour='Gamma = 0.8')) + geom_point(mapping=aes(y=tpr4,x=fpr4, colour='Gamma = 0.8')) + geom_line(mapping=aes(y=tpr5,x=fpr5, colour='Gamma = 0.9')) + geom_point(mapping=aes(y=tpr5,x=fpr5, colour='Gamma = 0.9')) + geom_line(mapping=aes(y=tpr6,x=fpr6, colour='Gamma = 0.99')) + geom_point(mapping=aes(y=tpr6,x=fpr6, colour='Gamma = 0.99')) + scale_color_manual(name = " ", breaks = c('Gamma = 0', 'Gamma = 0.4',  'Gamma = 0.6', 'Gamma = 0.8', 'Gamma = 0.9', 'Gamma = 0.99' ), values=c('Gamma = 0'='blue', 'Gamma = 0.4'='darkcyan', 'Gamma = 0.6'='darkgoldenrod2', 'Gamma = 0.8'='red', 'Gamma = 0.9'='darkviolet', 'Gamma = 0.99'='chartreuse4'))  + ggtitle('Sensitivity Analysis for Jump') + geom_segment(x=0,xend=1,y=0,yend=1) + xlim(0,1) + ylim(0,1) + xlab("False Positive Rate") + ylab("True Positive Rate")
+```
+The sensitivity analysis for the jump reflects the opposite of the predicted pattern. Performance is highest at Gamma = 0.99; however, for Gamma = 0, there were no false positives detected. The other graphs seems clustered together.
+
+#### Ramp Analyses
+```{r}
+N <- 100
+M <- 1000
+start <- 50
+dur <- 20
+amp <- 1.0
+del_amp <- -.2
+signal <- make_transition(length=N, amp=amp, dur=dur, del_amp=del_amp, start=start)
+sigma <- 0.4 # noise levels
+gamma <- c(0, 0.4, 0.6, 0.8, 0.9, 0.99)
+for (i in seq_along(gamma)){
+  noise <- ar1.noise(n=N, ncol = M, gamma=gamma[i], sigma=sigma)  # define noise
+  roc.res <- bayes_chgpt_roc(signal, noise, prob_thresh, loc = start, tol = 5, k_max = 2)
+  nam <- paste("tpr", i, sep="" )
+  assign(nam, rowMeans(roc.res$true_pos)/(rowMeans(roc.res$true_pos) + rowMeans(roc.res$false_neg)))
+  nam1 <-  paste("fpr", i, sep="" )
+  assign(nam1, rowMeans(roc.res$false_pos)/(rowMeans(roc.res$false_pos) + rowMeans(roc.res$true_neg)))
+}
+```
+```{r}
+roc <- data.frame(tpr1, fpr1, tpr2, fpr2, tpr3, fpr3, tpr4, fpr4, tpr5, fpr5, tpr6, fpr6)
+ggplot(roc) + geom_line(mapping=aes(y=tpr1,x=fpr1, colour='Gamma = 0')) + geom_point(mapping=aes(y=tpr1,x=fpr1, colour='Gamma = 0')) + geom_line(mapping=aes(y=tpr2,x=fpr2, colour='Gamma = 0.4')) + geom_point(mapping=aes(y=tpr2,x=fpr2, colour='Gamma = 0.4')) +  geom_line(mapping=aes(y=tpr3,x=fpr3, colour='Gamma = 0.6')) +  geom_point(mapping=aes(y=tpr3,x=fpr3, colour='Gamma = 0.6')) + geom_line(mapping=aes(y=tpr4,x=fpr4, colour='Gamma = 0.8')) + geom_point(mapping=aes(y=tpr4,x=fpr4, colour='Gamma = 0.8')) + geom_line(mapping=aes(y=tpr5,x=fpr5, colour='Gamma = 0.9')) + geom_point(mapping=aes(y=tpr5,x=fpr5, colour='Gamma = 0.9')) + geom_line(mapping=aes(y=tpr6,x=fpr6, colour='Gamma = 0.99')) + geom_point(mapping=aes(y=tpr6,x=fpr6, colour='Gamma = 0.99')) + scale_color_manual(name = " ", breaks = c('Gamma = 0', 'Gamma = 0.4',  'Gamma = 0.6', 'Gamma = 0.8', 'Gamma = 0.9', 'Gamma = 0.99' ), values=c('Gamma = 0'='blue', 'Gamma = 0.4'='darkcyan', 'Gamma = 0.6'='darkgoldenrod2', 'Gamma = 0.8'='red', 'Gamma = 0.9'='darkviolet', 'Gamma = 0.99'='chartreuse4'))  + ggtitle('Sensitivity Analysis for Ramp') + geom_segment(x=0,xend=1,y=0,yend=1) + xlim(0,1) + ylim(0,1) + xlab("False Positive Rate") + ylab("True Positive Rate")
+```
+The sensitivity analysis for the ramp roughly depicts the opposite of the predicted behavior. Lowest performance is found at Gamma = 0 and highest performance seems to be at Gamma = 0.9. However, the results are very clustered near each other, apart from Gamma = 0 and Gamma = 0.4. 
+
+#### Box Analyses
+```{r}
+N <- 100
+M <- 1000
+start <- 40
+dur <- 20
+amp <- 1.0
+signal <- make_excursion(length=N, start=start, dur=dur, amp=amp)
+sigma <- 0.4 # noise levels
+gamma <- c(0, 0.4, 0.6, 0.8, 0.9, 0.99)
+for (i in seq_along(gamma)){
+  noise <- ar1.noise(n=N, ncol = M, gamma=gamma[i], sigma=sigma)  # define noise
+  roc.res <- bayes_chgpt_roc(signal, noise, prob_thresh, loc = start, tol = 5, k_max = 2)
+  nam <- paste("tpr", i, sep="" )
+  assign(nam, rowMeans(roc.res$true_pos)/(rowMeans(roc.res$true_pos) + rowMeans(roc.res$false_neg)))
+  nam1 <-  paste("fpr", i, sep="" )
+  assign(nam1, rowMeans(roc.res$false_pos)/(rowMeans(roc.res$false_pos) + rowMeans(roc.res$true_neg)))
+}
+```
+```{r}
+roc <- data.frame(tpr1, fpr1, tpr2, fpr2, tpr3, fpr3, tpr4, fpr4, tpr5, fpr5, tpr6, fpr6)
+ggplot(roc) + geom_line(mapping=aes(y=tpr1,x=fpr1, colour='Gamma = 0')) + geom_point(mapping=aes(y=tpr1,x=fpr1, colour='Gamma = 0')) + geom_line(mapping=aes(y=tpr2,x=fpr2, colour='Gamma = 0.4')) + geom_point(mapping=aes(y=tpr2,x=fpr2, colour='Gamma = 0.4')) +  geom_line(mapping=aes(y=tpr3,x=fpr3, colour='Gamma = 0.6')) +  geom_point(mapping=aes(y=tpr3,x=fpr3, colour='Gamma = 0.6')) + geom_line(mapping=aes(y=tpr4,x=fpr4, colour='Gamma = 0.8')) + geom_point(mapping=aes(y=tpr4,x=fpr4, colour='Gamma = 0.8')) + geom_line(mapping=aes(y=tpr5,x=fpr5, colour='Gamma = 0.9')) + geom_point(mapping=aes(y=tpr5,x=fpr5, colour='Gamma = 0.9')) + geom_line(mapping=aes(y=tpr6,x=fpr6, colour='Gamma = 0.99')) + geom_point(mapping=aes(y=tpr6,x=fpr6, colour='Gamma = 0.99')) + scale_color_manual(name = " ", breaks = c('Gamma = 0', 'Gamma = 0.4',  'Gamma = 0.6', 'Gamma = 0.8', 'Gamma = 0.9', 'Gamma = 0.99' ), values=c('Gamma = 0'='blue', 'Gamma = 0.4'='darkcyan', 'Gamma = 0.6'='darkgoldenrod2', 'Gamma = 0.8'='red', 'Gamma = 0.9'='darkviolet', 'Gamma = 0.99'='chartreuse4'))  + ggtitle('Sensitivity Analysis for Box') + geom_segment(x=0,xend=1,y=0,yend=1) + xlim(0,1) + ylim(0,1) + xlab("False Positive Rate") + ylab("True Positive Rate")
+```
+The sensitivity analysis for box seems to perform best at Gamma = 0.9, since it has the closest proximity to the upper-left corner (which means it has high true positive rates correlated with low false positive rates). However, the results are still very clustered (particularly towards the upper right) and the pattern shows that performance generally increases as Gamma increases.
+
+#### Skew-Box Analyses
+```{r}
+# define signal and noise characteristics
+N <- 100
+M <- 1000
+start <- 40
+dur <- 20
+amp <- 1.0
+del_amp=-.2
+signal <- make_excursion(length=N, start=start, dur=dur, amp=amp, del_amp=del_amp)
+sigma <- 0.4 # noise levels
+gamma <- c(0, 0.4, 0.6, 0.8, 0.9, 0.99)
+for (i in seq_along(gamma)){
+  noise <- ar1.noise(n=N, ncol = M, gamma=gamma[i], sigma=sigma)  # define noise
+  roc.res <- bayes_chgpt_roc(signal, noise, prob_thresh, loc = start, tol = 5, k_max = 2)
+  nam <- paste("tpr", i, sep="" )
+  assign(nam, rowMeans(roc.res$true_pos)/(rowMeans(roc.res$true_pos) + rowMeans(roc.res$false_neg)))
+  nam1 <-  paste("fpr", i, sep="" )
+  assign(nam1, rowMeans(roc.res$false_pos)/(rowMeans(roc.res$false_pos) + rowMeans(roc.res$true_neg)))
+}
+```
+```{r}
+roc <- data.frame(tpr1, fpr1, tpr2, fpr2, tpr3, fpr3, tpr4, fpr4, tpr5, fpr5, tpr6, fpr6)
+ggplot(roc) + geom_line(mapping=aes(y=tpr1,x=fpr1, colour='Gamma = 0')) + geom_point(mapping=aes(y=tpr1,x=fpr1, colour='Gamma = 0')) + geom_line(mapping=aes(y=tpr2,x=fpr2, colour='Gamma = 0.4')) + geom_point(mapping=aes(y=tpr2,x=fpr2, colour='Gamma = 0.4')) +  geom_line(mapping=aes(y=tpr3,x=fpr3, colour='Gamma = 0.6')) +  geom_point(mapping=aes(y=tpr3,x=fpr3, colour='Gamma = 0.6')) + geom_line(mapping=aes(y=tpr4,x=fpr4, colour='Gamma = 0.8')) + geom_point(mapping=aes(y=tpr4,x=fpr4, colour='Gamma = 0.8')) + geom_line(mapping=aes(y=tpr5,x=fpr5, colour='Gamma = 0.9')) + geom_point(mapping=aes(y=tpr5,x=fpr5, colour='Gamma = 0.9')) + geom_line(mapping=aes(y=tpr6,x=fpr6, colour='Gamma = 0.99')) + geom_point(mapping=aes(y=tpr6,x=fpr6, colour='Gamma = 0.99')) + scale_color_manual(name = " ", breaks = c('Gamma = 0', 'Gamma = 0.4',  'Gamma = 0.6', 'Gamma = 0.8', 'Gamma = 0.9', 'Gamma = 0.99' ), values=c('Gamma = 0'='blue', 'Gamma = 0.4'='darkcyan', 'Gamma = 0.6'='darkgoldenrod2', 'Gamma = 0.8'='red', 'Gamma = 0.9'='darkviolet', 'Gamma = 0.99'='chartreuse4'))  + ggtitle('Sensitivity Analysis for Skew-Box') + geom_segment(x=0,xend=1,y=0,yend=1) + xlim(0,1) + ylim(0,1) + xlab("False Positive Rate") + ylab("True Positive Rate")
+```
+The sensitivity analysis for the skew-box shows the best performance at Gamma = 0.9 since it has the closest proximity to the upper-left corner. Gamma = 0.99 also shows high true positive rates, but it is associated with higher false positive rates. Lowest performance is clustered around Gamma = 0, 0.4, and 0.6.
+
+#### Spike Analyses
+```{r}
+N <- 100
+M <- 1000
+start <- 40
+dur <- 8
+amp <- 1.0
+del_amp=-.99
+signal <- make_excursion(length=N, start=start, dur=dur, amp=amp, del_amp=del_amp)
+sigma <- 0.4 # noise levels
+gamma <- c(0, 0.4, 0.6, 0.8, 0.9, 0.99)
+for (i in seq_along(gamma)){
+  noise <- ar1.noise(n=N, ncol = M, gamma=gamma[i], sigma=sigma)  # define noise
+  roc.res <- bayes_chgpt_roc(signal, noise, prob_thresh, loc = start, tol = 5, k_max = 2)
+  nam <- paste("tpr", i, sep="" )
+  assign(nam, rowMeans(roc.res$true_pos)/(rowMeans(roc.res$true_pos) + rowMeans(roc.res$false_neg)))
+  nam1 <-  paste("fpr", i, sep="" )
+  assign(nam1, rowMeans(roc.res$false_pos)/(rowMeans(roc.res$false_pos) + rowMeans(roc.res$true_neg)))
+}
+```
+```{r}
+roc <- data.frame(tpr1, fpr1, tpr2, fpr2, tpr3, fpr3, tpr4, fpr4, tpr5, fpr5, tpr6, fpr6)
+ggplot(roc) + geom_line(mapping=aes(y=tpr1,x=fpr1, colour='Gamma = 0')) + geom_point(mapping=aes(y=tpr1,x=fpr1, colour='Gamma = 0')) + geom_line(mapping=aes(y=tpr2,x=fpr2, colour='Gamma = 0.4')) + geom_point(mapping=aes(y=tpr2,x=fpr2, colour='Gamma = 0.4')) +  geom_line(mapping=aes(y=tpr3,x=fpr3, colour='Gamma = 0.6')) +  geom_point(mapping=aes(y=tpr3,x=fpr3, colour='Gamma = 0.6')) + geom_line(mapping=aes(y=tpr4,x=fpr4, colour='Gamma = 0.8')) + geom_point(mapping=aes(y=tpr4,x=fpr4, colour='Gamma = 0.8')) + geom_line(mapping=aes(y=tpr5,x=fpr5, colour='Gamma = 0.9')) + geom_point(mapping=aes(y=tpr5,x=fpr5, colour='Gamma = 0.9')) + geom_line(mapping=aes(y=tpr6,x=fpr6, colour='Gamma = 0.99')) + geom_point(mapping=aes(y=tpr6,x=fpr6, colour='Gamma = 0.99')) + scale_color_manual(name = " ", breaks = c('Gamma = 0', 'Gamma = 0.4',  'Gamma = 0.6', 'Gamma = 0.8', 'Gamma = 0.9', 'Gamma = 0.99' ), values=c('Gamma = 0'='blue', 'Gamma = 0.4'='darkcyan', 'Gamma = 0.6'='darkgoldenrod2', 'Gamma = 0.8'='red', 'Gamma = 0.9'='darkviolet', 'Gamma = 0.99'='chartreuse4'))  + ggtitle('Sensitivity Analysis for Spike') + geom_segment(x=0,xend=1,y=0,yend=1) + xlim(0,1) + ylim(0,1) + xlab("False Positive Rate") + ylab("True Positive Rate")
+```
+The sensitivity analysis for the spike illustrates the opposite of the predicted pattern. Highest performance is seen at Gamma = 0.99 and lowest performance is at Gamma = 0.4. The sensitivity analysis did not pick up anything for Gamma = 0.
+
+Overall, the Gamma sensitivity analysis showed a wide range of patterns, without an overarching structure. The skew-box sensitivity analysis seems to be the test that roughly followed the predicted pattern. However, most of the tests either showed the opposite (with performance improving as Gamma increases) or did not illustrate a clear pattern at all.
+
+## Discussion
+
+Bayesian change point detection attempts to determine the exact timing of change points or regime boundaries within a data set--in this case, within synthesized transitions and excursions commonly found in climate records. This notebook addresses the issues the algorithm described in Ruggieri, 2012, encountered when analyzing auto-correlated data and tests the sensitivity of the algorithm to different parameters in the AR(1) process: Sigma and Gamma.
+
+In the first section, the method was applied to 5 different synthesized data sets with known change points and one real-world climate record. The result from the HadCRUT Temperature Anomalies seemed consistent with accelerated warming in the last half of the 20th century. Furthermore, the algorithm seemed to work best on the synthesized data that had very defined transitions between states, such as the jump, box, and skew-box. Its performance declined when transitions were more gradual or had a slope, like the ramp and spike. However, these initial tests in the notebook were done with a significantly low Sigma and high Gamma. Therefore, a sensitivity analysis was applied to each transition and excursion with varying Sigma and Gamma values in order to truly analyze the algorithms accuracy in determining change points, for a total of 10 different sensitivity analyses.
+
+For the Sigma sensitivity analyses, the Gamma values were kept constant at 0.7. It was predicted that the algorithm's performance would degrade as sigma increases since it would increase the variance in the noise added to the data which would obscure the original signal. The results from the sensitivity analyses generally follows the expected pattern. Albeit, the ramp and spike deviate the most from this pattern. But, this is consistent with the initial observations in the first section of the notebook--gradual transitions are more difficult to detect than distinct ones, especially when noise is added.
+
+For the Gamma sensitivity analyses, the Sigma values were kept at 0.4. The performance of the algorithm was expected to decline as Gamma increases since it would "smooth out" the noise, making distinctions between states less obvious, and therefore, less detectable. However, the results from the sensitivity tests illustrated the opposite of the original prediction. Method performance mainly increased with an increasing Gamma value. 
+
+In order to fully understand the mechanisms behind the algorithm's response to varying parameters (especially Gamma), it would be relevant to incorporate a random index of the signal + noise being used within each iteration of the loop and plot them, in order to visualize exactly how the model changes and how that may impact the effectiveness of the change point detection.
+
+## References
+
+Ruggieri, E. (2012). A Bayesian approach to detecting change points in climatic records. International Journal of Climatology. 
+
+Stanley, J. D., Krom, M. D., Cliff, R. A., &amp; Woodward, J. C. (2016, April 5). Short contribution: Nile flow failure at the end of the Old kingdom, Egypt: Strontium Isotopic and petrologic evidence. Geoarchaeology: An International Journal.
+
+Brakenridge, G. R. (2011). Core-collapse Supernovae and the Younger Dryas/terminal Rancholabrean extinctions. Icarus. 
+
+Emile-Geay, J., 2020: Data Analysis in the Earth & Environmental Sciences, 265pp, Fourth edition, http://dx.doi.org/10.6084/m9.figshare.1014336.
