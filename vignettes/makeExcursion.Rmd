@@ -1,6 +1,6 @@
 ---
-title: "Synthetic Data in  meanShift and excursion"
-author: "Dave Edge"
+title: "Synthetic Data in  detectExcursion"
+author: "Dave Edge and Nick McKay"
 date: "2022-10-27"
 output: html_document
 ---
@@ -86,7 +86,7 @@ print(detectedExcusionEns)
 
 and make a plot
 
-```{r}
+```{r, warning=FALSE}
 plot(detectedExcusionEns)
 ```
 
