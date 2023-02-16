@@ -33,7 +33,8 @@ Imports:
     digest,
     crayon,
     neotoma2,
-    fBasics
+    fBasics,
+    devtools
 Suggests:
     testthat,
     knitr,
