@@ -12,7 +12,7 @@ resource_files:
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  fig.path = "man/figures/README-",
+  fig.path = "man/figures/",
   out.width = "100%"
 )
 ```
@@ -29,7 +29,7 @@ knitr::opts_chunk$set(
 
 The goal of actR -- the Abupt Change Toolkit in R -- is to streamline abrupt change detection, signficance testing, uncertainty quantification and visualization for paleogeoscientific datasets. This project is funded by the Belmont Forum as part of the "Abrupt Changes in Climate and Ecosystems - Data & e-Infrastructure (ACCEDE)" project, as part of the Science-driven e-Infrastructure Innovation program.
 
-We're still early in the development process, but basic functionality is now available.
+We're still in the development process, but basic functionality is now available.
 
 ## actR Design and Philososphy
 
