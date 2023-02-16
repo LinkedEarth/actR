@@ -1,6 +1,6 @@
 #' Summarize changepoint mean changes
 #'
-#' @param x Output of detectShiftCore()
+#' @param x Output of detectShiftCore
 #' @param alpha significance level of changepoints to consider
 #' @import tibble
 #'

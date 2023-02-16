@@ -1,7 +1,7 @@
 #' Print Excursion
 #'
 #' @param x excursion object to print
-#' @inheritDotParams print
+#' @inheritDotParams summary.excursion
 #'
 #' @export
 print.excursion <- function(x,...){
@@ -11,7 +11,7 @@ print.excursion <- function(x,...){
 #' Print shift
 #'
 #' @param x shift object to print
-#' @inheritDotParams print
+#' @inheritDotParams summary.shift
 #'
 #' @export
 print.shift <- function(x,...){

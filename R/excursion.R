@@ -36,7 +36,6 @@ detectExcursionSlidingWindow <- function(time,
 #' @references Morrill
 #'
 #' @inheritParams prepareInput
-#' @inheritParams propagateUncertainty
 #' @inheritParams testNullHypothesis
 #' @inheritParams detectShift
 #' @inheritDotParams propagateUncertainty

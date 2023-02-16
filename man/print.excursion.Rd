@@ -10,9 +10,9 @@
 \item{x}{excursion object to print}
 
 \item{...}{
-  Arguments passed on to \code{\link[=print]{print}}
+  Arguments passed on to \code{\link[=summary.excursion]{summary.excursion}}
   \describe{
-    \item{\code{}}{}
+    \item{\code{object}}{excursion class output}
   }}
 }
 \description{

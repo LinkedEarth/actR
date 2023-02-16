@@ -7,7 +7,7 @@
 summarizeChangepointMeanChanges(x, alpha = 0.05)
 }
 \arguments{
-\item{x}{Output of detectShiftCore()}
+\item{x}{Output of detectShiftCore}
 
 \item{alpha}{significance level of changepoints to consider}
 }

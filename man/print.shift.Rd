@@ -10,9 +10,9 @@
 \item{x}{shift object to print}
 
 \item{...}{
-  Arguments passed on to \code{\link[=print]{print}}
+  Arguments passed on to \code{\link[=summary.shift]{summary.shift}}
   \describe{
-    \item{\code{}}{}
+    \item{\code{object}}{shift output}
   }}
 }
 \description{

@@ -25,6 +25,8 @@ detectShiftCore(
 
 \item{gaussianize}{Force vals to gaussian distribution before analysis. Default (TRUE). Most (all?) methods in the changepoint package assume gaussian distributions, so this is strongly recommended.}
 
+\item{calc.deltas}{Calculate the difference in means between change point sections. Default FALSE}
+
 \item{...}{options to pass to cpt.fun . See changepoint function documentation for details.}
 }
 \value{
