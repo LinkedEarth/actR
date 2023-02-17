@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">actR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.6</span>
       </span>
     </div>
 
@@ -126,31 +126,30 @@ hypothesis testing.</p>
 <span>                          event.window <span class="op">=</span> <span class="fl">400</span>,</span>
 <span>                          ref.window <span class="op">=</span> <span class="fl">400</span>,</span>
 <span>                          sig.num <span class="op">=</span> <span class="fl">2</span>,</span>
-<span>                          exc.type <span class="op">=</span> <span class="st">"positive"</span>,</span>
+<span>                          exc.type <span class="op">=</span> <span class="st">"negative"</span>,</span>
 <span>                          n.ens <span class="op">=</span> <span class="fl">1</span>,</span>
-<span>                          null.hypothesis.n <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>                          null.hypothesis.n <span class="op">=</span> <span class="fl">10</span>,</span>
 <span>                          simulate.time.uncertainty <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>                          simulate.paleo.uncertainty <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## <span style="color: #00BB00;">Testing null hypothesis with 1 simulations, each with 1 ensemble members. </span></span></span>
-<span><span class="co"><span style="color: #00BB00;">## </span><span style="color: #0000BB;">This will probably take about 1 minutes</span></span></span>
-<span><span class="co"><span style="color: #0000BB;">## </span></span></span></code></pre>
+<pre><code><span><span class="co">## <span style="color: #00BB00;">Testing null hypothesis with 10 simulations, each with 1 ensemble members. </span></span></span>
+<span><span class="co"><span style="color: #00BB00;">## </span></span></span></code></pre>
 <p>Now we can use <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code> and plot to check out the
 results</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">detectedExcusion</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## <span style="font-weight: bold;">Synthetic excursion - Excursion test: Excursion test results</span></span></span>
-<span><span class="co"><span style="font-weight: bold;">## </span><span style="color: #555555;">Searched for </span><span style="color: #555555; font-weight: bold;">positive</span><span style="color: #555555;"> excursions in a </span><span style="color: #555555; font-weight: bold;">400</span><span style="color: #555555;"> year window around </span><span style="color: #555555; font-weight: bold;">4200</span><span style="color: #555555;"> yr BP, with reference windows of </span><span style="color: #555555; font-weight: bold;">400</span><span style="color: #555555;"> years on either side.</span></span></span>
+<span><span class="co"><span style="font-weight: bold;">## </span><span style="color: #555555;">Searched for </span><span style="color: #555555; font-weight: bold;">negative</span><span style="color: #555555;"> excursions in a </span><span style="color: #555555; font-weight: bold;">400</span><span style="color: #555555;"> year window around </span><span style="color: #555555; font-weight: bold;">4200</span><span style="color: #555555;"> yr BP, with reference windows of </span><span style="color: #555555; font-weight: bold;">400</span><span style="color: #555555;"> years on either side.</span></span></span>
 <span><span class="co"><span style="color: #555555;">## </span></span></span>
-<span><span class="co">## <span style="font-weight: bold;">Overall result: Empirical p-value = </span><span style="color: #00BB00; font-weight: bold;">0</span></span></span>
+<span><span class="co">## <span style="font-weight: bold;">Overall result: Empirical p-value = </span><span style="color: #BB0000; font-weight: bold;">0.2</span></span></span>
 <span><span class="co"><span style="font-weight: bold;">## </span>Time uncertainty considered? <span style="color: #BB0000;">FALSE</span></span></span>
 <span><span class="co">## Paleo uncertainty considered? <span style="color: #BB0000;">FALSE</span></span></span>
 <span><span class="co">## Error propagation ensemble members = 1</span></span>
-<span><span class="co">## Null hypothesis testing ensemble members = 1</span></span>
+<span><span class="co">## Null hypothesis testing ensemble members = 10</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## <span style="font-weight: bold;">Parameter choices:</span></span></span>
 <span><span class="co"><span style="font-weight: bold;">## </span><span style="color: #555555;">sig.num = 2</span></span></span>
 <span><span class="co"><span style="color: #555555;">## n.consecutive = 2</span></span></span>
-<span><span class="co"><span style="color: #555555;">## exc.type = positive</span></span></span>
+<span><span class="co"><span style="color: #555555;">## exc.type = negative</span></span></span>
 <span><span class="co"><span style="color: #555555;">## min.vals = 8</span></span></span>
 <span><span class="co"><span style="color: #555555;">## na.rm = TRUE</span></span></span>
 <span><span class="co"><span style="color: #555555;">## </span></span></span></code></pre>
@@ -178,10 +177,16 @@ uncertainty.</p>
 <span>                          simulate.time.uncertainty <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>                          simulate.paleo.uncertainty <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## <span style="color: #00BB00;">Testing null hypothesis with 50 simulations, each with 50 ensemble members. </span></span></span>
-<span><span class="co"><span style="color: #00BB00;">## </span><span style="color: #0000BB;">This will probably take about 1 minutes</span></span></span>
-<span><span class="co"><span style="color: #0000BB;">## </span></span></span></code></pre>
+<span><span class="co"><span style="color: #00BB00;">## </span></span></span></code></pre>
+<pre><code><span><span class="co">## Testing null hypothesis <span style="color: #00BB00;">■■■                             </span>   6% |  ETA: 20s</span></span></code></pre>
+<pre><code><span><span class="co">## Testing null hypothesis <span style="color: #00BB00;">■■■■■■■                         </span>  20% |  ETA: 17s</span></span></code></pre>
+<pre><code><span><span class="co">## Testing null hypothesis <span style="color: #00BB00;">■■■■■■■■■■■                     </span>  34% |  ETA: 14s</span></span></code></pre>
+<pre><code><span><span class="co">## Testing null hypothesis <span style="color: #00BB00;">■■■■■■■■■■■■■■■                 </span>  48% |  ETA: 11s</span></span></code></pre>
+<pre><code><span><span class="co">## Testing null hypothesis <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■            </span>  62% |  ETA:  8s</span></span></code></pre>
+<pre><code><span><span class="co">## Testing null hypothesis <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■■        </span>  76% |  ETA:  5s</span></span></code></pre>
+<pre><code><span><span class="co">## Testing null hypothesis <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■■■■■■    </span>  90% |  ETA:  2s</span></span></code></pre>
 <p>Now let’s look at the results</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">detectedExcusionEns</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## <span style="font-weight: bold;">Synthetic excursion - Excursion test: Excursion test results</span></span></span>
 <span><span class="co"><span style="font-weight: bold;">## </span><span style="color: #555555;">Searched for </span><span style="color: #555555; font-weight: bold;">positive</span><span style="color: #555555;"> excursions in a </span><span style="color: #555555; font-weight: bold;">400</span><span style="color: #555555;"> year window around </span><span style="color: #555555; font-weight: bold;">4200</span><span style="color: #555555;"> yr BP, with reference windows of </span><span style="color: #555555; font-weight: bold;">400</span><span style="color: #555555;"> years on either side.</span></span></span>
@@ -200,7 +205,7 @@ uncertainty.</p>
 <span><span class="co"><span style="color: #555555;">## na.rm = TRUE</span></span></span>
 <span><span class="co"><span style="color: #555555;">## </span></span></span></code></pre>
 <p>and make a plot</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">detectedExcusionEns</span><span class="op">)</span></span></code></pre></div>
 <p><img src="makeExcursion_files/figure-html/unnamed-chunk-7-1.png" width="700"></p>
 </div>
