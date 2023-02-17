@@ -1,6 +1,3 @@
-
-<!-- README.md is generated from README.Rmd. Please edit that file -->
-
 # actR
 
 <!-- badges: start -->
@@ -20,14 +17,14 @@ funded by the Belmont Forum as part of the “Abrupt Changes in Climate
 and Ecosystems - Data & e-Infrastructure (ACCEDE)” project, as part of
 the Science-driven e-Infrastructure Innovation program.
 
-We’re still early in the development process, but basic functionality is
-now available.
+We’re still in the development process, but basic functionality is now
+available.
 
 ## actR Design and Philososphy
 
 ### Data input
 
-<img src="docs/DataInputDiagram.png" width="50%" />
+<img src="https://linked.earth/actR/reference/figures/DataInputDiagram.png" width="50%" />
 
 actR, like most software, benefits greatly from standardized data
 inputs. To achieve this, actR works best with LiPD data, although users
@@ -38,7 +35,7 @@ includes options for simple data preprocessing for methods as needed.
 
 ### Change detection - single site
 
-<img src="docs/ChangeDetectionDiagram.png" width="50%" />
+<img src="https://linked.earth/actR/reference/figures/ChangeDetectionDiagram.png" width="50%" />
 
 actR equips single site, time series based change detection with error
 propagation and robust null hypothesis testing. Change detection
@@ -69,7 +66,7 @@ This is planned, but still in progress.
 
 ### Results
 
-<img src="docs/SummarizeResultsDiagram.png" width="50%" />
+<img src="https://linked.earth/actR/reference/figures/SummarizeResultsDiagram.png" width="50%" />
 
 All change detection methods implemented in actR have two output
 options, `summary()` (and `print()`), which provides a text summary of
@@ -89,7 +86,5 @@ Guide!](contributor_guide.html)
 You can install the development version from
 [GitHub](https://github.com/) with:
 
-``` r
-# install.packages("remotes")
-remotes::install_github("LinkedEarth/actR")
-```
+    # install.packages("remotes")
+    remotes::install_github("LinkedEarth/actR")
