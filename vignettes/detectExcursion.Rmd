@@ -40,9 +40,9 @@ excOutNoUnc <- detectExcursion(ngrip,
                           event.window = 200,
                           ref.window = 400,
                           sig.num = 2,
-                          exc.type = "negative",
+                          exc.type = "either",
                           n.ens = 1,
-                          null.hypothesis.n = 1,
+                          null.hypothesis.n = 1000,
                           simulate.time.uncertainty = FALSE,
                           simulate.paleo.uncertainty = FALSE)
 ```

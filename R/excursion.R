@@ -144,7 +144,7 @@ detectExcursion = function(ltt = NA,
 #' @param time time vector of only the points in the window
 #' @param vals value vector of only the points in the window
 #' @param n.consecutive how many consecutive points are required for this to be considered an excursion? (default = 2)
-#' @param exc.type Type of excursion to look for. "positive", "negativee", "either" or "both" (default = "either")
+#' @param exc.type Type of excursion to look for. "positive", "negative", "either" or "both" (default = "either")
 #' @param min.vals Minimum number of values required in reference and event windows (default = 8)
 #' @param na.rm Remove NAs? (default = TRUE)
 #' @param sig.num how many standard deviations required outside the reference windows must be exceeded for this to be considered an excursion? (default = 2)
@@ -250,7 +250,8 @@ detectExcursionCore <- function(time,
 
 
   # Identify points in event window that exceed the thresholds defined above
-  exc.ind <- c() #setup excursion index
+  exc.ind.above <- c() #setup excursion index
+  exc.ind.below <- c() #setup excursion index
 
   # positive
   aboveBool <- values[event.i] > avg.hi + sig.num * sd.hi
@@ -259,7 +260,7 @@ detectExcursionCore <- function(time,
   # Determine whether there are any consecutive extreme points - this qualifies an event
   if (mctAbove$max >= n.consecutive) {
     aboveEvent <- TRUE
-    exc.ind <- c(exc.ind,mctAbove$index)
+    exc.ind.above <- c(exc.ind.above,mctAbove$index)
   }else{
     aboveEvent <- FALSE
   }
@@ -270,9 +271,26 @@ detectExcursionCore <- function(time,
   # Determine whether there are any consecutive extreme points - this qualifies an event
   if (mctBelow$max >= n.consecutive) {
     belowEvent <- TRUE
-    exc.ind <- c(exc.ind,mctBelow$index)
+    exc.ind.below <- c(exc.ind.below,mctBelow$index)
   }else{
     belowEvent <- FALSE
+  }
+
+
+  if(grepl(pattern = "either",x = exc.type,ignore.case = TRUE)){
+    event <- any(c(aboveEvent,belowEvent))
+    exc.ind <- c(exc.ind.above,exc.ind.below)
+  }else if(grepl(pattern = "both",x = exc.type,ignore.case = TRUE)){
+    event <- all(c(aboveEvent,belowEvent))
+    exc.ind <- c(exc.ind.above,exc.ind.below)
+  }else if(grepl(pattern = "pos",x = exc.type,ignore.case = TRUE)){
+    event <- aboveEvent
+    exc.ind <- exc.ind.above
+  }else if(grepl(pattern = "neg",x = exc.type,ignore.case = TRUE)){
+    event <- belowEvent
+    exc.ind <- exc.ind.below
+  }else{
+    stop(glue::glue("exc.type = {exc.type} is not recognized"))
   }
 
   isExcursion <- seq_along(time) %in% event.i[exc.ind]
@@ -285,17 +303,7 @@ detectExcursionCore <- function(time,
     excursionMaxSd = NA
   }
 
-  if(grepl(pattern = "either",x = exc.type,ignore.case = TRUE)){
-    event <- any(c(aboveEvent,belowEvent))
-  }else if(grepl(pattern = "both",x = exc.type,ignore.case = TRUE)){
-    event <- all(c(aboveEvent,belowEvent))
-  }else if(grepl(pattern = "pos",x = exc.type,ignore.case = TRUE)){
-    event <- aboveEvent
-  }else if(grepl(pattern = "neg",x = exc.type,ignore.case = TRUE)){
-    event <- belowEvent
-  }else{
-    stop(glue::glue("exc.type = {exc.type} is not recognized"))
-  }
+
 
   out <- tibble::tibble(time_start = event.start,
                         time_end = event.end,

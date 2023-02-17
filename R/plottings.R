@@ -103,13 +103,13 @@ plotExcursion <- function(x,
 
   #title
   if(!is.na(x$dataSetName) & !is.na(x$paleoData_variableName)){
-    title <- glue::glue("{x$dataSetName} - {x$paleoData_variableName}: Excursion")
+    title <- glue::glue("{x$dataSetName} - {x$paleoData_variableName}: Excursion ({x$exc.type[1]})")
   }else if(is.na(x$dataSetName) & !is.na(x$paleoData_variableName)){
-    title <- glue::glue("{x$paleoData_variableName}: Excursion")
+    title <- glue::glue("{x$paleoData_variableName}: Excursion ({x$exc.type[1]})")
   }else if(!is.na(x$dataSetName) & is.na(x$paleoData_variableName)){
-    title <- glue::glue("{x$dataSetName}: Excursion")
+    title <- glue::glue("{x$dataSetName}: Excursion ({x$exc.type[1]})")
   }else{
-    title <- glue::glue("Excursion")
+    title <- glue::glue("Excursion ({x$exc.type[1]})")
   }
 
   #add labels, directionality
@@ -176,13 +176,14 @@ plotExcursionCore <- function(x,
 
   #Find the excursions
   plotOut <- add.to.plot +
-    geom_point(data = tp,aes(x = time, y = vals,color = isExcursion)) +
+    geom_point(data = tp,aes(x = time, y = vals,color = isExcursion,shape = isExcursion)) +
     geom_line(data = tp,aes(x = time, y = vals)) +
     geom_line(data = tp,aes(x = time, y = refMeans), color = 'red',linetype = 1)+
     geom_line(data = tp,aes(x = time, y = refSdHi),  color = 'red', linetype = 4)+
     geom_line(data = tp,aes(x = time, y = refSdLo),  color = 'red', linetype = 4)+
     ylab("Detrended values")+
     scale_color_manual("Excursion Detected",values = c("black","red"))+
+    scale_shape_manual("Excursion Detected",values = c(15,16))+
     actR_ggtheme()
 
   return(plotOut)

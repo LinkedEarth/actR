@@ -138,12 +138,12 @@ testNullHypothesis <- function(time,
                                ...) {
 
   cat(crayon::green(glue::glue("Testing null hypothesis with {mc.ens} simulations, each with {n.ens} ensemble members. \n\n")))
-  if(is.na(how.long.prop)){
-  cat(crayon::blue(glue::glue("This will probably take awhile.\n\n")))
-  }else{
-    est <- ceiling(1.2*mc.ens*how.long.prop/60) #I wonder how accurate this is.
-    cat(crayon::blue(glue::glue("This will probably take about {est} minutes\n\n")))
-  }
+  # if(is.na(how.long.prop)){
+  # cat(crayon::blue(glue::glue("This will probably take awhile.\n\n")))
+  # }else{
+  #   est <- ceiling(1.2*mc.ens*how.long.prop/60) #I wonder how accurate this is.
+  #   cat(crayon::blue(glue::glue("This will probably take about {est} minutes\n\n")))
+  # }
 
   #prep values for surrogates
 
@@ -212,6 +212,7 @@ testNullHypothesis <- function(time,
                     time = time,
                     changeFun = changeFun,
                     n.ens = n.ens,
+                    .progress = "Testing null hypothesis",
                     ...)
 
   return(out)

@@ -1,5 +1,9 @@
 # actR 0.1.6
 
+* Used purrr >v1.0.0 to enable progress bars!
+* fixed bug with exc.type and plotting
+* minor fixes
+
 # actR 0.1.5
 
 * merged in calculate deltas - introducing the `summarizeChangepointMeanChanges()`
