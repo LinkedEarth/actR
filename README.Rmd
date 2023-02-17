@@ -34,7 +34,7 @@ We're still in the development process, but basic functionality is now available
 
 ### Data input
 ```{r,out.width="50%",echo = FALSE}
-knitr::include_graphics("reference/figures/DataInputDiagram.png")
+knitr::include_graphics("https://linked.earth/actR/reference/figures/DataInputDiagram.png",rel_path = FALSE)
 ```
 
 actR, like most software, benefits greatly from standardized data inputs. To achieve this, actR works best with LiPD data, although users can also directly input data as matrices or vectors and metadata in R. Either way, the inputs are passed through the `prepareInput()` function, which helps to standardize the input for subsequent analysis, and includes options for simple data preprocessing for methods as needed.
@@ -42,7 +42,7 @@ actR, like most software, benefits greatly from standardized data inputs. To ach
 
 ### Change detection - single site
 ```{r,out.width="50%",echo = FALSE}
-knitr::include_graphics("reference/figures/ChangeDetectionDiagram.pngChangeDetectionDiagram.png")
+knitr::include_graphics("https://linked.earth/actR/reference/figures/ChangeDetectionDiagram.pngChangeDetectionDiagram.png",rel_path = FALSE)
 ```
 
 actR equips single site, time series based change detection with error propagation and robust null hypothesis testing. Change detection algorithms are often highly parametric, and don't consider many uncertainties that are relevant to paleogeoscientific data. There are two key processes to achieve this. 
@@ -61,7 +61,7 @@ This is planned, but still in progress.
 
 ### Results
 ```{r,out.width="50%",echo = FALSE}
-knitr::include_graphics("reference/figures/SummarizeResultsDiagram.png")
+knitr::include_graphics("https://linked.earth/actR/reference/figures/SummarizeResultsDiagram.png",rel_path = FALSE)
 ```
 
 All change detection methods implemented in actR have two output options, `summary()` (and `print()`), which provides a text summary of the test conducted and the results, and `plot()` which visualizes the results, including both error propagation and null hypothesis testing. Other approaches, including geospatial change detection, will include additional outputs as appropriate.
