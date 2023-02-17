@@ -1,3 +1,5 @@
+# actR 0.1.6
+
 # actR 0.1.5
 
 * merged in calculate deltas - introducing the `summarizeChangepointMeanChanges()`
