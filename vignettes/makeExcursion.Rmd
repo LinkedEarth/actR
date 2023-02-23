@@ -39,12 +39,12 @@ First, let's just test the excursion with now uncertainty or null hypothesis tes
 ```{r}
 detectedExcusion <- detectExcursion(syntheticExcursion,
                           event.yr = 4200,
-                          event.window = 400,
-                          ref.window = 400,
-                          sig.num = 2,
-                          exc.type = "negative",
-                          n.ens = 1,
-                          null.hypothesis.n = 10,
+                          event.window = rnorm(1000,mean = 400,sd = 100),
+                          ref.window = rnorm(1000,mean = 400,sd = 100),
+                          sig.num = rnorm(1000,mean = 2,sd = 0.5),
+                          exc.type = "either",
+                          n.ens = 100,
+                          null.hypothesis.n = 1,
                           simulate.time.uncertainty = FALSE,
                           simulate.paleo.uncertainty = FALSE)
 ```

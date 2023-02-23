@@ -33,10 +33,6 @@ propagateUncertainty <- function(time,
 
 
   #check inputs
-  if(!simulate.time.uncertainty & !simulate.paleo.uncertainty & NCOL(time) == 1 & NCOL(vals) == 1){
-    n.ens <- 1
-  }
-
   if(max(c(NCOL(time),NCOL(vals))) > 1 & n.ens <= 1){#at least one is an ensemble
     stop("To simulate uncertainty with an ensemble, increasee n.ens to more than 1 (probably more than 50 at the minimum)")
   }
@@ -91,8 +87,29 @@ propagateUncertainty <- function(time,
     paleoList <- purrr::array_branch(paleoMat,margin = 2)
   }
 
+  # check to see if ... includes vectors of parameters
+  dots <- list(...)
 
+  dl <- purrr::map_dbl(dots,length)
+  if(any(dl > 1)){#then we need to sample over
+#turn params into vectors that are n.ens long...
+    dotsLong <- vector(mode = "list",length = length(dots))
+    for(d in 1:length(dots)){
+      if(length(dots[[d]]) == 1){
+      dotsLong[[d]] <- rep(dots[[d]],n.ens)
+      }else if(length(dots[[d]]) <= n.ens){
+      dotsLong[[d]] <- sample(dots[[d]],size = n.ens,replace = FALSE)
+      }else{
+      dotsLong[[d]] <- sample(dots[[d]],size = n.ens,replace = TRUE)
+      }
+    }
+    names(dotsLong) <- names(dots)
+    tomaplist <- append(list(time = timeList,vals = paleoList),dotsLong)
+
+    propagated <- purrr::pmap_dfr(tomaplist,changeFun)
+  }else{
   propagated <- purrr::map2_dfr(timeList,paleoList,changeFun,...)
+  }
 
   propagated$nEns <- n.ens
 
@@ -148,6 +165,8 @@ testNullHypothesis <- function(time,
   #prep values for surrogates
 
   ncp <- NCOL(vals)
+
+  mc.ens <- max(mc.ens,n.ens)
 
   if(ncp == 1){
     vm <- matrix(rep(vals,times = mc.ens),ncol = mc.ens,byrow = FALSE)
@@ -205,6 +224,7 @@ testNullHypothesis <- function(time,
                           num_surr = ncp)
   }
 
+#this way repeats the uncertainty propagation for EACH surrrogate
   pucv <- function(x,...){propagateUncertainty(vals = x,...)}
 
   out <- purrr::map(surVals,
@@ -214,6 +234,23 @@ testNullHypothesis <- function(time,
                     n.ens = n.ens,
                     .progress = "Testing null hypothesis",
                     ...)
+
+
+#this way uses DIFFERENT surrogates each time through (much faster) But I also don't know that it makes sense
+#svm <- purrr::map(surVals,as.data.frame) %>% purrr::list_cbind() %>% as.matrix() %>% suppressMessages()
+
+#out <- propagateUncertainty(time = time, vals = svm,changeFun = changeFun,n.ens = n.ens,...)
+#END THIS IDEA
+
+out <- purrr::map(surVals,
+                  pucv,
+                  time = time,
+                  changeFun = changeFun,
+                  n.ens = n.ens,
+                  .progress = "Testing null hypothesis",
+                  ...)
+
+
 
   return(out)
 
