@@ -10,8 +10,8 @@ ACCEDE](https://img.shields.io/badge/Belmont%20SEI-ACCEDE-blue)](https://www.bel
 [![R-CMD-check](https://github.com/LinkedEarth/actR/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/LinkedEarth/actR/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
-The goal of actR – the Abupt Change Toolkit in R – is to streamline
-abrupt change detection, signficance testing, uncertainty quantification
+The goal of actR – the Abrupt Change Toolkit in R – is to streamline
+abrupt change detection, significance testing, uncertainty quantification
 and visualization for paleogeoscientific datasets. This project is
 funded by the Belmont Forum as part of the “Abrupt Changes in Climate
 and Ecosystems - Data & e-Infrastructure (ACCEDE)” project, as part of
