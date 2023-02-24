@@ -166,8 +166,6 @@ testNullHypothesis <- function(time,
 
   ncp <- NCOL(vals)
 
-  mc.ens <- max(mc.ens,n.ens)
-
   if(ncp == 1){
     vm <- matrix(rep(vals,times = mc.ens),ncol = mc.ens,byrow = FALSE)
     valList <- purrr::array_branch(vm,margin = 2)
@@ -241,16 +239,6 @@ testNullHypothesis <- function(time,
 
 #out <- propagateUncertainty(time = time, vals = svm,changeFun = changeFun,n.ens = n.ens,...)
 #END THIS IDEA
-
-out <- purrr::map(surVals,
-                  pucv,
-                  time = time,
-                  changeFun = changeFun,
-                  n.ens = n.ens,
-                  .progress = "Testing null hypothesis",
-                  ...)
-
-
 
   return(out)
 

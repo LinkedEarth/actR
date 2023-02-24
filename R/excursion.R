@@ -80,14 +80,12 @@ detectExcursion = function(ltt = NA,
 
 
   # detect excursions while propagating time and data uncertainties
-  ptm <- proc.time()
   dataEst <- propagateUncertainty(time,
                                   vals,
                                   n.ens = n.ens,
                                   changeFun = detectExcursionCore,
                                   ...)
-  te <- proc.time() - ptm
-  te <- te[3]
+
 
   #see if we got any results
   if(sum(!is.na(dataEst$eventDetected)) / nrow(dataEst) < 0.5){
@@ -117,8 +115,8 @@ detectExcursion = function(ltt = NA,
   nullLevels <- nullEventProb %>%
     tidyr::pivot_wider(values_from = qs,names_from = clLevel)
 
-  eventSummary <- tibble::tibble(time_start = dataEst$time_start[1],
-                                 time_end = dataEst$time_end[1],
+  eventSummary <- tibble::tibble(time_start = mean(dataEst$time_start,na.rm = TRUE),
+                                 time_end = mean(dataEst$time_end,na.rm = TRUE),
                                  time_mid = mean(time_start,time_end),
                                  eventDetectionWithUncertainty = mean(dataEst$eventDetected,na.rm = TRUE),
                                  empirical_pvalue = 1-nullEcdf(eventDetectionWithUncertainty),
