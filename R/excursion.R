@@ -26,6 +26,81 @@ detectExcursionSlidingWindow <- function(time,
 
 }
 
+#helper function to allow pmapping over ts tibble rows
+todfr <- function(...){
+  l <- list(...)
+  for(li in 1:length(l)){
+    if(length(l[[li]]) > 1){
+      l[[li]] <- list(l[[li]])
+    }
+    if(length(l[[li]]) == 0){
+      l[[li]] <- NA
+    }
+  }
+  return(tibble::as_tibble_row(l))
+}
+
+#' Detect an excursion in a timeseries
+#'
+#' @author Hannah Kolus
+#' @author Nick McKay
+#' @description Determines whether an excursion event has occurred within the specified event window. Excursion events are defined as n.consecutive values within the event window that are more extreme than the avg +/- sig.num standard deviations of the reference windows.
+#' @references Morrill
+#'
+#' @inheritParams detectShift
+#' @inheritDotParams detectShift
+#'
+#' @importFrom furrr future_pmap
+#'
+#' @return a tibble that describes the positive and negative excursion results
+#' @export
+detectMultipleExcursions <- function(ltt = NA,
+                                     n.ens = 100,
+                                     surrogate.method = "isospectral",
+                                     null.hypothesis.n = 100,
+                                     event.yr,
+                                     event.window,
+                                     ref.window,
+                                     sig.num = 2,
+                                     n.consecutive = 2,
+                                     exc.type = "either",
+                                     min.vals = 8,
+                                     na.rm = TRUE,
+                                     simulate.time.uncertainty = FALSE,
+                                     simulate.paleo.uncertainty = FALSE){
+
+
+  #this requeires a lipd-tibble-ts with multiple timeseries
+  if(all(is.na(ltt)) | !is.data.frame(ltt)){
+    stop("detectMultipleExcursions requires lipd-ts-tibble input. See ?prepareInput for help")
+  }
+
+  if(nrow(ltt) < 2){
+    stop("you must enter at least 2 rows in your lipd-ts-tibble to use detectMultipleExcursions")
+  }
+
+out <- furrr::future_pmap(ltt,\(...) detectExcursion(todfr(...),
+                                                     n.ens = n.ens,
+                                                     surrogate.method = surrogate.method,
+                                                     null.hypothesis.n = null.hypothesis.n,
+                                                     event.yr = event.yr,
+                                                     event.window = event.window,
+                                                     ref.window = ref.window,
+                                                     sig.num = sig.num,
+                                                     n.consecutive = n.consecutive,
+                                                     exc.type = exc.type,
+                                                     min.vals = min.vals,
+                                                     na.rm = na.rm,
+                                                     simulate.paleo.uncertainty = simulate.paleo.uncertainty,
+                                                     simulate.time.uncertainty = simulate.time.uncertainty,
+                                                     progress = FALSE),
+                          .progress = TRUE)
+
+multiout <- purrr::list_rbind(out)
+
+  return(multiout)
+
+}
 
 
 #' Detect an excursion in a timeseries
@@ -119,6 +194,7 @@ detectExcursion = function(ltt = NA,
                                  time_end = mean(dataEst$time_end,na.rm = TRUE),
                                  time_mid = mean(time_start,time_end),
                                  eventDetectionWithUncertainty = mean(dataEst$eventDetected,na.rm = TRUE),
+                                 nullDetectionWithUncertainty = list(nullEvents$nulls),
                                  empirical_pvalue = 1-nullEcdf(eventDetectionWithUncertainty),
                                  eventDetection = list(dataEst),
                                  unc.prop.n = n.ens,

@@ -16,6 +16,7 @@ propagateUncertainty(
   paleo.ar1 = sqrt(0.5),
   paleo.arima.order = c(1, 0, 0),
   summarize = FALSE,
+  seed = round(sum(time, na.rm = TRUE)),
   ...
 )
 }

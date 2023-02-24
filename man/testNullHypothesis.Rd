@@ -12,6 +12,7 @@ testNullHypothesis(
   mc.ens = 100,
   surrogate.method = "isospectral",
   how.long.prop = NA,
+  seed = round(sum(vals, na.rm = FALSE)),
   ...
 )
 }

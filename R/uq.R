@@ -27,6 +27,8 @@ propagateUncertainty <- function(time,
                                  paleo.ar1 = sqrt(0.5),
                                  paleo.arima.order = c(1,0,0),
                                  summarize = FALSE,
+                                 seed = round(sum(time,na.rm = TRUE)),
+                                 progress = TRUE,
                                  ...){
 
 
@@ -38,6 +40,13 @@ propagateUncertainty <- function(time,
   }
 
   nca <- NCOL(time)
+
+  #set a seed.
+  if(all(is.na(seed))){
+    seed <- sample.int(1000,1)
+  }
+  set.seed(seed)
+
   #Prepare time ensemble
   if(nca == 1){#then it's not an ensemble
     #create ensemble?
@@ -152,17 +161,20 @@ testNullHypothesis <- function(time,
                                mc.ens = 100,
                                surrogate.method = "isospectral",
                                how.long.prop = NA,
+                               seed = round(sum(vals,na.rm=FALSE)),
+                               progress = TRUE,
                                ...) {
 
   cat(crayon::green(glue::glue("Testing null hypothesis with {mc.ens} simulations, each with {n.ens} ensemble members. \n\n")))
-  # if(is.na(how.long.prop)){
-  # cat(crayon::blue(glue::glue("This will probably take awhile.\n\n")))
-  # }else{
-  #   est <- ceiling(1.2*mc.ens*how.long.prop/60) #I wonder how accurate this is.
-  #   cat(crayon::blue(glue::glue("This will probably take about {est} minutes\n\n")))
-  # }
 
   #prep values for surrogates
+
+  #set a seed.
+  if(all(is.na(seed))){
+    seed <- sample.int(1000,1)
+  }
+  set.seed(seed)
+
 
   ncp <- NCOL(vals)
 
@@ -225,12 +237,16 @@ testNullHypothesis <- function(time,
 #this way repeats the uncertainty propagation for EACH surrrogate
   pucv <- function(x,...){propagateUncertainty(vals = x,...)}
 
+  if(progress){
+    progress <- "Testing null hypothesis"
+  }
+
   out <- purrr::map(surVals,
                     pucv,
                     time = time,
                     changeFun = changeFun,
                     n.ens = n.ens,
-                    .progress = "Testing null hypothesis",
+                    .progress = progress,
                     ...)
 
 

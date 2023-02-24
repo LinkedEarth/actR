@@ -100,7 +100,7 @@ prepareInput <- function(ltt = NA,
 
       if(hasAgeEnsemble){
         ltt$time <- ltt$ageEnsemble
-        ltt$timeUnits <- ltt$ageEnsembleUnits
+        ltt$timeUnits <- ltt$ageUnits
         if(is.null(ltt$timeUnits)){
           ltt$timeUnits <- ltt$ageUnits
         }
@@ -266,23 +266,25 @@ prepareInput <- function(ltt = NA,
   }
 
   #check for missing metadata
-  if(is.na(ltt$timeUnits)){
-    if(NCOL(ltt$time) == 1){
-      ltt$timeUnits <- geoChronR::heuristicUnits(ltt$time[[1]])
-    }else{
-      ltt$timeUnits <- geoChronR::heuristicUnits(ltt$time[[1]][,1])
+  for(r in 1:nrow(ltt)){
+    if(is.na(ltt$timeUnits[r])){
+      if(NCOL(ltt$time[[r]]) == 1){
+        ltt$timeUnits[r] <- geoChronR::heuristicUnits(ltt$time[[r]])
+      }else{
+        ltt$timeUnits[r] <- geoChronR::heuristicUnits(ltt$time[[r]][,1])
+      }
     }
   }
 
-  if(is.na(ltt$timeVariableName)){
-    ltt$timeVariableName <- "time"
+  if(any(is.na(ltt$timeVariableName))){
+    ltt$timeVariableName[is.na(ltt$timeVariableName)] <- "time"
   }
 
-  if(is.na(ltt$paleoData_units)){
-    ltt$paleoData_units <- "?"
+  if(any(is.na(ltt$paleoData_units))){
+    ltt$paleoData_units[is.na(ltt$paleoData_units)] <- "?"
   }
-  if(is.na(ltt$paleoData_variableName)){
-    ltt$paleoData_variableName <- "unknown"
+  if(any(is.na(ltt$paleoData_variableName))){
+    ltt$paleoData_variableName[is.na(ltt$paleoData_variableName)] <- "unknown"
   }
 
 
