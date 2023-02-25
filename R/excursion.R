@@ -40,15 +40,16 @@ todfr <- function(...){
   return(tibble::as_tibble_row(l))
 }
 
-#' Detect an excursion in a timeseries
+#' Detect an excursion in many timeseries
 #'
+#' @inheritParams detectExcursion
+#' @inheritParams detectExcursionCore
+#' @inheritParams propagateUncertainty
+#' @inheritParams testNullHypothesis
 #' @author Hannah Kolus
 #' @author Nick McKay
-#' @description Determines whether an excursion event has occurred within the specified event window. Excursion events are defined as n.consecutive values within the event window that are more extreme than the avg +/- sig.num standard deviations of the reference windows.
+#' @description Determines whether an excursion event has occurred within the specified event window for a lipd-ts-tibble of timeseries. Excursion events are defined as n.consecutive values within the event window that are more extreme than the avg +/- sig.num standard deviations of the reference windows.
 #' @references Morrill
-#'
-#' @inheritParams detectShift
-#' @inheritDotParams detectShift
 #'
 #' @importFrom furrr future_pmap
 #'

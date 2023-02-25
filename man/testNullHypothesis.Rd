@@ -13,6 +13,7 @@ testNullHypothesis(
   surrogate.method = "isospectral",
   how.long.prop = NA,
   seed = round(sum(vals, na.rm = FALSE)),
+  progress = TRUE,
   ...
 )
 }
@@ -34,6 +35,10 @@ testNullHypothesis(
 }}
 
 \item{how.long.prop}{Optionally input the duration to calculate a single instance to estimate how long the calculation will take}
+
+\item{seed}{set a seed for reproducibility}
+
+\item{progress}{show null hypothesis testing progress bar?}
 
 \item{...}{
   Arguments passed on to \code{\link[=propagateUncertainty]{propagateUncertainty}}

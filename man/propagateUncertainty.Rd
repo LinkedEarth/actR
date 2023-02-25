@@ -17,6 +17,7 @@ propagateUncertainty(
   paleo.arima.order = c(1, 0, 0),
   summarize = FALSE,
   seed = round(sum(time, na.rm = TRUE)),
+  progress = TRUE,
   ...
 )
 }
@@ -42,6 +43,10 @@ propagateUncertainty(
 \item{paleo.arima.order}{Order to use for ARIMA model used in modelling uncertainty on paleoDat (default = c(1,0,0))}
 
 \item{summarize}{Boolean. Summarize the output? Or return all the ensembles?}
+
+\item{seed}{set a seed for reproducibility}
+
+\item{progress}{show null hypothesis testing progress bar?}
 
 \item{...}{arguments to pass to pass to changeFun}
 }

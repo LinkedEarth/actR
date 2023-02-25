@@ -13,6 +13,8 @@
 #' @param paleo.arima.order Order to use for ARIMA model used in modelling uncertainty on paleoDat (default = c(1,0,0))
 #' @param summarize Boolean. Summarize the output? Or return all the ensembles?
 #' @param ... arguments to pass to pass to changeFun
+#' @param seed set a seed for reproducibility
+#' @param progress show null hypothesis testing progress bar?
 #'
 #' @return a propagated uncertainty tibble
 #' @export

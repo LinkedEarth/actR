@@ -34,7 +34,9 @@ Imports:
     crayon,
     neotoma2,
     fBasics,
-    devtools
+    devtools,
+    furrr,
+    future
 Suggests:
     testthat,
     knitr,

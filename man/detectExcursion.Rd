@@ -63,6 +63,8 @@ detectExcursion(
     \item{\code{paleo.ar1}}{Autocorrelation coefficient to use for modelling uncertainty on paleoData, what fraction of the uncertainties are autocorrelated? (default = sqrt(0.5); or 50\% autocorrelated uncertainty)}
     \item{\code{paleo.arima.order}}{Order to use for ARIMA model used in modelling uncertainty on paleoDat (default = c(1,0,0))}
     \item{\code{summarize}}{Boolean. Summarize the output? Or return all the ensembles?}
+    \item{\code{seed}}{set a seed for reproducibility}
+    \item{\code{progress}}{show null hypothesis testing progress bar?}
   }}
 }
 \value{

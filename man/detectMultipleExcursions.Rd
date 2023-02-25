@@ -2,39 +2,63 @@
 % Please edit documentation in R/excursion.R
 \name{detectMultipleExcursions}
 \alias{detectMultipleExcursions}
-\title{Detect an excursion in a timeseries}
+\title{Detect an excursion in many timeseries}
 \usage{
-detectMultipleExcursions(ltt = NA, ...)
+detectMultipleExcursions(
+  ltt = NA,
+  n.ens = 100,
+  surrogate.method = "isospectral",
+  null.hypothesis.n = 100,
+  event.yr,
+  event.window,
+  ref.window,
+  sig.num = 2,
+  n.consecutive = 2,
+  exc.type = "either",
+  min.vals = 8,
+  na.rm = TRUE,
+  simulate.time.uncertainty = FALSE,
+  simulate.paleo.uncertainty = FALSE
+)
 }
 \arguments{
 \item{ltt}{A LiPD-timeseries-tibble, a tibble or data.frame that has the variable(s) of interest, a time variable (age, year or time) along with their metadata, aranged in rows. If ltt = NA, then one in is created from other inputs}
 
-\item{...}{
-  Arguments passed on to \code{\link[=detectShift]{detectShift}}
-  \describe{
-    \item{\code{summary.bin.step}}{Time interval over which to summarize the results}
-    \item{\code{null.hypothesis.n}}{How many simulations to run for null hypothesis testing (default = 100)}
-    \item{\code{null.quantiles}}{What quantiles to report as output from null hypothesis testing (default = c(.95, .9))}
-    \item{\code{time}}{if ltt is not provided, input a vector or matrix of time (year or age) data. If it's a multicolumn matrix, the columns are time-ensemble members}
-    \item{\code{vals}}{if ltt is not provided, input a vector or matrix of paleoData. If it's a multicolumn matrix, the columns are value-ensemble members}
-    \item{\code{time.variable.name}}{If ltt is not provided, specify the name of the time variable (typically 'age' or 'year')}
-    \item{\code{vals.variable.name}}{If ltt is not provided, specify the name of the paleo variable (e.g., 'd18O' or 'temperature'). Alternatively, if ltt is provided with more rows than expected, this term is used to attempt to select the correct row.}
-    \item{\code{time.units}}{If ltt is not provided, specify the units the time variable (typically 'yr BP' or 'CE')}
-    \item{\code{vals.units}}{If ltt is not provided, specify the units the paleo variable (e.g. 'permil' or 'degrees C')}
-    \item{\code{dataset.name}}{If ltt is not provided, specify the dataset name}
-    \item{\code{time.range}}{Optionally enter a time range (as minimum and maximum) that you'd like to restrict the analysis to. (default = NA)}
-    \item{\code{surrogate.method}}{What method to use to generage surrogate data for hypothesis testing? Options include: \itemize{
+\item{n.ens}{How many ensembles to use for error propagation? (default = 100)}
+
+\item{surrogate.method}{What method to use to generage surrogate data for hypothesis testing? Options include: \itemize{
 \item 'isospectral': (Default) Following Ebisuzaki (1997), generate surrogates by scrambling the phases of the data while preserving their power spectrum. This uses the To generate these “isospectral” surrogates. Uses the rEDM::make_surrogate_data() function
 \item 'isopersistent':  Generates surrogates by simulating from an autoregressive process of order 1 (AR(1)), which has been fit to the data. Uses the geoChronR::createSyntheticTimeseries() function
 \item 'shuffle': Randomly shuffles the data to create surrogates. Uses the rEDM::make_surrogate_data() function
 }}
-  }}
+
+\item{null.hypothesis.n}{How many simulations to run for null hypothesis testing (default = 100)}
+
+\item{event.yr}{time at the center of the excursion window}
+
+\item{event.window}{width (in time units) of the excursion window}
+
+\item{ref.window}{width (in time units) of the reference windows}
+
+\item{sig.num}{how many standard deviations required outside the reference windows must be exceeded for this to be considered an excursion? (default = 2)}
+
+\item{n.consecutive}{how many consecutive points are required for this to be considered an excursion? (default = 2)}
+
+\item{exc.type}{Type of excursion to look for. "positive", "negative", "either" or "both" (default = "either")}
+
+\item{min.vals}{Minimum number of values required in reference and event windows (default = 8)}
+
+\item{na.rm}{Remove NAs? (default = TRUE)}
+
+\item{simulate.time.uncertainty}{TRUE or FALSE. If an ensemble is not included, do you want to simulate time ensembles (default = TRUE)}
+
+\item{simulate.paleo.uncertainty}{TRUE or FALSE. If an ensemble is not included, do you want to simulate paleo ensembles (default = TRUE)}
 }
 \value{
 a tibble that describes the positive and negative excursion results
 }
 \description{
-Determines whether an excursion event has occurred within the specified event window. Excursion events are defined as n.consecutive values within the event window that are more extreme than the avg +/- sig.num standard deviations of the reference windows.
+Determines whether an excursion event has occurred within the specified event window for a lipd-ts-tibble of timeseries. Excursion events are defined as n.consecutive values within the event window that are more extreme than the avg +/- sig.num standard deviations of the reference windows.
 }
 \references{
 Morrill
