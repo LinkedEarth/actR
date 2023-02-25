@@ -78,6 +78,8 @@
 <span>  paleo.ar1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="fl">0.5</span><span class="op">)</span>,</span>
 <span>  paleo.arima.order <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">0</span>, <span class="fl">0</span><span class="op">)</span>,</span>
 <span>  summarize <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">time</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  progress <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -126,6 +128,14 @@
 
 <dt>summarize</dt>
 <dd><p>Boolean. Summarize the output? Or return all the ensembles?</p></dd>
+
+
+<dt>seed</dt>
+<dd><p>set a seed for reproducibility</p></dd>
+
+
+<dt>progress</dt>
+<dd><p>show null hypothesis testing progress bar?</p></dd>
 
 
 <dt>...</dt>

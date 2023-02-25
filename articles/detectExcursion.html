@@ -123,15 +123,12 @@ on each side), and how many standard deviations to use for the baseline
 <span>                          sig.num <span class="op">=</span> <span class="fl">2</span>,</span>
 <span>                          exc.type <span class="op">=</span> <span class="st">"either"</span>,</span>
 <span>                          n.ens <span class="op">=</span> <span class="fl">1</span>,</span>
-<span>                          null.hypothesis.n <span class="op">=</span> <span class="fl">1000</span>,</span>
+<span>                          null.hypothesis.n <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>                          simulate.time.uncertainty <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>                          simulate.paleo.uncertainty <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Selected d18O</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">Testing null hypothesis with 1000 simulations, each with 1 ensemble members. </span></span></span>
-<span><span class="co"><span style="color: #00BB00;">#&gt; </span></span></span>
-<span><span class="co">#&gt; Testing null hypothesis <span style="color: #00BB00;">■■■■■                           </span>  12% |  ETA:  8s</span></span>
-<span><span class="co">#&gt; Testing null hypothesis <span style="color: #00BB00;">■■■■■■■■■■■■■■■                 </span>  46% |  ETA:  5s</span></span>
-<span><span class="co">#&gt; Testing null hypothesis <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■■■       </span>  79% |  ETA:  2s</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #00BB00;">Testing null hypothesis with 1 simulations, each with 1 ensemble members. </span></span></span>
+<span><span class="co"><span style="color: #00BB00;">#&gt; </span></span></span></code></pre></div>
 <p>After it runs, the <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code> or <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code>
 functions will summarize the results.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
@@ -143,7 +140,7 @@ functions will summarize the results.</p>
 <span><span class="co"><span style="font-weight: bold;">#&gt; </span>Time uncertainty considered? <span style="color: #BB0000;">FALSE</span></span></span>
 <span><span class="co">#&gt; Paleo uncertainty considered? <span style="color: #BB0000;">FALSE</span></span></span>
 <span><span class="co">#&gt; Error propagation ensemble members = 1</span></span>
-<span><span class="co">#&gt; Null hypothesis testing ensemble members = 1000</span></span>
+<span><span class="co">#&gt; Null hypothesis testing ensemble members = 1</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold;">Parameter choices:</span></span></span>
 <span><span class="co"><span style="font-weight: bold;">#&gt; </span><span style="color: #555555;">sig.num = 2</span></span></span>
@@ -199,10 +196,11 @@ null hypothesis simulation 50 times.</p>
 <span><span class="co">#&gt; Selected d18O</span></span>
 <span><span class="co">#&gt; <span style="color: #00BB00;">Testing null hypothesis with 50 simulations, each with 50 ensemble members. </span></span></span>
 <span><span class="co"><span style="color: #00BB00;">#&gt; </span></span></span>
-<span><span class="co">#&gt; Testing null hypothesis <span style="color: #00BB00;">■■■■■■■■                        </span>  24% |  ETA: 10s</span></span>
-<span><span class="co">#&gt; Testing null hypothesis <span style="color: #00BB00;">■■■■■■■■■■■■■■■                 </span>  46% |  ETA:  7s</span></span>
-<span><span class="co">#&gt; Testing null hypothesis <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■           </span>  68% |  ETA:  4s</span></span>
-<span><span class="co">#&gt; Testing null hypothesis <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■■■■■■■   </span>  92% |  ETA:  1s</span></span></code></pre></div>
+<span><span class="co">#&gt; Testing null hypothesis <span style="color: #00BB00;">■■■■■■                          </span>  16% |  ETA: 16s</span></span>
+<span><span class="co">#&gt; Testing null hypothesis <span style="color: #00BB00;">■■■■■■■■■■■                     </span>  34% |  ETA: 12s</span></span>
+<span><span class="co">#&gt; Testing null hypothesis <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■               </span>  52% |  ETA:  8s</span></span>
+<span><span class="co">#&gt; Testing null hypothesis <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■           </span>  68% |  ETA:  6s</span></span>
+<span><span class="co">#&gt; Testing null hypothesis <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■■■■■     </span>  86% |  ETA:  2s</span></span></code></pre></div>
 <p>This time, when we summarize the results, we get more interesting
 output, including an empirical p-value, which is the fraction of null
 hypothesis simulations that exceed the positivity rate in the actual
@@ -213,7 +211,7 @@ significant.</p>
 <span><span class="co">#&gt; <span style="font-weight: bold;">NGRIP.NGRIP.2004 - d18O: Excursion test results</span></span></span>
 <span><span class="co"><span style="font-weight: bold;">#&gt; </span><span style="color: #555555;">Searched for </span><span style="color: #555555; font-weight: bold;">negative</span><span style="color: #555555;"> excursions in a </span><span style="color: #555555; font-weight: bold;">200</span><span style="color: #555555;"> year window around </span><span style="color: #555555; font-weight: bold;">8200</span><span style="color: #555555;"> BP, with reference windows of </span><span style="color: #555555; font-weight: bold;">400</span><span style="color: #555555;"> years on either side.</span></span></span>
 <span><span class="co"><span style="color: #555555;">#&gt; </span></span></span>
-<span><span class="co">#&gt; <span style="font-weight: bold;">Overall result: Empirical p-value = </span><span style="color: #00BB00; font-weight: bold;">0.04</span></span></span>
+<span><span class="co">#&gt; <span style="font-weight: bold;">Overall result: Empirical p-value = </span><span style="color: #BB0000; font-weight: bold;">0.0600000000000001</span></span></span>
 <span><span class="co"><span style="font-weight: bold;">#&gt; </span>Time uncertainty considered? <span style="color: #BB0000;">FALSE</span></span></span>
 <span><span class="co">#&gt; Paleo uncertainty considered? <span style="color: #00BB00;">TRUE</span></span></span>
 <span><span class="co">#&gt; Error propagation ensemble members = 50</span></span>
@@ -271,13 +269,15 @@ through our robust null hypothesis testing.</p>
 <span><span class="co">#&gt; Selected d18O</span></span>
 <span><span class="co">#&gt; <span style="color: #00BB00;">Testing null hypothesis with 50 simulations, each with 50 ensemble members. </span></span></span>
 <span><span class="co"><span style="color: #00BB00;">#&gt; </span></span></span>
-<span><span class="co">#&gt; Testing null hypothesis <span style="color: #00BB00;">■■■■■■                          </span>  16% |  ETA: 19s</span></span>
-<span><span class="co">#&gt; Testing null hypothesis <span style="color: #00BB00;">■■■■■■■■■■                      </span>  30% |  ETA: 16s</span></span>
-<span><span class="co">#&gt; Testing null hypothesis <span style="color: #00BB00;">■■■■■■■■■■■■■■                  </span>  42% |  ETA: 13s</span></span>
-<span><span class="co">#&gt; Testing null hypothesis <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■              </span>  56% |  ETA: 10s</span></span>
-<span><span class="co">#&gt; Testing null hypothesis <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■           </span>  68% |  ETA:  7s</span></span>
-<span><span class="co">#&gt; Testing null hypothesis <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■■■■      </span>  82% |  ETA:  4s</span></span>
-<span><span class="co">#&gt; Testing null hypothesis <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■■■■■■■   </span>  94% |  ETA:  1s</span></span></code></pre></div>
+<span><span class="co">#&gt; Testing null hypothesis <span style="color: #00BB00;">■■■                             </span>   8% |  ETA: 26s</span></span>
+<span><span class="co">#&gt; Testing null hypothesis <span style="color: #00BB00;">■■■■■■■                         </span>  20% |  ETA: 24s</span></span>
+<span><span class="co">#&gt; Testing null hypothesis <span style="color: #00BB00;">■■■■■■■■■                       </span>  28% |  ETA: 21s</span></span>
+<span><span class="co">#&gt; Testing null hypothesis <span style="color: #00BB00;">■■■■■■■■■■■■■                   </span>  40% |  ETA: 17s</span></span>
+<span><span class="co">#&gt; Testing null hypothesis <span style="color: #00BB00;">■■■■■■■■■■■■■■■■                </span>  50% |  ETA: 14s</span></span>
+<span><span class="co">#&gt; Testing null hypothesis <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■             </span>  60% |  ETA: 12s</span></span>
+<span><span class="co">#&gt; Testing null hypothesis <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■          </span>  70% |  ETA:  9s</span></span>
+<span><span class="co">#&gt; Testing null hypothesis <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■■■       </span>  80% |  ETA:  6s</span></span>
+<span><span class="co">#&gt; Testing null hypothesis <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■■■■■■■   </span>  92% |  ETA:  2s</span></span></code></pre></div>
 <p>Let’s examine the result.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
