@@ -26,6 +26,82 @@ detectExcursionSlidingWindow <- function(time,
 
 }
 
+#helper function to allow pmapping over ts tibble rows
+todfr <- function(...){
+  l <- list(...)
+  for(li in 1:length(l)){
+    if(length(l[[li]]) > 1){
+      l[[li]] <- list(l[[li]])
+    }
+    if(length(l[[li]]) == 0){
+      l[[li]] <- NA
+    }
+  }
+  return(tibble::as_tibble_row(l))
+}
+
+#' Detect an excursion in many timeseries
+#'
+#' @inheritParams detectExcursion
+#' @inheritParams detectExcursionCore
+#' @inheritParams propagateUncertainty
+#' @inheritParams testNullHypothesis
+#' @author Hannah Kolus
+#' @author Nick McKay
+#' @description Determines whether an excursion event has occurred within the specified event window for a lipd-ts-tibble of timeseries. Excursion events are defined as n.consecutive values within the event window that are more extreme than the avg +/- sig.num standard deviations of the reference windows.
+#' @references Morrill
+#'
+#' @importFrom furrr future_pmap
+#'
+#' @return a tibble that describes the positive and negative excursion results
+#' @export
+detectMultipleExcursions <- function(ltt = NA,
+                                     n.ens = 100,
+                                     surrogate.method = "isospectral",
+                                     null.hypothesis.n = 100,
+                                     event.yr,
+                                     event.window,
+                                     ref.window,
+                                     sig.num = 2,
+                                     n.consecutive = 2,
+                                     exc.type = "either",
+                                     min.vals = 8,
+                                     na.rm = TRUE,
+                                     simulate.time.uncertainty = FALSE,
+                                     simulate.paleo.uncertainty = FALSE){
+
+
+  #this requeires a lipd-tibble-ts with multiple timeseries
+  if(all(is.na(ltt)) | !is.data.frame(ltt)){
+    stop("detectMultipleExcursions requires lipd-ts-tibble input. See ?prepareInput for help")
+  }
+
+  if(nrow(ltt) < 2){
+    stop("you must enter at least 2 rows in your lipd-ts-tibble to use detectMultipleExcursions")
+  }
+
+out <- furrr::future_pmap(ltt,\(...) detectExcursion(todfr(...),
+                                                     n.ens = n.ens,
+                                                     surrogate.method = surrogate.method,
+                                                     null.hypothesis.n = null.hypothesis.n,
+                                                     event.yr = event.yr,
+                                                     event.window = event.window,
+                                                     ref.window = ref.window,
+                                                     sig.num = sig.num,
+                                                     n.consecutive = n.consecutive,
+                                                     exc.type = exc.type,
+                                                     min.vals = min.vals,
+                                                     na.rm = na.rm,
+                                                     simulate.paleo.uncertainty = simulate.paleo.uncertainty,
+                                                     simulate.time.uncertainty = simulate.time.uncertainty,
+                                                     progress = FALSE),
+                          .progress = TRUE)
+
+multiout <- purrr::list_rbind(out)
+
+  return(multiout)
+
+}
 
 
 #' Detect an excursion in a timeseries
@@ -36,7 +112,6 @@ detectExcursionSlidingWindow <- function(time,
 #' @references Morrill
 #'
 #' @inheritParams prepareInput
-#' @inheritParams propagateUncertainty
 #' @inheritParams testNullHypothesis
 #' @inheritParams detectShift
 #' @inheritDotParams propagateUncertainty
@@ -59,6 +134,7 @@ detectExcursion = function(ltt = NA,
                            surrogate.method = "isospectral",
                            null.hypothesis.n = 100,
                            null.quantiles = c(.95),
+                           detrend.type="linear",
                            ...) {
 
   #prep inputs
@@ -78,15 +154,15 @@ detectExcursion = function(ltt = NA,
   vals <- prepped$paleoData_values[[1]]
 
 
+
+
   # detect excursions while propagating time and data uncertainties
-  ptm <- proc.time()
   dataEst <- propagateUncertainty(time,
                                   vals,
                                   n.ens = n.ens,
                                   changeFun = detectExcursionCore,
                                   ...)
-  te <- proc.time() - ptm
-  te <- te[3]
+
 
   #see if we got any results
   if(sum(!is.na(dataEst$eventDetected)) / nrow(dataEst) < 0.5){
@@ -116,10 +192,11 @@ detectExcursion = function(ltt = NA,
   nullLevels <- nullEventProb %>%
     tidyr::pivot_wider(values_from = qs,names_from = clLevel)
 
-  eventSummary <- tibble::tibble(time_start = dataEst$time_start[1],
-                                 time_end = dataEst$time_end[1],
+  eventSummary <- tibble::tibble(time_start = mean(dataEst$time_start,na.rm = TRUE),
+                                 time_end = mean(dataEst$time_end,na.rm = TRUE),
                                  time_mid = mean(time_start,time_end),
                                  eventDetectionWithUncertainty = mean(dataEst$eventDetected,na.rm = TRUE),
+                                 nullDetectionWithUncertainty = list(nullEvents$nulls),
                                  empirical_pvalue = 1-nullEcdf(eventDetectionWithUncertainty),
                                  eventDetection = list(dataEst),
                                  unc.prop.n = n.ens,
@@ -143,7 +220,7 @@ detectExcursion = function(ltt = NA,
 #' @param time time vector of only the points in the window
 #' @param vals value vector of only the points in the window
 #' @param n.consecutive how many consecutive points are required for this to be considered an excursion? (default = 2)
-#' @param exc.type Type of excursion to look for. "positive", "negativee", "either" or "both" (default = "either")
+#' @param exc.type Type of excursion to look for. "positive", "negative", "either" or "both" (default = "either")
 #' @param min.vals Minimum number of values required in reference and event windows (default = 8)
 #' @param na.rm Remove NAs? (default = TRUE)
 #' @param sig.num how many standard deviations required outside the reference windows must be exceeded for this to be considered an excursion? (default = 2)
@@ -162,7 +239,8 @@ detectExcursionCore <- function(time,
                                 n.consecutive = 2,
                                 exc.type = "either",
                                 min.vals = 8,
-                                na.rm = TRUE){
+                                na.rm = TRUE,
+                                detrend.type=detrend.type){
 
  #write parameters for export
   params = glue::glue("event.yr = {event.yr}, event.window = {event.window}, ref.window = {ref.window}, sig.num = {sig.num}, n.consecutive = {n.consecutive},exc.type = '{exc.type}', min.vals = {min.vals}, na.rm = {na.rm}")
@@ -188,8 +266,22 @@ detectExcursionCore <- function(time,
   vals = vals[analysis.i]
 
   # Detrend over analysis window
-  a = predict(lm(vals ~ time))
-  values = as.vector(vals - a)
+  if (detrend.type == "none"){
+    values = as.vector(vals)
+  }else if (detrend.type == "linear"){
+    a = predict(lm(vals ~ time))
+    values = as.vector(vals - a)
+  }else if (detrend.type == "spline"){
+    #Calculate spline degrees of freedom
+    numVals <- length(time)
+    recordLen <- abs(max(time)-min(time))
+    splineDF <- event.window / (recordLen/numVals)
+    a = predict(smooth.spline(vals~time, df=splineDF))$y
+    values = as.vector(vals/a)
+  }else{
+    stop("detrending.type mst be one of: none, linear, spline")
+  }
+
 
   pre.i = which(time < event.start)                        # define pre-event (ref) window indices
   event.i = which(time >= event.start & time <= event.end)  # define event window indices
@@ -207,7 +299,7 @@ detectExcursionCore <- function(time,
                           preSd = NA,
                           postMean = NA,
                           postSd = NA,
-                          nExcusionVals = NA,
+                          nExcursionVals = NA,
                           excursionMeanTime = NA,
                           excursionMaxSd = NA,
                           isExcursion = list(rep(NA,times = length(time))),
@@ -249,7 +341,8 @@ detectExcursionCore <- function(time,
 
 
   # Identify points in event window that exceed the thresholds defined above
-  exc.ind <- c() #setup excursion index
+  exc.ind.above <- c() #setup excursion index
+  exc.ind.below <- c() #setup excursion index
 
   # positive
   aboveBool <- values[event.i] > avg.hi + sig.num * sd.hi
@@ -258,7 +351,7 @@ detectExcursionCore <- function(time,
   # Determine whether there are any consecutive extreme points - this qualifies an event
   if (mctAbove$max >= n.consecutive) {
     aboveEvent <- TRUE
-    exc.ind <- c(exc.ind,mctAbove$index)
+    exc.ind.above <- c(exc.ind.above,mctAbove$index)
   }else{
     aboveEvent <- FALSE
   }
@@ -269,9 +362,26 @@ detectExcursionCore <- function(time,
   # Determine whether there are any consecutive extreme points - this qualifies an event
   if (mctBelow$max >= n.consecutive) {
     belowEvent <- TRUE
-    exc.ind <- c(exc.ind,mctBelow$index)
+    exc.ind.below <- c(exc.ind.below,mctBelow$index)
   }else{
     belowEvent <- FALSE
+  }
+
+
+  if(grepl(pattern = "either",x = exc.type,ignore.case = TRUE)){
+    event <- any(c(aboveEvent,belowEvent))
+    exc.ind <- c(exc.ind.above,exc.ind.below)
+  }else if(grepl(pattern = "both",x = exc.type,ignore.case = TRUE)){
+    event <- all(c(aboveEvent,belowEvent))
+    exc.ind <- c(exc.ind.above,exc.ind.below)
+  }else if(grepl(pattern = "pos",x = exc.type,ignore.case = TRUE)){
+    event <- aboveEvent
+    exc.ind <- exc.ind.above
+  }else if(grepl(pattern = "neg",x = exc.type,ignore.case = TRUE)){
+    event <- belowEvent
+    exc.ind <- exc.ind.below
+  }else{
+    stop(glue::glue("exc.type = {exc.type} is not recognized"))
   }
 
   isExcursion <- seq_along(time) %in% event.i[exc.ind]
@@ -284,17 +394,7 @@ detectExcursionCore <- function(time,
     excursionMaxSd = NA
   }
 
-  if(grepl(pattern = "either",x = exc.type,ignore.case = TRUE)){
-    event <- any(c(aboveEvent,belowEvent))
-  }else if(grepl(pattern = "both",x = exc.type,ignore.case = TRUE)){
-    event <- all(c(aboveEvent,belowEvent))
-  }else if(grepl(pattern = "pos",x = exc.type,ignore.case = TRUE)){
-    event <- aboveEvent
-  }else if(grepl(pattern = "neg",x = exc.type,ignore.case = TRUE)){
-    event <- belowEvent
-  }else{
-    stop(glue::glue("exc.type = {exc.type} is not recognized"))
-  }
+
 
   out <- tibble::tibble(time_start = event.start,
                         time_end = event.end,
@@ -306,7 +406,7 @@ detectExcursionCore <- function(time,
                         preSd = preSD,
                         postMean = postAVG,
                         postSd = postSD,
-                        nExcusionVals = sum(isExcursion),
+                        nExcursionVals = sum(isExcursion),
                         excursionMeanTime = excursionMeanTime,
                         excursionMaxSd = excursionMaxSd,
                         isExcursion = list(isExcursion),
