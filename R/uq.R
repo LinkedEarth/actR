@@ -103,15 +103,15 @@ propagateUncertainty <- function(time,
 
   dl <- purrr::map_dbl(dots,length)
   if(any(dl > 1)){#then we need to sample over
-#turn params into vectors that are n.ens long...
+    #turn params into vectors that are n.ens long...
     dotsLong <- vector(mode = "list",length = length(dots))
     for(d in 1:length(dots)){
       if(length(dots[[d]]) == 1){
-      dotsLong[[d]] <- rep(dots[[d]],n.ens)
+        dotsLong[[d]] <- rep(dots[[d]],n.ens)
       }else if(length(dots[[d]]) <= n.ens){
-      dotsLong[[d]] <- sample(dots[[d]],size = n.ens,replace = FALSE)
+        dotsLong[[d]] <- sample(dots[[d]],size = n.ens,replace = FALSE)
       }else{
-      dotsLong[[d]] <- sample(dots[[d]],size = n.ens,replace = TRUE)
+        dotsLong[[d]] <- sample(dots[[d]],size = n.ens,replace = TRUE)
       }
     }
     names(dotsLong) <- names(dots)
@@ -119,7 +119,7 @@ propagateUncertainty <- function(time,
 
     propagated <- purrr::pmap_dfr(tomaplist,changeFun)
   }else{
-  propagated <- purrr::map2_dfr(timeList,paleoList,changeFun,...)
+    propagated <- purrr::map2_dfr(timeList,paleoList,changeFun,...)
   }
 
   propagated$nEns <- n.ens

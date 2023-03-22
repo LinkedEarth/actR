@@ -97,9 +97,8 @@ out <- furrr::future_pmap(ltt,\(...) detectExcursion(todfr(...),
                                                      progress = FALSE),
                           .progress = TRUE)
 
-multiout <- purrr::list_rbind(out)
 
-  return(multiout)
+  return(out)
 
 }
 
@@ -164,11 +163,30 @@ detectExcursion = function(ltt = NA,
 
 
   #see if we got any results
-  if(sum(!is.na(dataEst$eventDetected)) / nrow(dataEst) < 0.5){
-    stop("Excursion detection couldn't be performed, probably because there were typically fewer than 'min.vals' poins than in the defined windows. Consider changing your parameters")
-  }
+  if(sum(!is.na(dataEst$eventDetected)) / nrow(dataEst) < 0.5){#safely exit
 
-  # now test null hypothesis
+  eventSummarySafe <- tibble::tibble(time_start = mean(dataEst$time_start,na.rm = TRUE),
+                                 time_end = mean(dataEst$time_end,na.rm = TRUE),
+                                 time_mid = mean(time_start,time_end),
+                                 eventDetectionWithUncertainty = NA,
+                                 nullDetectionWithUncertainty = list(NA),
+                                 empirical_pvalue = NA,
+                                 eventDetection = list(dataEst),
+                                 unc.prop.n = n.ens,
+                                 null.hypothesis.n = null.hypothesis.n)
+
+  eventSummarySafe[paste0("cl",null.quantiles)] <- NA
+
+  paramTib <- createTibbleFromParameterString(as.character(dataEst$parameters[1]))
+
+  eventSummarySafe <- dplyr::bind_cols(eventSummarySafe,paramTib,prepped)
+
+  eventSummarySafe <- new_excursion(eventSummarySafe)
+
+  return(eventSummarySafe)
+
+  }else{
+      # now test null hypothesis
   nullHyp <- testNullHypothesis(time,
                                 vals,
                                 n.ens = n.ens,
@@ -210,6 +228,7 @@ detectExcursion = function(ltt = NA,
   eventSummary <- new_excursion(eventSummary)
 
   return(eventSummary)
+  }
 
 }
 
@@ -263,8 +282,29 @@ detectExcursionCore <- function(time,
   time = time[analysis.i]
   vals = vals[analysis.i]
 
+  #create safe output in case of error
+  safeOut <- tibble::tibble(time_start = event.start,
+                        time_end = event.end,
+                        eventDetected = NA,
+                        eventProbability = NA,
+                        time = list(time),
+                        vals = list(vals),
+                        preMean = NA,
+                        preSd = NA,
+                        postMean = NA,
+                        postSd = NA,
+                        nExcursionVals = NA,
+                        excursionMeanTime = NA,
+                        excursionMaxSd = NA,
+                        isExcursion = list(rep(NA,times = length(time))),
+                        parameters = as.character(params))
+
+
   # Detrend over analysis window
-  a = predict(lm(vals ~ time))
+  a <- try(predict(lm(vals ~ time)),silent = TRUE)
+  if(is(a,"try-error")){
+    return(safeOut)
+  }
   values = as.vector(vals - a)
 
   pre.i = which(time < event.start)                        # define pre-event (ref) window indices
@@ -273,22 +313,7 @@ detectExcursionCore <- function(time,
 
   #test for sufficient values in each window
   if(min(length(pre.i),length(event.i), length(post.i)) < min.vals){
-    out <- tibble::tibble(time_start = event.start,
-                          time_end = event.end,
-                          eventDetected = NA,
-                          eventProbability = NA,
-                          time = list(time),
-                          vals = list(values),
-                          preMean = NA,
-                          preSd = NA,
-                          postMean = NA,
-                          postSd = NA,
-                          nExcursionVals = NA,
-                          excursionMeanTime = NA,
-                          excursionMaxSd = NA,
-                          isExcursion = list(rep(NA,times = length(time))),
-                          parameters = as.character(params))
-    return(out)
+    return(safeOut)
   }
 
 

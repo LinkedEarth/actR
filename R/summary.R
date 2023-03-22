@@ -25,12 +25,16 @@ summaryExcursion <- function(object, params.to.print = c("sig.num","n.consecutiv
   }
 
 
-
-if(object$empirical_pvalue < 0.05){
-  resFun <- crayon::green
-}else{
-  resFun <- crayon::red
-}
+  if(!is.na(object$empirical_pvalue)){
+    if(object$empirical_pvalue < 0.05){
+      resFun <- crayon::green
+    }else{
+      resFun <- crayon::red
+    }
+  }else{
+    resFun <- crayon::red
+    object$empirical_pvalue <- "Excursion test failed to run."
+  }
 
   ensOut <- object$eventDetection[[1]]
   hasTimeEnsemble <- !identicalVectorsList(ensOut$time)
