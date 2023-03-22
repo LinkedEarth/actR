@@ -1,5 +1,8 @@
 # actR 0.1.7
 
+* Introduce `detectMultipleExcursions()` to run the excursion detector across a suite of datasets
+* Makes `detectExcursion()` return a data.frame with NAs rather than errors to better support `detectMultipleExcursions()`
+
 # actR 0.1.6
 
 * Used purrr >v1.0.0 to enable progress bars!
