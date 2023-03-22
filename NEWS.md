@@ -1,3 +1,5 @@
+# actR 0.1.7
+
 # actR 0.1.6
 
 * Used purrr >v1.0.0 to enable progress bars!
