@@ -179,10 +179,8 @@ detectShift <- function(ltt = NA,
   vals.ens.supplied.n <- NCOL(vals)
 
   #ensemble with uncertainties
-  ptm <- proc.time()
   propagated <- propagateUncertainty(time,vals,changeFun = detectShiftCore,...)
-  te <- proc.time() - ptm
-  te <- te[3]
+
 
 
   propSummary <- summarizeEventProbability(propagated,
@@ -195,7 +193,6 @@ detectShift <- function(ltt = NA,
                            changeFun = detectShiftCore,
                            surrogate.method = surrogate.method,
                            mc.ens = null.hypothesis.n,
-                           how.long.prop = te,
                            ...)
 
 

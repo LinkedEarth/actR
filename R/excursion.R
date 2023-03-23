@@ -163,7 +163,6 @@ detectExcursion = function(ltt = NA,
 
 
   #see if we got any results
-  if(sum(!is.na(dataEst$eventDetected)) / nrow(dataEst) < 0.5){#safely exit
 
   eventSummarySafe <- tibble::tibble(time_start = mean(dataEst$time_start,na.rm = TRUE),
                                  time_end = mean(dataEst$time_end,na.rm = TRUE),
@@ -182,6 +181,7 @@ detectExcursion = function(ltt = NA,
   eventSummarySafe <- dplyr::bind_cols(eventSummarySafe,paramTib,prepped)
 
   eventSummarySafe <- new_excursion(eventSummarySafe)
+  if(sum(!is.na(dataEst$eventDetected)) / nrow(dataEst) < 0.5){#safely exit
 
   return(eventSummarySafe)
 
@@ -192,17 +192,19 @@ detectExcursion = function(ltt = NA,
                                 n.ens = n.ens,
                                 surrogate.method = surrogate.method,
                                 changeFun = detectExcursionCore,
-                                how.long.prop = te,
                                 mc.ens = null.hypothesis.n,
                                 ...)
 
   nullEvents <- purrr::map_dbl(nullHyp,~ mean(.x$eventDetected,na.rm = TRUE)) %>%
     tibble::tibble(nulls = .)
+  if(all(!is.finite(nullEvents$nulls))){
+    return(eventSummarySafe)
+  }
 
   nullEcdf <- stats::ecdf(nullEvents$nulls)
 
   nullEventProb <- nullEvents %>%
-    dplyr::summarize(qs = quantile(nulls,probs = null.quantiles))
+    dplyr::summarize(qs = quantile(nulls,probs = null.quantiles,na.rm = TRUE))
 
   nullEventProb$clLevel <- paste0("cl",null.quantiles)
 
@@ -256,7 +258,7 @@ detectExcursionCore <- function(time,
                                 sig.num = 2,
                                 n.consecutive = 2,
                                 exc.type = "either",
-                                min.vals = 8,
+                                min.vals = 4,
                                 na.rm = TRUE){
 
  #write parameters for export
@@ -299,7 +301,9 @@ detectExcursionCore <- function(time,
                         isExcursion = list(rep(NA,times = length(time))),
                         parameters = as.character(params))
 
-
+  if(length(vals) <= 2){
+    return(safeOut)
+  }
   # Detrend over analysis window
   a <- try(predict(lm(vals ~ time)),silent = TRUE)
   if(is(a,"try-error")){
@@ -311,8 +315,12 @@ detectExcursionCore <- function(time,
   event.i = which(time >= event.start & time <= event.end)  # define event window indices
   post.i = which(time > event.end)                         # define post-event (ref) window indices
 
+  ar1 <- max(geoChronR::ar1(vals),0)
+  effective.n.adjustment <- (1)/(1+2*ar1) #https://andrewcharlesjones.github.io/journal/21-effective-sample-size.html
+
   #test for sufficient values in each window
-  if(min(length(pre.i),length(event.i), length(post.i)) < min.vals){
+  if(min(length(pre.i),length(event.i), length(post.i)) * effective.n.adjustment < min.vals){
+    warning("insufficient minimum values")
     return(safeOut)
   }
 

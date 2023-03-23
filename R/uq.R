@@ -150,7 +150,6 @@ propagateUncertainty <- function(time,
 #' \item 'isopersistent':  Generates surrogates by simulating from an autoregressive process of order 1 (AR(1)), which has been fit to the data. Uses the geoChronR::createSyntheticTimeseries() function
 #' \item 'shuffle': Randomly shuffles the data to create surrogates. Uses the rEDM::make_surrogate_data() function
 #' }
-#' @param how.long.prop Optionally input the duration to calculate a single instance to estimate how long the calculation will take
 #' @inheritDotParams propagateUncertainty
 #' @importFrom stats quantile
 #' @importFrom magrittr %>%
@@ -162,7 +161,6 @@ testNullHypothesis <- function(time,
                                n.ens = 100,
                                mc.ens = 100,
                                surrogate.method = "isospectral",
-                               how.long.prop = NA,
                                seed = round(sum(vals,na.rm=FALSE)),
                                progress = TRUE,
                                ...) {
