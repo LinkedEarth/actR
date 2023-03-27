@@ -261,7 +261,7 @@ detectExcursionCore <- function(time,
                                 sig.num = 2,
                                 n.consecutive = 2,
                                 exc.type = "either",
-                                min.vals = 2,
+                                min.vals = 3,
                                 na.rm = TRUE){
 
  #write parameters for export
@@ -326,7 +326,7 @@ detectExcursionCore <- function(time,
     while(a$acf[ari] > sig){
       wa <- c(wa,ari)
       ari <- ari + 1
-      if(ari > 20){break}
+      if(ari > length(a$acf)){break}
     }
 
     if(length(wa) == 0){
