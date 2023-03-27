@@ -13,7 +13,7 @@ detectExcursionCore(
   sig.num = 2,
   n.consecutive = 2,
   exc.type = "either",
-  min.vals = 8,
+  min.vals = 4,
   na.rm = TRUE
 )
 }
@@ -34,7 +34,7 @@ detectExcursionCore(
 
 \item{exc.type}{Type of excursion to look for. "positive", "negative", "either" or "both" (default = "either")}
 
-\item{min.vals}{Minimum number of values required in reference and event windows (default = 8)}
+\item{min.vals}{Minimum effective sample size (adjusted by autocorrelation) required in reference and event windows (default = 4)}
 
 \item{na.rm}{Remove NAs? (default = TRUE)}
 }

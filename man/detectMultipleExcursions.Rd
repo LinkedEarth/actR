@@ -18,7 +18,8 @@ detectMultipleExcursions(
   min.vals = 8,
   na.rm = TRUE,
   simulate.time.uncertainty = FALSE,
-  simulate.paleo.uncertainty = FALSE
+  simulate.paleo.uncertainty = FALSE,
+  seed = as.integer(Sys.time())
 )
 }
 \arguments{
@@ -46,13 +47,15 @@ detectMultipleExcursions(
 
 \item{exc.type}{Type of excursion to look for. "positive", "negative", "either" or "both" (default = "either")}
 
-\item{min.vals}{Minimum number of values required in reference and event windows (default = 8)}
+\item{min.vals}{Minimum effective sample size (adjusted by autocorrelation) required in reference and event windows (default = 4)}
 
 \item{na.rm}{Remove NAs? (default = TRUE)}
 
 \item{simulate.time.uncertainty}{TRUE or FALSE. If an ensemble is not included, do you want to simulate time ensembles (default = TRUE)}
 
 \item{simulate.paleo.uncertainty}{TRUE or FALSE. If an ensemble is not included, do you want to simulate paleo ensembles (default = TRUE)}
+
+\item{seed}{Set a seed for reproducibility. By default it will use current time meaning it will not be reproducible.}
 }
 \value{
 a tibble that describes the positive and negative excursion results
