@@ -261,7 +261,7 @@ detectExcursionCore <- function(time,
                                 sig.num = 2,
                                 n.consecutive = 2,
                                 exc.type = "either",
-                                min.vals = 4,
+                                min.vals = 2,
                                 na.rm = TRUE){
 
  #write parameters for export
@@ -304,7 +304,7 @@ detectExcursionCore <- function(time,
                         isExcursion = list(rep(NA,times = length(time))),
                         parameters = as.character(params))
 
-  if(length(vals) <= 2){
+  if(length(vals) <= 3){
     return(safeOut)
   }
   # Detrend over analysis window
@@ -318,8 +318,28 @@ detectExcursionCore <- function(time,
   event.i = which(time >= event.start & time <= event.end)  # define event window indices
   post.i = which(time > event.end)                         # define post-event (ref) window indices
 
-  ar1 <- max(geoChronR::ar1(vals),0)
-  effective.n.adjustment <- (1)/(1+2*ar1) #https://andrewcharlesjones.github.io/journal/21-effective-sample-size.html
+  arCumulative <- function(x){
+    a <- acf(x)
+    sig <- qnorm((1 + .95)/2)/sqrt(a$n.used)
+    wa <- c()
+    ari <- 2
+    while(a$acf[ari] > sig){
+      wa <- c(wa,ari)
+      ari <- ari + 1
+      if(ari > 20){break}
+    }
+
+    if(length(wa) == 0){
+      arc <- 0
+    }else{
+      arc <- sum(a$acf[wa])
+    }
+
+    return(arc)
+    }
+
+  ar <- arCumulative(vals)
+  effective.n.adjustment <- (1)/(1+ar) #https://andrewcharlesjones.github.io/journal/21-effective-sample-size.html
 
   #test for sufficient values in each window
   if(min(length(pre.i),length(event.i), length(post.i)) * effective.n.adjustment < min.vals){
