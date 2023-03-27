@@ -80,7 +80,8 @@
 <span>  min.vals <span class="op">=</span> <span class="fl">8</span>,</span>
 <span>  na.rm <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  simulate.time.uncertainty <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  simulate.paleo.uncertainty <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  simulate.paleo.uncertainty <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -130,7 +131,7 @@
 
 
 <dt>min.vals</dt>
-<dd><p>Minimum number of values required in reference and event windows (default = 8)</p></dd>
+<dd><p>Minimum effective sample size (adjusted by autocorrelation) required in reference and event windows (default = 4)</p></dd>
 
 
 <dt>na.rm</dt>
@@ -143,6 +144,10 @@
 
 <dt>simulate.paleo.uncertainty</dt>
 <dd><p>TRUE or FALSE. If an ensemble is not included, do you want to simulate paleo ensembles (default = TRUE)</p></dd>
+
+
+<dt>seed</dt>
+<dd><p>Set a seed for reproducibility. By default it will use current time meaning it will not be reproducible.</p></dd>
 
 </dl></div>
     <div id="value">

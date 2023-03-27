@@ -73,7 +73,6 @@
 <span>  n.ens <span class="op">=</span> <span class="fl">100</span>,</span>
 <span>  mc.ens <span class="op">=</span> <span class="fl">100</span>,</span>
 <span>  surrogate.method <span class="op">=</span> <span class="st">"isospectral"</span>,</span>
-<span>  how.long.prop <span class="op">=</span> <span class="cn">NA</span>,</span>
 <span>  seed <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">vals</span>, na.rm <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  progress <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  <span class="va">...</span></span>
@@ -107,10 +106,6 @@
 <li><p>'isopersistent':  Generates surrogates by simulating from an autoregressive process of order 1 (AR(1)), which has been fit to the data. Uses the geoChronR::createSyntheticTimeseries() function</p></li>
 <li><p>'shuffle': Randomly shuffles the data to create surrogates. Uses the rEDM::make_surrogate_data() function</p></li>
 </ul></dd>
-
-
-<dt>how.long.prop</dt>
-<dd><p>Optionally input the duration to calculate a single instance to estimate how long the calculation will take</p></dd>
 
 
 <dt>seed</dt>
