@@ -319,7 +319,7 @@ detectExcursionCore <- function(time,
   post.i = which(time > event.end)                         # define post-event (ref) window indices
 
   arCumulative <- function(x){
-    a <- acf(x)
+    a <- acf(x,plot = FALSE)
     sig <- qnorm((1 + .95)/2)/sqrt(a$n.used)
     wa <- c()
     ari <- 2
