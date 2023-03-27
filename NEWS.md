@@ -1,3 +1,5 @@
+# actR 0.1.8
+
 # actR 0.1.7
 
 * Introduce `detectMultipleExcursions()` to run the excursion detector across a suite of datasets
