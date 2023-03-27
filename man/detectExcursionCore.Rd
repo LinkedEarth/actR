@@ -13,7 +13,7 @@ detectExcursionCore(
   sig.num = 2,
   n.consecutive = 2,
   exc.type = "either",
-  min.vals = 4,
+  min.vals = 2,
   na.rm = TRUE
 )
 }
