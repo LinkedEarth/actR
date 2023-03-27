@@ -46,6 +46,7 @@ todfr <- function(...){
 #' @inheritParams detectExcursionCore
 #' @inheritParams propagateUncertainty
 #' @inheritParams testNullHypothesis
+#' @param seed Set a seed for reproducibility. By default it will use current time meaning it will not be reproducible.
 #' @author Hannah Kolus
 #' @author Nick McKay
 #' @description Determines whether an excursion event has occurred within the specified event window for a lipd-ts-tibble of timeseries. Excursion events are defined as n.consecutive values within the event window that are more extreme than the avg +/- sig.num standard deviations of the reference windows.
@@ -68,7 +69,8 @@ detectMultipleExcursions <- function(ltt = NA,
                                      min.vals = 8,
                                      na.rm = TRUE,
                                      simulate.time.uncertainty = FALSE,
-                                     simulate.paleo.uncertainty = FALSE){
+                                     simulate.paleo.uncertainty = FALSE,
+                                     seed = as.integer(Sys.time())){
 
 
   #this requeires a lipd-tibble-ts with multiple timeseries
@@ -94,6 +96,7 @@ out <- furrr::future_pmap(ltt,\(...) detectExcursion(todfr(...),
                                                      na.rm = na.rm,
                                                      simulate.paleo.uncertainty = simulate.paleo.uncertainty,
                                                      simulate.time.uncertainty = simulate.time.uncertainty,
+                                                     seed = seed,
                                                      progress = FALSE),
                           .progress = TRUE)
 
@@ -241,7 +244,7 @@ detectExcursion = function(ltt = NA,
 #' @param vals value vector of only the points in the window
 #' @param n.consecutive how many consecutive points are required for this to be considered an excursion? (default = 2)
 #' @param exc.type Type of excursion to look for. "positive", "negative", "either" or "both" (default = "either")
-#' @param min.vals Minimum number of values required in reference and event windows (default = 8)
+#' @param min.vals Minimum effective sample size (adjusted by autocorrelation) required in reference and event windows (default = 4)
 #' @param na.rm Remove NAs? (default = TRUE)
 #' @param sig.num how many standard deviations required outside the reference windows must be exceeded for this to be considered an excursion? (default = 2)
 #' @param event.yr time at the center of the excursion window
