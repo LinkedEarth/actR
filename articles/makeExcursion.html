@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">actR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.7</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.8</span>
       </span>
     </div>
 
@@ -286,16 +286,17 @@ uncertainty.</p>
 <span>                          simulate.paleo.uncertainty <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## <span style="color: #00BB00;">Testing null hypothesis with 50 simulations, each with 50 ensemble members. </span></span></span>
 <span><span class="co"><span style="color: #00BB00;">## </span></span></span></code></pre>
-<pre><code><span><span class="co">## Testing null hypothesis <span style="color: #00BB00;">■■■■■                           </span>  12% |  ETA: 26s</span></span></code></pre>
-<pre><code><span><span class="co">## Testing null hypothesis <span style="color: #00BB00;">■■■■■■■■                        </span>  22% |  ETA: 22s</span></span></code></pre>
-<pre><code><span><span class="co">## Testing null hypothesis <span style="color: #00BB00;">■■■■■■■■■■■                     </span>  34% |  ETA: 18s</span></span></code></pre>
-<pre><code><span><span class="co">## Testing null hypothesis <span style="color: #00BB00;">■■■■■■■■■■■■■■                  </span>  44% |  ETA: 15s</span></span></code></pre>
-<pre><code><span><span class="co">## Testing null hypothesis <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■              </span>  56% |  ETA: 12s</span></span></code></pre>
-<pre><code><span><span class="co">## Testing null hypothesis <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■           </span>  68% |  ETA:  9s</span></span></code></pre>
-<pre><code><span><span class="co">## Testing null hypothesis <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■■■       </span>  80% |  ETA:  5s</span></span></code></pre>
-<pre><code><span><span class="co">## Testing null hypothesis <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■■■■■■    </span>  90% |  ETA:  3s</span></span></code></pre>
+<pre><code><span><span class="co">## Testing null hypothesis <span style="color: #00BB00;">■■■                             </span>   8% |  ETA: 28s</span></span></code></pre>
+<pre><code><span><span class="co">## Testing null hypothesis <span style="color: #00BB00;">■■■■■■                          </span>  16% |  ETA: 28s</span></span></code></pre>
+<pre><code><span><span class="co">## Testing null hypothesis <span style="color: #00BB00;">■■■■■■■■■                       </span>  26% |  ETA: 23s</span></span></code></pre>
+<pre><code><span><span class="co">## Testing null hypothesis <span style="color: #00BB00;">■■■■■■■■■■■■                    </span>  38% |  ETA: 19s</span></span></code></pre>
+<pre><code><span><span class="co">## Testing null hypothesis <span style="color: #00BB00;">■■■■■■■■■■■■■■■                 </span>  48% |  ETA: 16s</span></span></code></pre>
+<pre><code><span><span class="co">## Testing null hypothesis <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■              </span>  58% |  ETA: 13s</span></span></code></pre>
+<pre><code><span><span class="co">## Testing null hypothesis <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■           </span>  68% |  ETA: 10s</span></span></code></pre>
+<pre><code><span><span class="co">## Testing null hypothesis <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■■        </span>  78% |  ETA:  7s</span></span></code></pre>
+<pre><code><span><span class="co">## Testing null hypothesis <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■■■■■     </span>  88% |  ETA:  4s</span></span></code></pre>
 <p>Now let’s look at the results</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">detectedExcusionEns</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## <span style="font-weight: bold;">Synthetic excursion - Excursion test: Excursion test results</span></span></span>
 <span><span class="co"><span style="font-weight: bold;">## </span><span style="color: #555555;">Searched for </span><span style="color: #555555; font-weight: bold;">positive</span><span style="color: #555555;"> excursions in a </span><span style="color: #555555; font-weight: bold;">400</span><span style="color: #555555;"> year window around </span><span style="color: #555555; font-weight: bold;">4200</span><span style="color: #555555;"> yr BP, with reference windows of </span><span style="color: #555555; font-weight: bold;">400</span><span style="color: #555555;"> years on either side.</span></span></span>
@@ -314,7 +315,7 @@ uncertainty.</p>
 <span><span class="co"><span style="color: #555555;">## na.rm = TRUE</span></span></span>
 <span><span class="co"><span style="color: #555555;">## </span></span></span></code></pre>
 <p>and make a plot</p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">detectedExcusionEns</span><span class="op">)</span></span></code></pre></div>
 <p><img src="makeExcursion_files/figure-html/unnamed-chunk-7-1.png" width="700"></p>
 </div>
