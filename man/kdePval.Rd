@@ -7,7 +7,14 @@
 kdePval(nulls, real, h = NA)
 }
 \arguments{
+\item{nulls}{a vector of null hypothesis results}
+
+\item{real}{a single value for the real data}
+
 \item{h}{smoothing factor}
+}
+\value{
+a list with pvalues and kde data
 }
 \description{
 Use a kde to estimate pvalue

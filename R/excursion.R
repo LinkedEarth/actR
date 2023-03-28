@@ -118,7 +118,7 @@ out <- furrr::future_pmap(ltt,\(...) detectExcursion(todfr(...),
 #' @inheritParams detectShift
 #' @inheritDotParams propagateUncertainty
 #' @param output.figure.path path pointing to where should the output figure be saved? An NA will not produce a figure (default = NA)
-#'
+#' @param pvalue.method method for estimating a pvalue. Options are "kde" (the default) which will use a KDE to estimate the pvalue relative to the null, or "ecdf" which will use an empirical cumulative distribution function.
 #' @importFrom stats lm predict sd
 #'
 #' @return a tibble that describes the positive and negative excursion results

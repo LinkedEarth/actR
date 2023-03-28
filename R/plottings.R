@@ -500,7 +500,7 @@ plotNullHistogram <- function(x,pal = "Paired",h = NA){
 
   hist <- ggplot()+
     actR_ggtheme()+
-    geom_histogram(aes(x = nulls,y = ..density..,fill = "Null hypothesis results")) +
+    geom_histogram(aes(x = nulls,y = after_stat(density),fill = "Null hypothesis results")) +
     geom_area(aes(x = kd$x,y = kd$y,fill = "KDE fit",color = "KDE fit"),alpha = 0.4) +
     geom_vline(aes(xintercept = real),color = "red") +
     geom_label(aes(x = real,y = max(kd$y) * 1.2),label = glue::glue("pval = {round(kd$pval,digits = 2)}")) +
@@ -508,7 +508,7 @@ plotNullHistogram <- function(x,pal = "Paired",h = NA){
     scale_fill_brewer(name = NULL,palette = pal) +
     scale_color_brewer(palette = pal) +
     theme(legend.position = c(.5,.8),legend.background = element_blank()) +
-    guides(color = FALSE)
+    guides(color = "none")
 
   return(hist)
 
