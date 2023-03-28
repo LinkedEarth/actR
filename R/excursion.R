@@ -252,6 +252,7 @@ detectExcursion = function(ltt = NA,
 #' @param event.yr time at the center of the excursion window
 #' @param event.window width (in time units) of the excursion window
 #' @param ref.window width (in time units) of the reference windows
+#' @param adjust.n.for.autocorrelation Adjust the min.vals check to account for autocorrelation?
 #'
 #' @return a tibble of results
 #' @export
@@ -263,7 +264,8 @@ detectExcursionCore <- function(time,
                                 sig.num = 2,
                                 n.consecutive = 2,
                                 exc.type = "either",
-                                min.vals = 3,
+                                min.vals = 8,
+                                adjust.n.for.autocorrelation = FALSE,
                                 na.rm = TRUE){
 
  #write parameters for export
@@ -320,31 +322,16 @@ detectExcursionCore <- function(time,
   event.i = which(time >= event.start & time <= event.end)  # define event window indices
   post.i = which(time > event.end)                         # define post-event (ref) window indices
 
-  arCumulative <- function(x){
-    a <- acf(x,plot = FALSE)
-    sig <- qnorm((1 + .95)/2)/sqrt(a$n.used)
-    wa <- c()
-    ari <- 2
-    while(a$acf[ari] > sig){
-      wa <- c(wa,ari)
-      ari <- ari + 1
-      if(ari > length(a$acf)){break}
-    }
 
-    if(length(wa) == 0){
-      arc <- 0
-    }else{
-      arc <- sum(a$acf[wa])
-    }
-
-    return(arc)
-    }
-
-  ar <- arCumulative(vals)
-  effective.n.adjustment <- (1)/(1+ar) #https://andrewcharlesjones.github.io/journal/21-effective-sample-size.html
+  if(adjust.n.for.autocorrelation){
+    ar <- arCumulative(vals)
+    effective.n.adjustment <- (1)/(1+ar) #https://andrewcharlesjones.github.io/journal/21-effective-sample-size.html
+  }else{
+    effective.n.adjustment <- 1
+  }
 
   #test for sufficient values in each window
-  if(min(length(pre.i),length(event.i), length(post.i)) * effective.n.adjustment < min.vals){
+  if(min( length(pre.i)*effective.n.adjustment, length(event.i), length(post.i)*effective.n.adjustment )  < min.vals){
     warning("insufficient minimum values")
     return(safeOut)
   }
@@ -461,4 +448,24 @@ detectExcursionCore <- function(time,
     new_excursionCore()
 
   return(out)
+}
+
+arCumulative <- function(x){
+  a <- acf(x,plot = FALSE)
+  sig <- qnorm((1 + .95)/2)/sqrt(a$n.used)
+  wa <- c()
+  ari <- 2
+  while(a$acf[ari] > sig){
+    wa <- c(wa,ari)
+    ari <- ari + 1
+    if(ari > length(a$acf)){break}
+  }
+
+  if(length(wa) == 0){
+    arc <- 0
+  }else{
+    arc <- sum(a$acf[wa])
+  }
+
+  return(arc)
 }
