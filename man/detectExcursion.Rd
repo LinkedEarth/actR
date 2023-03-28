@@ -53,6 +53,8 @@ detectExcursion(
 
 \item{null.quantiles}{What quantiles to report as output from null hypothesis testing (default = c(.95, .9))}
 
+\item{pvalue.method}{method for estimating a pvalue. Options are "kde" (the default) which will use a KDE to estimate the pvalue relative to the null, or "ecdf" which will use an empirical cumulative distribution function.}
+
 \item{...}{
   Arguments passed on to \code{\link[=propagateUncertainty]{propagateUncertainty}}
   \describe{
