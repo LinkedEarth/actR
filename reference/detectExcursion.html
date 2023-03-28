@@ -80,6 +80,7 @@
 <span>  surrogate.method <span class="op">=</span> <span class="st">"isospectral"</span>,</span>
 <span>  null.hypothesis.n <span class="op">=</span> <span class="fl">100</span>,</span>
 <span>  null.quantiles <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.95</span><span class="op">)</span>,</span>
+<span>  pvalue.method <span class="op">=</span> <span class="st">"kde"</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -139,6 +140,10 @@
 
 <dt>null.quantiles</dt>
 <dd><p>What quantiles to report as output from null hypothesis testing (default = c(.95, .9))</p></dd>
+
+
+<dt>pvalue.method</dt>
+<dd><p>method for estimating a pvalue. Options are "kde" (the default) which will use a KDE to estimate the pvalue relative to the null, or "ecdf" which will use an empirical cumulative distribution function.</p></dd>
 
 
 <dt>...</dt>

@@ -67,6 +67,9 @@
     <loc>/reference/index.html</loc>
   </url>
   <url>
+    <loc>/reference/kdePval.html</loc>
+  </url>
+  <url>
     <loc>/reference/linearRamp.html</loc>
   </url>
   <url>
@@ -104,6 +107,9 @@
   </url>
   <url>
     <loc>/reference/plotExcursionCore.html</loc>
+  </url>
+  <url>
+    <loc>/reference/plotNullHistogram.html</loc>
   </url>
   <url>
     <loc>/reference/plotSectionMeans.html</loc>
