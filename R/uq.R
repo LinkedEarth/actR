@@ -44,10 +44,10 @@ propagateUncertainty <- function(time,
   nca <- NCOL(time)
 
   #set a seed.
-  if(all(is.na(seed))){
+  if(any(is.na(seed))){
     seed <- sample.int(1000,1)
   }
-  set.seed(seed)
+  try(set.seed(seed),silent = TRUE)
 
   #Prepare time ensemble
   if(nca == 1){#then it's not an ensemble
