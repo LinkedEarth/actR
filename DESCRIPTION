@@ -36,7 +36,8 @@ Imports:
     fBasics,
     devtools,
     furrr,
-    future
+    future,
+    ks
 Suggests:
     testthat,
     knitr,

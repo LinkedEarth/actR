@@ -136,6 +136,7 @@ detectExcursion = function(ltt = NA,
                            surrogate.method = "isospectral",
                            null.hypothesis.n = 100,
                            null.quantiles = c(.95),
+                           pvalue.method = "kde",
                            ...) {
 
   #prep inputs
@@ -204,7 +205,19 @@ detectExcursion = function(ltt = NA,
     return(eventSummarySafe)
   }
 
-  nullEcdf <- stats::ecdf(nullEvents$nulls)
+  eventDetectionWithUncertainty <-  mean(dataEst$eventDetected,na.rm = TRUE)
+
+
+  if(pvalue.method == "ecdf"){
+
+    nullEcdf <- stats::ecdf(nullEvents$nulls)
+    pval <- 1-nullEcdf(eventDetectionWithUncertainty)
+
+  }else if(pvalue.method == "kde"){
+    pval <- kdePval(nullEvents$nulls,eventDetectionWithUncertainty)$pval
+  }else{
+    stop("pvalue.method must be 'ecdf' or 'kde'")
+  }
 
   nullEventProb <- nullEvents %>%
     dplyr::summarize(qs = quantile(nulls,probs = null.quantiles,na.rm = TRUE))
@@ -217,9 +230,9 @@ detectExcursion = function(ltt = NA,
   eventSummary <- tibble::tibble(time_start = mean(dataEst$time_start,na.rm = TRUE),
                                  time_end = mean(dataEst$time_end,na.rm = TRUE),
                                  time_mid = mean(time_start,time_end),
-                                 eventDetectionWithUncertainty = mean(dataEst$eventDetected,na.rm = TRUE),
+                                 eventDetectionWithUncertainty = eventDetectionWithUncertainty,
                                  nullDetectionWithUncertainty = list(nullEvents$nulls),
-                                 empirical_pvalue = 1-nullEcdf(eventDetectionWithUncertainty),
+                                 empirical_pvalue = pval,
                                  eventDetection = list(dataEst),
                                  unc.prop.n = n.ens,
                                  null.hypothesis.n = null.hypothesis.n) %>%

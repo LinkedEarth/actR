@@ -18,6 +18,7 @@ detectExcursion(
   surrogate.method = "isospectral",
   null.hypothesis.n = 100,
   null.quantiles = c(0.95),
+  pvalue.method = "kde",
   ...
 )
 }

@@ -484,5 +484,72 @@ plotShift <- function(x,
 
 }
 
+#' Plot a histogram of null hypothesis and KDE results
+#'
+#' @param x a actR output object
+#' @param pal Color brewer palette
+#' @param h KDE smoothing factor, lower is smoother
+#'
+#' @return a ggplot object
+#' @export
+plotNullHistogram <- function(x,pal = "Paired",h = NA){
+  nulls <- x$nullDetectionWithUncertainty[[1]]
+  real <- x$eventDetectionWithUncertainty
+
+  kd <- kdePval(nulls, real, h = h)
+
+  hist <- ggplot()+
+    actR_ggtheme()+
+    geom_histogram(aes(x = nulls,y = ..density..,fill = "Null hypothesis results")) +
+    geom_area(aes(x = kd$x,y = kd$y,fill = "KDE fit",color = "KDE fit"),alpha = 0.4) +
+    geom_vline(aes(xintercept = real),color = "red") +
+    geom_label(aes(x = real,y = max(kd$y) * 1.2),label = glue::glue("pval = {round(kd$pval,digits = 2)}")) +
+    xlab("Fraction passed") +
+    scale_fill_brewer(name = NULL,palette = pal) +
+    scale_color_brewer(palette = pal) +
+    theme(legend.position = c(.5,.8),legend.background = element_blank()) +
+    guides(color = FALSE)
+
+  return(hist)
+
+}
+
+
+
+#' Use a kde to estimate pvalue
+#'
+#' @param nulls a vector of null hypothesis results
+#' @param real a single value for the real data
+#' @param h smoothing factor
+#' @importFrom ks kde
+#'
+#' @return a list with pvalues and kde data
+#' @export
+kdePval <- function(nulls,real,h = NA){
+
+  if(all(is.na(h))){
+    h <- .03
+  }
+#estimate kde
+kd <- ks::kde(nulls,h = h,xmin = 0,xmax = 1,density = TRUE,gridsize = 1000)
+if(real == 1){
+  real <- kd$eval.points[length(kd$eval.points)-1]
+}
+
+if(real == 0){
+  real <- kd$eval.points[2]
+}
+
+cdf <- cumsum(kd$estimate)/sum(kd$estimate)
+
+pval <- 1-approx(kd$eval.points,y = cdf,xout = real)$y
+
+out <- list(pval = pval,
+            x = kd$eval.points,
+            y = kd$estimate)
+
+return(out)
+}
+
 
 
