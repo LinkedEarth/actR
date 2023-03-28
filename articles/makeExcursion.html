@@ -133,20 +133,9 @@ hypothesis testing.</p>
 <span>                          simulate.paleo.uncertainty <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## <span style="color: #00BB00;">Testing null hypothesis with 10 simulations, each with 10 ensemble members. </span></span></span>
 <span><span class="co"><span style="color: #00BB00;">## </span></span></span></code></pre>
-<pre><code><span><span class="co">## Warning in .f(time = .l[[1L]][[i]], vals = .l[[2L]][[i]], event.yr =</span></span>
-<span><span class="co">## .l[[3L]][[i]], : insufficient minimum values</span></span>
-<span></span>
-<span><span class="co">## Warning in .f(time = .l[[1L]][[i]], vals = .l[[2L]][[i]], event.yr =</span></span>
-<span><span class="co">## .l[[3L]][[i]], : insufficient minimum values</span></span>
-<span></span>
-<span><span class="co">## Warning in .f(time = .l[[1L]][[i]], vals = .l[[2L]][[i]], event.yr =</span></span>
-<span><span class="co">## .l[[3L]][[i]], : insufficient minimum values</span></span>
-<span></span>
-<span><span class="co">## Warning in .f(time = .l[[1L]][[i]], vals = .l[[2L]][[i]], event.yr =</span></span>
-<span><span class="co">## .l[[3L]][[i]], : insufficient minimum values</span></span></code></pre>
 <p>Now we can use <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code> and plot to check out the
 results</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">detectedExcusion</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Warning in .x == .y: longer object length is not a multiple of shorter object</span></span>
 <span><span class="co">## length</span></span>
@@ -214,11 +203,11 @@ results</p>
 <span><span class="co"><span style="font-weight: bold;">## </span><span style="color: #555555;">sig.num = 2.2854998252122</span></span></span>
 <span><span class="co"><span style="color: #555555;">## n.consecutive = 2</span></span></span>
 <span><span class="co"><span style="color: #555555;">## exc.type = either</span></span></span>
-<span><span class="co"><span style="color: #555555;">## min.vals = 3</span></span></span>
+<span><span class="co"><span style="color: #555555;">## min.vals = 8</span></span></span>
 <span><span class="co"><span style="color: #555555;">## na.rm = TRUE</span></span></span>
 <span><span class="co"><span style="color: #555555;">## </span></span></span></code></pre>
 <p>Let’s plot the results</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">detectedExcusion</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Warning in .x == .y: longer object length is not a multiple of shorter object</span></span>
 <span><span class="co">## length</span></span>
@@ -282,7 +271,7 @@ results</p>
 excursions. This could be done with age or paleo ensembles included in
 the data, but for our synthetic experiment, we’ll simulate age and paleo
 uncertainty.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">detectedExcusionEns</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/detectExcursion.html">detectExcursion</a></span><span class="op">(</span><span class="va">syntheticExcursion</span>,</span>
 <span>                          event.yr <span class="op">=</span> <span class="fl">4200</span>,</span>
 <span>                          event.window <span class="op">=</span> <span class="fl">400</span>,</span>
@@ -295,33 +284,14 @@ uncertainty.</p>
 <span>                          simulate.paleo.uncertainty <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## <span style="color: #00BB00;">Testing null hypothesis with 50 simulations, each with 50 ensemble members. </span></span></span>
 <span><span class="co"><span style="color: #00BB00;">## </span></span></span></code></pre>
-<pre><code><span><span class="co">## Testing null hypothesis <span style="color: #00BB00;">■■■■■■                          </span>  16% |  ETA: 19s</span></span></code></pre>
-<pre><code><span><span class="co">## Warning in .f(.x[[i]], .y[[i]], ...): insufficient minimum values</span></span></code></pre>
-<pre><code><span><span class="co">## Testing null hypothesis <span style="color: #00BB00;">■■■■■■■■■■                      </span>  30% |  ETA: 15s</span></span></code></pre>
-<pre><code><span><span class="co">## Warning in .f(.x[[i]], .y[[i]], ...): insufficient minimum values</span></span>
-<span></span>
-<span><span class="co">## Warning in .f(.x[[i]], .y[[i]], ...): insufficient minimum values</span></span>
-<span></span>
-<span><span class="co">## Warning in .f(.x[[i]], .y[[i]], ...): insufficient minimum values</span></span>
-<span></span>
-<span><span class="co">## Warning in .f(.x[[i]], .y[[i]], ...): insufficient minimum values</span></span></code></pre>
-<pre><code><span><span class="co">## Testing null hypothesis <span style="color: #00BB00;">■■■■■■■■■■■■■■                  </span>  44% |  ETA: 12s</span></span></code></pre>
-<pre><code><span><span class="co">## Warning in .f(.x[[i]], .y[[i]], ...): insufficient minimum values</span></span></code></pre>
-<pre><code><span><span class="co">## Testing null hypothesis <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■              </span>  58% |  ETA:  9s</span></span></code></pre>
-<pre><code><span><span class="co">## Warning in .f(.x[[i]], .y[[i]], ...): insufficient minimum values</span></span>
-<span></span>
-<span><span class="co">## Warning in .f(.x[[i]], .y[[i]], ...): insufficient minimum values</span></span>
-<span></span>
-<span><span class="co">## Warning in .f(.x[[i]], .y[[i]], ...): insufficient minimum values</span></span></code></pre>
-<pre><code><span><span class="co">## Testing null hypothesis <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■         </span>  74% |  ETA:  5s</span></span></code></pre>
-<pre><code><span><span class="co">## Testing null hypothesis <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■■■■■     </span>  88% |  ETA:  2s</span></span></code></pre>
-<pre><code><span><span class="co">## Warning in .f(.x[[i]], .y[[i]], ...): insufficient minimum values</span></span>
-<span></span>
-<span><span class="co">## Warning in .f(.x[[i]], .y[[i]], ...): insufficient minimum values</span></span>
-<span></span>
-<span><span class="co">## Warning in .f(.x[[i]], .y[[i]], ...): insufficient minimum values</span></span></code></pre>
+<pre><code><span><span class="co">## Testing null hypothesis <span style="color: #00BB00;">■■■■■■                          </span>  16% |  ETA: 18s</span></span></code></pre>
+<pre><code><span><span class="co">## Testing null hypothesis <span style="color: #00BB00;">■■■■■■■■■■■                     </span>  32% |  ETA: 14s</span></span></code></pre>
+<pre><code><span><span class="co">## Testing null hypothesis <span style="color: #00BB00;">■■■■■■■■■■■■■■■                 </span>  46% |  ETA: 11s</span></span></code></pre>
+<pre><code><span><span class="co">## Testing null hypothesis <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■            </span>  62% |  ETA:  8s</span></span></code></pre>
+<pre><code><span><span class="co">## Testing null hypothesis <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■■        </span>  78% |  ETA:  4s</span></span></code></pre>
+<pre><code><span><span class="co">## Testing null hypothesis <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■■■■■■■   </span>  94% |  ETA:  1s</span></span></code></pre>
 <p>Now let’s look at the results</p>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">detectedExcusionEns</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## <span style="font-weight: bold;">Synthetic excursion - Excursion test: Excursion test results</span></span></span>
 <span><span class="co"><span style="font-weight: bold;">## </span><span style="color: #555555;">Searched for </span><span style="color: #555555; font-weight: bold;">positive</span><span style="color: #555555;"> excursions in a </span><span style="color: #555555; font-weight: bold;">400</span><span style="color: #555555;"> year window around </span><span style="color: #555555; font-weight: bold;">4200</span><span style="color: #555555;"> yr BP, with reference windows of </span><span style="color: #555555; font-weight: bold;">400</span><span style="color: #555555;"> years on either side.</span></span></span>
@@ -336,11 +306,11 @@ uncertainty.</p>
 <span><span class="co"><span style="font-weight: bold;">## </span><span style="color: #555555;">sig.num = 2</span></span></span>
 <span><span class="co"><span style="color: #555555;">## n.consecutive = 2</span></span></span>
 <span><span class="co"><span style="color: #555555;">## exc.type = positive</span></span></span>
-<span><span class="co"><span style="color: #555555;">## min.vals = 3</span></span></span>
+<span><span class="co"><span style="color: #555555;">## min.vals = 8</span></span></span>
 <span><span class="co"><span style="color: #555555;">## na.rm = TRUE</span></span></span>
 <span><span class="co"><span style="color: #555555;">## </span></span></span></code></pre>
 <p>and make a plot</p>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">detectedExcusionEns</span><span class="op">)</span></span></code></pre></div>
 <p><img src="makeExcursion_files/figure-html/unnamed-chunk-7-1.png" width="700"></p>
 </div>
