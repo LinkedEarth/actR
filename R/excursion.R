@@ -264,6 +264,7 @@ detectExcursion = function(ltt = NA,
 #' @param event.window width (in time units) of the excursion window
 #' @param ref.window width (in time units) of the reference windows
 #' @param adjust.n.for.autocorrelation Adjust the min.vals check to account for autocorrelation?
+#' @param min.ref.window.coverage.fraction reference windows must cover at least this fraction of the time.
 #'
 #' @return a tibble of results
 #' @export
@@ -277,6 +278,7 @@ detectExcursionCore <- function(time,
                                 exc.type = "either",
                                 min.vals = 8,
                                 adjust.n.for.autocorrelation = FALSE,
+                                min.ref.window.coverage.fraction = .5,
                                 na.rm = TRUE){
 
  #write parameters for export
@@ -332,6 +334,16 @@ detectExcursionCore <- function(time,
   pre.i = which(time < event.start)                        # define pre-event (ref) window indices
   event.i = which(time >= event.start & time <= event.end)  # define event window indices
   post.i = which(time > event.end)                         # define post-event (ref) window indices
+
+
+  #check min.ref.window.coverage.fraction
+  pre.range <- abs(diff(range(time[pre.i])))/ref.window
+  post.range <- abs(diff(range(time[post.i])))/ref.window
+
+  if(min(post.range,pre.range) < min.ref.window.coverage.fraction){
+    warning("insufficient reference window coverage")
+    return(safeOut)
+  }
 
 
   if(adjust.n.for.autocorrelation){

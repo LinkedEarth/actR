@@ -15,6 +15,7 @@ detectExcursionCore(
   exc.type = "either",
   min.vals = 8,
   adjust.n.for.autocorrelation = FALSE,
+  min.ref.window.coverage.fraction = 0.5,
   na.rm = TRUE
 )
 }
@@ -38,6 +39,8 @@ detectExcursionCore(
 \item{min.vals}{Minimum effective sample size (adjusted by autocorrelation) required in reference and event windows (default = 4)}
 
 \item{adjust.n.for.autocorrelation}{Adjust the min.vals check to account for autocorrelation?}
+
+\item{min.ref.window.coverage.fraction}{reference windows must cover at least this fraction of the time.}
 
 \item{na.rm}{Remove NAs? (default = TRUE)}
 }
