@@ -234,6 +234,8 @@ detectExcursion = function(ltt = NA,
                                  nullDetectionWithUncertainty = list(nullEvents$nulls),
                                  empirical_pvalue = pval,
                                  eventDetection = list(dataEst),
+                                 excursionDirection = dataEst$excursionDirection,
+                                 eventTimes = dataEst$eventTimes,
                                  unc.prop.n = n.ens,
                                  null.hypothesis.n = null.hypothesis.n) %>%
     dplyr::bind_cols(nullLevels)
@@ -434,6 +436,9 @@ detectExcursionCore <- function(time,
     excursionMaxSd = NA
   }
 
+  exc.dir.seq <- rep("None", length(event.i))
+  exc.dir.seq[aboveBool] <- "High"
+  exc.dir.seq[belowBool] <- "Low"
 
 
   out <- tibble::tibble(time_start = event.start,
@@ -450,6 +455,8 @@ detectExcursionCore <- function(time,
                         excursionMeanTime = excursionMeanTime,
                         excursionMaxSd = excursionMaxSd,
                         isExcursion = list(isExcursion),
+                        excursionDirection = list(exc.dir.seq),
+                        eventTimes = list(unlist(time)[unlist(event.i)]),
                         parameters = as.character(params)) %>%
     new_excursionCore()
 
