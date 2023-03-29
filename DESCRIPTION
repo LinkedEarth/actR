@@ -34,11 +34,11 @@ Imports:
     crayon,
     fBasics,
     furrr,
-    future
+    future,
+    ks
 Suggests:
     testthat,
     devtools,
-    ks,
     knitr,
     rmarkdown
 Remotes:
