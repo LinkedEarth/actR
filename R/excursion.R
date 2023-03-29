@@ -1,30 +1,78 @@
-detectExcursionSlidingWindow <- function(time,
-                              vals,
-                              event.window,
-                              ref.window,
-                              slide.step,
-                              ...){
+#' Detect an excursion in many timeseries
+#'
+#' @inheritParams detectExcursion
+#' @inheritParams detectExcursionCore
+#' @inheritParams propagateUncertainty
+#' @inheritParams testNullHypothesis
+#' @param seed Set a seed for reproducibility. By default it will use current time meaning it will not be reproducible.
+#' @author Hannah Kolus
+#' @author Nick McKay
+#' @description Determines whether an excursion event has occurred within the specified event window for a lipd-ts-tibble of timeseries. Excursion events are defined as n.consecutive values within the event window that are more extreme than the avg +/- sig.num standard deviations of the reference windows.
+#' @references Morrill
+#'
+#' @importFrom furrr future_pmap
+#'
+#' @return a tibble that describes the positive and negative excursion results
+#' @export
+detectExcursionSlidingWindow <- function(ltt = NA,
+                                         time = NA,
+                                         vals = NA,
+                                         time.variable.name = NA,
+                                         vals.variable.name = NA,
+                                         time.units = NA,
+                                         vals.units = NA,
+                                         dataset.name = NA,
+                                         event.yr.vec = NA,
+                                         event.step = NA,
+                                         ref.window,
+                                         ...){
 
-  #define the intervals over which to slide
-  slide.min <- (min(time,na.rm = TRUE)+ref.window)+event.window/2
-  slide.max <- (max(time,na.rm = TRUE)-ref.window)-event.window/2
 
-  window.vec <- seq(slide.min,slide.max,by =slide.step)
-  window.mid <- window.vec[-1]-event.window/2
+  #prep inputs
+  prepped <- prepareInput(ltt = ltt,
+                          time = time,
+                          vals = vals,
+                          time.variable.name = time.variable.name,
+                          vals.variable.name = vals.variable.name,
+                          time.units = time.units,
+                          vals.units = vals.units,
+                          dataset.name = dataset.name,
+                          expecting.one.row = TRUE,
+                          sort.by.time = TRUE,
+                          remove.time.nas = TRUE)
 
-  des <- function(ey,...){detectExcursion(event.yr = ey,...)}
-  slid <- purrr::map_dfr(window.mid,
-                         .f = des,
-                         time = time,
-                         vals = vals,
-                         event.window = event.window,
-                         ref.window = ref.window,
-                         n.ens = 100,
-                         ...)
+  time <- prepped$time[[1]]
+  vals <- prepped$paleoData_values[[1]]
 
-  return(slid)
+  if(nrow(prepped) != 1){
+    stop("there should only be 1 row in ltt")
+  }
+
+  #figure out event.yr.vec
+  if(any(is.na(event.yr.vec))){
+    if(all(is.na(event.step))){
+      stop("either event.yr.vec or event.step must be specified")
+    }
+    event.yr.vec <- seq(from = min(time,na.rm = TRUE) + min(ref.window),
+                        to = max(time,na.rm = TRUE) - max(ref.window),
+                        by = event.step)
+  }
+
+#run the detector over all the windows, potentially in parallel
+
+  out <- furrr::future_map_dfr(event.yr.vec,\(x) detectExcursion(ltt = prepped,
+                                                      event.yr = x,
+                                                      ref.window = ref.window,
+                                                      progress = FALSE,
+                                                      ...),
+                            .progress = TRUE)
+
+
+  return(out)
 
 }
+
+
 
 #helper function to allow pmapping over ts tibble rows
 todfr <- function(...){
@@ -240,7 +288,14 @@ detectExcursion = function(ltt = NA,
 
   paramTib <- createTibbleFromParameterString(as.character(dataEst$parameters[1]))
 
-  eventSummary <- dplyr::bind_cols(eventSummary,paramTib,prepped)
+
+  #trim down the prepped tibble to only the most common and important variables
+
+  goodVar <- c("paleoData_TSid","paleoData_variableName","paleoData_units","dataSetName","datasetId","geo_latitude","geo_longitude","geo_elevation","archiveType","paleoData_proxy","paleoData_proxyGeneral","interpretation1_variable","interpretation1_variableDetail","interpretation1_seasonality","interpretation1_direction","time","paleoData_values")
+
+  preppedSlim <- dplyr::select(prepped,tidyselect::any_of(goodVar))
+
+  eventSummary <- dplyr::bind_cols(eventSummary,paramTib,preppedSlim)
 
 # assign the appropriate class
   eventSummary <- new_excursion(eventSummary)

@@ -552,4 +552,42 @@ return(out)
 }
 
 
+#' Plot a timeseries result of sliding
+#'
+#' @param x sliding excursion output
+#' @return a plot object
+#' @export
+plotExcursionSliding <- function(x,xlim = c(12000,0)){
+
+  # Make a basic plot
+  p_values_all = x$empirical_pvalue
+  ages_to_test <- x$event.yr
+  step <- abs(mean(diff(ages_to_test)))
+
+
+# Set labels and title
+xlabel <- paste('Age (',x$ageUnits[[1]],')',sep='')
+ylabel <- paste(x$paleoData_proxy[[1]],' (',x$paleoData_units[[1]],')',sep='')
+title  <- paste('Time series: ',x$archiveType[[1]],', ',x$dataSetName[[1]],', ',x$paleoData_TSid[[1]],
+                ', lat=',x$geo_latitude[[1]],', lon=',x$geo_longitude[[1]],sep='')
+
+# Top panel: plot the time series
+par(mfrow=c(2,1))
+plot(x$time[[1]],x$paleoData_values[[1]],type='b',xlim = xlim,xlab=xlabel,ylab=ylabel, main=title)
+
+# Top panel: Use the p-values to shade the background
+for (i in 1:length(p_values_all)) {
+  if (!is.na(p_values_all[i])) {
+    rect(xleft=ages_to_test[i]-(step/2),xright=ages_to_test[i]+(step/2),ybottom=par('usr')[3],ytop=par('usr')[4],
+         col=adjustcolor('red',alpha=(1-p_values_all[i])/2),border='transparent')}
+}
+lines(x$age[[1]],x$paleoData_values[[1]],lwd=2) # Plot the record again, over top
+
+# Bottom panel: plot the p-values
+plot(ages_to_test,p_values_all,type='b',xlim=c(12000,0),ylim=c(1,0),xlab=xlabel,ylab="p-value",main='p-values (also shaded in red above)')
+abline(h=0.05,col='blue')
+
+}
+
+
 
