@@ -32,20 +32,18 @@ Imports:
     egg,
     digest,
     crayon,
-    neotoma2,
     fBasics,
     furrr,
-    future,
-    ks
+    future
 Suggests:
     testthat,
     devtools,
+    ks,
     knitr,
     rmarkdown
 Remotes:
     github::nickmckay/geoChronR,
-    github::nickmckay/lipdR,
-    github::NeotomaDB/neotoma2
+    github::nickmckay/lipdR
 Depends:
-    R (>= 2.10)
+    R (>= 3.60)
 VignetteBuilder: knitr
