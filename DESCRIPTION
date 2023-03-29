@@ -34,12 +34,12 @@ Imports:
     crayon,
     neotoma2,
     fBasics,
-    devtools,
     furrr,
     future,
     ks
 Suggests:
     testthat,
+    devtools,
     knitr,
     rmarkdown
 Remotes:
