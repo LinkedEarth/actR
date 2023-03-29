@@ -137,6 +137,7 @@ detectExcursion = function(ltt = NA,
                            null.hypothesis.n = 100,
                            null.quantiles = c(.95),
                            pvalue.method = "kde",
+                           exc.type = "either",
                            ...) {
 
   #prep inputs
@@ -165,88 +166,156 @@ detectExcursion = function(ltt = NA,
                                   changeFun = detectExcursionCore,
                                   ...)
 
-
-  #see if we got any results
-
-  eventSummarySafe <- tibble::tibble(time_start = mean(dataEst$time_start,na.rm = TRUE),
-                                 time_end = mean(dataEst$time_end,na.rm = TRUE),
-                                 time_mid = mean(time_start,time_end),
+  # # cat("length(dataEst): ", length(dataEst), "\n")
+  # # cat("names(dataEst): ", names(dataEst), "\n")
+  # #
+  # # cat("dim(dataEst$Orig): ", dim(dataEst$Orig), "\n")
+  # # cat("names(dataEst$Orig): ", names(dataEst$Orig), "\n")
+  # # cat("dataEst$Orig: ", dataEst$Orig$eventDetected, "\n")
+  # #
+  # # cat("dim(dataEst$All$pos): ", dim(dataEst$All$pos), "\n")
+  # # cat("names(dataEst$All$pos): ", names(dataEst$All$pos), "\n")
+  # # cat("dataEst$All$pos$eventDetected: ", dataEst$All$pos$eventDetected, "\n")
+  #
+  startTime <- mean(dataEst$either$time_start,na.rm = TRUE)
+  endTime <- mean(dataEst$either$time_end,na.rm = TRUE)
+  #
+  # #see if we got any results
+  #
+  eventSummarySafe <- tibble::tibble(time_start = startTime,
+                                 time_end = endTime,
+                                 time_mid = mean(c(startTime,endTime)),
                                  eventDetectionWithUncertainty = NA,
                                  nullDetectionWithUncertainty = list(NA),
                                  empirical_pvalue = NA,
-                                 eventDetection = list(dataEst),
+                                 eventDetection = dataEst[[eval(exc.type)]],
                                  unc.prop.n = n.ens,
                                  null.hypothesis.n = null.hypothesis.n)
-
+  #
   eventSummarySafe[paste0("cl",null.quantiles)] <- NA
-
-  paramTib <- createTibbleFromParameterString(as.character(dataEst$parameters[1]))
-
+  #
+  paramTib <- createTibbleFromParameterString(as.character(dataEst[[eval(exc.type)]]$parameters[1]))
+  #
   eventSummarySafe <- dplyr::bind_cols(eventSummarySafe,paramTib,prepped)
 
   eventSummarySafe <- new_excursion(eventSummarySafe)
-  if(sum(!is.na(dataEst$eventDetected)) / nrow(dataEst) < 0.5){#safely exit
+  if(sum(!is.na(dataEst[[eval(exc.type)]]$eventDetected)) / length(dataEst[[eval(exc.type)]]$eventDetected) < 0.5){#safely exit
+
+    message("Returning safe summary, less than half of runs completed successfully")
 
   return(eventSummarySafe)
 
   }else{
-      # now test null hypothesis
-  nullHyp <- testNullHypothesis(time,
-                                vals,
-                                n.ens = n.ens,
-                                surrogate.method = surrogate.method,
-                                changeFun = detectExcursionCore,
-                                mc.ens = null.hypothesis.n,
-                                ...)
 
-  nullEvents <- purrr::map_dbl(nullHyp,~ mean(.x$eventDetected,na.rm = TRUE)) %>%
-    tibble::tibble(nulls = .)
-  if(all(!is.finite(nullEvents$nulls))){
-    return(eventSummarySafe)
+    eventSummaryAll <- list()
+  #
+  #   # now test null hypothesis
+    nullHyp <- testNullHypothesis(time,
+                                  vals,
+                                  n.ens = n.ens,
+                                  surrogate.method = surrogate.method,
+                                  changeFun = detectExcursionCore,
+                                  mc.ens = null.hypothesis.n,
+                                  ...)
+  #
+    exc.type.all <- c("either", "both", "pos", "neg")
+  #
+  #   dataEstIndices <- split(1:(n.ens*4), ceiling(seq_along(1:(n.ens*4)) / n.ens))
+  #   nullIndices <- split(1:(n.ens*null.hypothesis.n), ceiling(seq_along(1:(n.ens*null.hypothesis.n)) / (n.ens)))
+  #   countA <- 0
+  #
+  #
+    for (zz in exc.type.all){
+
+  #     countA <- countA + 1
+  #     dataEstIndex <- dataEstIndices[[countA]]
+  #
+      cat(zz, "\n")
+  #
+  #     # cat("nullEvents: ", unlist(lapply(nullHyp, function(x) x$Orig$eventDetected[dataEstIndex])), "\n")
+  #     # cat("numnullevents: ", length(unlist(lapply(nullHyp, function(x) x$Orig$eventDetected[dataEstIndex]))), "\n")
+  #     #
+  #     # allNULLS <- unlist(lapply(nullHyp, function(x) x$Orig$eventDetected[dataEstIndex]))
+  #     #
+  #     # nullEvents <- list()
+  #     # for (i in 1:length(nullIndices)){
+  #     #   iii <- nullIndices[[i]]
+  #     #   nullEvents[[i]] <- mean(iii)
+  #     # }
+  #     # nullEvents <- unlist(nullEvents)
+
+      cat(nullHyp[[1]][[eval(zz)]]$eventDetected, "\n")
+  #
+      nullEvents <- purrr::map_dbl(nullHyp,~ mean(.x[[eval(zz)]]$eventDetected,na.rm = TRUE)) %>%
+        tibble::tibble(nulls = .)
+      if(all(!is.finite(nullEvents$nulls))){
+        eventSummaryAll[[eval(zz)]] <- eventSummarySafe
+        next
+      }
+      cat(nullEvents$nulls, "\n")
+  #
+      eventDetectionWithUncertainty <-  mean(dataEst[[eval(zz)]]$eventDetected,na.rm = TRUE)
+  #
+  #     #cat(dataEst$Orig$eventDetected[dataEstIndex], "\n")
+  #
+  #     #cat("nullevents: ", nullEvents$nulls, "\n")
+  #
+  #
+      if(pvalue.method == "ecdf"){
+
+        nullEcdf <- stats::ecdf(nullEvents$nulls)
+        pval <- 1-nullEcdf(eventDetectionWithUncertainty)
+
+      }else if(pvalue.method == "kde"){
+        pval <- kdePval(nullEvents$nulls,eventDetectionWithUncertainty)$pval
+      }else{
+        stop("pvalue.method must be 'ecdf' or 'kde'")
+      }
+  #
+      nullEventProb <- nullEvents %>%
+        dplyr::summarize(qs = quantile(nulls,probs = null.quantiles,na.rm = TRUE))
+
+      nullEventProb$clLevel <- paste0("cl",null.quantiles)
+
+      nullLevels <- nullEventProb %>%
+        tidyr::pivot_wider(values_from = qs,names_from = clLevel)
+
+      eventSummary <- tibble::tibble(time_start = startTime,
+                                     time_end = endTime,
+                                     time_mid = mean(c(startTime,endTime)),
+                                     eventDetectionWithUncertainty = eventDetectionWithUncertainty,
+                                     nullDetectionWithUncertainty = nullEvents$nulls,
+                                     empirical_pvalue = pval,
+                                     eventDetection = dataEst[[eval(zz)]],
+                                     unc.prop.n = n.ens,
+                                     null.hypothesis.n = null.hypothesis.n) %>%
+        dplyr::bind_cols(nullLevels)
+
+      paramTib <- createTibbleFromParameterString(as.character(dataEst[[eval(zz)]]$parameters[1]))
+
+      eventSummary <- dplyr::bind_cols(eventSummary,paramTib,prepped)
+  #
+  #     # assign the appropriate class
+      eventSummary <- new_excursion(eventSummary)
+  #
+      eventSummaryAll[[eval(zz)]]<-eventSummary
+  #
+    }
+  #
+  #
+    # if (length(eventSummaryAll)<1){
+    #   returns <- NULL
+    # }else{
+    #   returns <- eventSummaryAll
+    # }
+  #
   }
+  #
+  # returns <- list(returns, nullEvents)
 
-  eventDetectionWithUncertainty <-  mean(dataEst$eventDetected,na.rm = TRUE)
+    # returns <- list(dataEst, nullHyp)
 
-
-  if(pvalue.method == "ecdf"){
-
-    nullEcdf <- stats::ecdf(nullEvents$nulls)
-    pval <- 1-nullEcdf(eventDetectionWithUncertainty)
-
-  }else if(pvalue.method == "kde"){
-    pval <- kdePval(nullEvents$nulls,eventDetectionWithUncertainty)$pval
-  }else{
-    stop("pvalue.method must be 'ecdf' or 'kde'")
-  }
-
-  nullEventProb <- nullEvents %>%
-    dplyr::summarize(qs = quantile(nulls,probs = null.quantiles,na.rm = TRUE))
-
-  nullEventProb$clLevel <- paste0("cl",null.quantiles)
-
-  nullLevels <- nullEventProb %>%
-    tidyr::pivot_wider(values_from = qs,names_from = clLevel)
-
-  eventSummary <- tibble::tibble(time_start = mean(dataEst$time_start,na.rm = TRUE),
-                                 time_end = mean(dataEst$time_end,na.rm = TRUE),
-                                 time_mid = mean(time_start,time_end),
-                                 eventDetectionWithUncertainty = eventDetectionWithUncertainty,
-                                 nullDetectionWithUncertainty = list(nullEvents$nulls),
-                                 empirical_pvalue = pval,
-                                 eventDetection = list(dataEst),
-                                 unc.prop.n = n.ens,
-                                 null.hypothesis.n = null.hypothesis.n) %>%
-    dplyr::bind_cols(nullLevels)
-
-  paramTib <- createTibbleFromParameterString(as.character(dataEst$parameters[1]))
-
-  eventSummary <- dplyr::bind_cols(eventSummary,paramTib,prepped)
-
-# assign the appropriate class
-  eventSummary <- new_excursion(eventSummary)
-
-  return(eventSummary)
-  }
+  return(eventSummaryAll)
 
 }
 
@@ -407,51 +476,58 @@ detectExcursionCore <- function(time,
     belowEvent <- FALSE
   }
 
+  out <- list()
 
-  if(grepl(pattern = "either",x = exc.type,ignore.case = TRUE)){
-    event <- any(c(aboveEvent,belowEvent))
-    exc.ind <- c(exc.ind.above,exc.ind.below)
-  }else if(grepl(pattern = "both",x = exc.type,ignore.case = TRUE)){
-    event <- all(c(aboveEvent,belowEvent))
-    exc.ind <- c(exc.ind.above,exc.ind.below)
-  }else if(grepl(pattern = "pos",x = exc.type,ignore.case = TRUE)){
-    event <- aboveEvent
-    exc.ind <- exc.ind.above
-  }else if(grepl(pattern = "neg",x = exc.type,ignore.case = TRUE)){
-    event <- belowEvent
-    exc.ind <- exc.ind.below
-  }else{
-    stop(glue::glue("exc.type = {exc.type} is not recognized"))
+
+  exc.type.all <- c("either", "both", "pos", "neg")
+
+
+  for (zz in exc.type.all){
+    if(grepl(pattern = "either",x = zz,ignore.case = TRUE)){
+      event <- any(c(aboveEvent,belowEvent))
+      exc.ind <- c(exc.ind.above,exc.ind.below)
+    }else if(grepl(pattern = "both",x = zz,ignore.case = TRUE)){
+      event <- all(c(aboveEvent,belowEvent))
+      exc.ind <- c(exc.ind.above,exc.ind.below)
+    }else if(grepl(pattern = "pos",x = zz,ignore.case = TRUE)){
+      event <- aboveEvent
+      exc.ind <- exc.ind.above
+    }else if(grepl(pattern = "neg",x = zz,ignore.case = TRUE)){
+      event <- belowEvent
+      exc.ind <- exc.ind.below
+    }else{
+      stop(glue::glue("exc.type = {exc.type} is not recognized"))
+    }
+
+    isExcursion <- seq_along(time) %in% event.i[exc.ind]
+
+    if(any(isExcursion)){
+      excursionMeanTime = mean(time[isExcursion])
+      excursionMaxSd = max(abs(vals[isExcursion])/max(preSD,postSD))
+    }else{
+      excursionMeanTime = NA
+      excursionMaxSd = NA
+    }
+
+    out[[eval(zz)]] <- tibble::tibble(time_start = event.start,
+                          time_end = event.end,
+                          eventDetected = event,
+                          eventProbability = NA,
+                          time = list(time),
+                          vals = list(values),
+                          preMean = preAVG,
+                          preSd = preSD,
+                          postMean = postAVG,
+                          postSd = postSD,
+                          nExcursionVals = sum(isExcursion),
+                          excursionMeanTime = excursionMeanTime,
+                          excursionMaxSd = excursionMaxSd,
+                          isExcursion = list(isExcursion),
+                          parameters = as.character(params)) %>%
+      new_excursionCore()
   }
 
-  isExcursion <- seq_along(time) %in% event.i[exc.ind]
-
-  if(any(isExcursion)){
-    excursionMeanTime = mean(time[isExcursion])
-    excursionMaxSd = max(abs(vals[isExcursion])/max(preSD,postSD))
-  }else{
-    excursionMeanTime = NA
-    excursionMaxSd = NA
-  }
-
-
-
-  out <- tibble::tibble(time_start = event.start,
-                        time_end = event.end,
-                        eventDetected = event,
-                        eventProbability = NA,
-                        time = list(time),
-                        vals = list(values),
-                        preMean = preAVG,
-                        preSd = preSD,
-                        postMean = postAVG,
-                        postSd = postSD,
-                        nExcursionVals = sum(isExcursion),
-                        excursionMeanTime = excursionMeanTime,
-                        excursionMaxSd = excursionMaxSd,
-                        isExcursion = list(isExcursion),
-                        parameters = as.character(params)) %>%
-    new_excursionCore()
+  #returns<-list("Orig" = out[[eval(exc.type)]], "All" = out)
 
   return(out)
 }
