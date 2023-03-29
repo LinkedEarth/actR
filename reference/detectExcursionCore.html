@@ -77,6 +77,7 @@
 <span>  exc.type <span class="op">=</span> <span class="st">"either"</span>,</span>
 <span>  min.vals <span class="op">=</span> <span class="fl">8</span>,</span>
 <span>  adjust.n.for.autocorrelation <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  min.ref.window.coverage.fraction <span class="op">=</span> <span class="fl">0.5</span>,</span>
 <span>  na.rm <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -121,6 +122,10 @@
 
 <dt>adjust.n.for.autocorrelation</dt>
 <dd><p>Adjust the min.vals check to account for autocorrelation?</p></dd>
+
+
+<dt>min.ref.window.coverage.fraction</dt>
+<dd><p>reference windows must cover at least this fraction of the time.</p></dd>
 
 
 <dt>na.rm</dt>
