@@ -60,7 +60,21 @@ slidingResult <- detectExcursionSlidingWindow(ngrip,
 ```
 
 
-```{r plot}
+```{r plot, fig.width=8, fig.height=6}
 plotExcursionSliding(slidingResult)
 ```
+
+Get a vector of all the points ever found as a cold excursion
+```{r}
+allColdEventPoints <- getAllExcursionTimes(slidingResult, exc.type = "Below")
+```
+
+
+And plot it
+
+```{r histogram,fig.width=8, fig.height=6}
+hist(allColdEventPoints,breaks = seq(1000,12500,by = 20),xlim = c(12000,0))
+```
+
+
 

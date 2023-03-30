@@ -566,7 +566,7 @@ plotExcursionSliding <- function(x,xlim = c(12000,0)){
 
 
 # Set labels and title
-xlabel <- paste('Age (',x$ageUnits[[1]],')',sep='')
+xlabel <- paste('Age (',x$timeUnits[[1]],')',sep='')
 ylabel <- paste(x$paleoData_proxy[[1]],' (',x$paleoData_units[[1]],')',sep='')
 title  <- paste('Time series: ',x$archiveType[[1]],', ',x$dataSetName[[1]],', ',x$paleoData_TSid[[1]],
                 ', lat=',x$geo_latitude[[1]],', lon=',x$geo_longitude[[1]],sep='')
@@ -584,8 +584,10 @@ for (i in 1:length(p_values_all)) {
 lines(x$time[[1]],x$paleoData_values[[1]],lwd=2) # Plot the record again, over top
 
 # Bottom panel: plot the p-values
-plot(ages_to_test,p_values_all,type='b',xlim=c(12000,0),ylim=c(1,0),xlab=xlabel,ylab="p-value",main='p-values (also shaded in red above)')
-abline(h=0.05,col='blue')
+plot(ages_to_test,x$pvalue_above,type='l',col = 'red',xlim=c(12000,0),ylim=c(1,0),xlab=xlabel,ylab="p-value",main='p-values (above in red, below in blue)')
+lines(ages_to_test,x$pvalue_below,col = 'blue')
+
+abline(h=0.05,col='black',lty = 'dotted')
 
 }
 
