@@ -53,6 +53,9 @@
       <a href="../articles/detectExcursion.html">detectExcursion</a>
     </li>
     <li>
+      <a href="../articles/detectExcursionSlidingWindow.html">detectExcursionSlidingWindow</a>
+    </li>
+    <li>
       <a href="../articles/detectShift.html">detectShift</a>
     </li>
     <li>
@@ -126,9 +129,7 @@ on each side), and how many standard deviations to use for the baseline
 <span>                          null.hypothesis.n <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>                          simulate.time.uncertainty <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>                          simulate.paleo.uncertainty <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Selected d18O</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">Testing null hypothesis with 1 simulations, each with 1 ensemble members. </span></span></span>
-<span><span class="co"><span style="color: #00BB00;">#&gt; </span></span></span></code></pre></div>
+<span><span class="co">#&gt; Selected d18O</span></span></code></pre></div>
 <p>After it runs, the <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code> or <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code>
 functions will summarize the results.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
@@ -194,15 +195,14 @@ null hypothesis simulation 50 times.</p>
 <span>                          paleo.uncertainty <span class="op">=</span> <span class="fl">0.2</span>,</span>
 <span>                          paleo.ar1 <span class="op">=</span> <span class="fl">0.8</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Selected d18O</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">Testing null hypothesis with 50 simulations, each with 50 ensemble members. </span></span></span>
-<span><span class="co"><span style="color: #00BB00;">#&gt; </span></span></span>
-<span><span class="co">#&gt; Testing null hypothesis <span style="color: #00BB00;">■■                              </span>   4% |  ETA: 25s</span></span>
-<span><span class="co">#&gt; Testing null hypothesis <span style="color: #00BB00;">■■■■■■■                         </span>  20% |  ETA: 17s</span></span>
-<span><span class="co">#&gt; Testing null hypothesis <span style="color: #00BB00;">■■■■■■■■■■■                     </span>  34% |  ETA: 14s</span></span>
-<span><span class="co">#&gt; Testing null hypothesis <span style="color: #00BB00;">■■■■■■■■■■■■■■■                 </span>  48% |  ETA: 11s</span></span>
-<span><span class="co">#&gt; Testing null hypothesis <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■            </span>  64% |  ETA:  7s</span></span>
-<span><span class="co">#&gt; Testing null hypothesis <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■■■       </span>  80% |  ETA:  4s</span></span>
-<span><span class="co">#&gt; Testing null hypothesis <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■■■■■■■   </span>  94% |  ETA:  1s</span></span></code></pre></div>
+<span><span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■ </span>…</span></span>
+<span><span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span>
+<span><span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span>
+<span><span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span>
+<span><span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span>
+<span><span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span>
+<span><span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span>
+<span><span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span></code></pre></div>
 <p>This time, when we summarize the results, we get more interesting
 output, including an empirical p-value, which is the fraction of null
 hypothesis simulations that exceed the positivity rate in the actual
@@ -269,17 +269,17 @@ through our robust null hypothesis testing.</p>
 <span>                          simulate.paleo.uncertainty <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>                          paleo.uncertainty <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Selected d18O</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">Testing null hypothesis with 50 simulations, each with 50 ensemble members. </span></span></span>
-<span><span class="co"><span style="color: #00BB00;">#&gt; </span></span></span>
-<span><span class="co">#&gt; Testing null hypothesis <span style="color: #00BB00;">■■■■■                           </span>  12% |  ETA: 28s</span></span>
-<span><span class="co">#&gt; Testing null hypothesis <span style="color: #00BB00;">■■■■■■■■                        </span>  22% |  ETA: 24s</span></span>
-<span><span class="co">#&gt; Testing null hypothesis <span style="color: #00BB00;">■■■■■■■■■■■                     </span>  32% |  ETA: 21s</span></span>
-<span><span class="co">#&gt; Testing null hypothesis <span style="color: #00BB00;">■■■■■■■■■■■■■■                  </span>  42% |  ETA: 18s</span></span>
-<span><span class="co">#&gt; Testing null hypothesis <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■               </span>  52% |  ETA: 15s</span></span>
-<span><span class="co">#&gt; Testing null hypothesis <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■            </span>  62% |  ETA: 12s</span></span>
-<span><span class="co">#&gt; Testing null hypothesis <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■         </span>  72% |  ETA:  8s</span></span>
-<span><span class="co">#&gt; Testing null hypothesis <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■■■■      </span>  82% |  ETA:  5s</span></span>
-<span><span class="co">#&gt; Testing null hypothesis <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■■■■■■■   </span>  92% |  ETA:  2s</span></span></code></pre></div>
+<span><span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■ </span>…</span></span>
+<span><span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span>
+<span><span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span>
+<span><span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span>
+<span><span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span>
+<span><span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span>
+<span><span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span>
+<span><span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span>
+<span><span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span>
+<span><span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span>
+<span><span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span></code></pre></div>
 <p>Let’s examine the result.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>

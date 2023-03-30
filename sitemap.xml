@@ -13,6 +13,9 @@
     <loc>/articles/detectExcursion.html</loc>
   </url>
   <url>
+    <loc>/articles/detectExcursionSlidingWindow.html</loc>
+  </url>
+  <url>
     <loc>/articles/detectShift.html</loc>
   </url>
   <url>
@@ -49,6 +52,9 @@
     <loc>/reference/detectExcursionCore.html</loc>
   </url>
   <url>
+    <loc>/reference/detectExcursionSlidingWindow.html</loc>
+  </url>
+  <url>
     <loc>/reference/detectMultipleExcursions.html</loc>
   </url>
   <url>
@@ -59,6 +65,9 @@
   </url>
   <url>
     <loc>/reference/geob7926_2.html</loc>
+  </url>
+  <url>
+    <loc>/reference/getAllExcursionTimes.html</loc>
   </url>
   <url>
     <loc>/reference/great_basin.html</loc>
@@ -107,6 +116,9 @@
   </url>
   <url>
     <loc>/reference/plotExcursionCore.html</loc>
+  </url>
+  <url>
+    <loc>/reference/plotExcursionSliding.html</loc>
   </url>
   <url>
     <loc>/reference/plotNullHistogram.html</loc>
