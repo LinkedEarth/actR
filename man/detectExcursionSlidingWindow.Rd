@@ -36,6 +36,10 @@ detectExcursionSlidingWindow(
 
 \item{dataset.name}{If ltt is not provided, specify the dataset name}
 
+\item{event.yr.vec}{A vector of times at the center of event years to test.}
+
+\item{event.step}{If event.yr.vec = NA, then event.step will build one with this spacing.}
+
 \item{ref.window}{width (in time units) of the reference windows}
 
 \item{...}{arguments to pass to pass to changeFun}
