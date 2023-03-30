@@ -53,8 +53,8 @@ slidingResult <- detectExcursionSlidingWindow(ngrip,
                           ref.window = eventWindows,
                           sig.num = 2,
                           exc.type = "either",
-                          n.ens = 50,
-                          null.hypothesis.n = 50,
+                          n.ens = 10,
+                          null.hypothesis.n = 20,
                           simulate.time.uncertainty = FALSE,
                           simulate.paleo.uncertainty = FALSE)
 ```
