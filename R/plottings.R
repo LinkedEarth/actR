@@ -554,7 +554,9 @@ return(out)
 
 #' Plot a timeseries result of sliding
 #'
+#' @param xlim limits on the plot
 #' @param x sliding excursion output
+#'
 #' @return a plot object
 #' @export
 plotExcursionSliding <- function(x,xlim = c(12000,0)){

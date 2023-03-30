@@ -4,9 +4,9 @@
 #' @inheritParams detectExcursionCore
 #' @inheritParams propagateUncertainty
 #' @inheritParams testNullHypothesis
-#' @param seed Set a seed for reproducibility. By default it will use current time meaning it will not be reproducible.
 #' @param event.yr.vec A vector of times at the center of event years to test.
 #' @param event.step If event.yr.vec = NA, then event.step will build one with this spacing.
+#' @param ... pass additional arguments to detectExcursion()
 #' @author Hannah Kolus
 #' @author Nick McKay
 #' @description Determines whether an excursion event has occurred within the specified event window for a lipd-ts-tibble of timeseries. Excursion events are defined as n.consecutive values within the event window that are more extreme than the avg +/- sig.num standard deviations of the reference windows.
