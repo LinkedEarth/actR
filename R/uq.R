@@ -165,7 +165,6 @@ testNullHypothesis <- function(time,
                                progress = TRUE,
                                ...) {
 
-  cat(crayon::green(glue::glue("Testing null hypothesis with {mc.ens} simulations, each with {n.ens} ensemble members. \n\n")))
 
   #prep values for surrogates
 
@@ -238,7 +237,7 @@ testNullHypothesis <- function(time,
   pucv <- function(x,...){propagateUncertainty(vals = x,...)}
 
   if(progress){
-    progress <- "Testing null hypothesis"
+    progress <-  glue::glue("Testing null hypothesis with {mc.ens} simulations, each with {n.ens} ensemble members.")
   }
 
   out <- purrr::map(surVals,

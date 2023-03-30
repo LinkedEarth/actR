@@ -1,30 +1,80 @@
-detectExcursionSlidingWindow <- function(time,
-                              vals,
-                              event.window,
-                              ref.window,
-                              slide.step,
-                              ...){
+#' Detect an excursion in many timeseries
+#'
+#' @inheritParams detectExcursion
+#' @inheritParams detectExcursionCore
+#' @inheritParams propagateUncertainty
+#' @inheritParams testNullHypothesis
+#' @param seed Set a seed for reproducibility. By default it will use current time meaning it will not be reproducible.
+#' @param event.yr.vec A vector of times at the center of event years to test.
+#' @param event.step If event.yr.vec = NA, then event.step will build one with this spacing.
+#' @author Hannah Kolus
+#' @author Nick McKay
+#' @description Determines whether an excursion event has occurred within the specified event window for a lipd-ts-tibble of timeseries. Excursion events are defined as n.consecutive values within the event window that are more extreme than the avg +/- sig.num standard deviations of the reference windows.
+#' @references Morrill
+#'
+#' @importFrom furrr future_pmap
+#'
+#' @return a tibble that describes the positive and negative excursion results
+#' @export
+detectExcursionSlidingWindow <- function(ltt = NA,
+                                         time = NA,
+                                         vals = NA,
+                                         time.variable.name = NA,
+                                         vals.variable.name = NA,
+                                         time.units = NA,
+                                         vals.units = NA,
+                                         dataset.name = NA,
+                                         event.yr.vec = NA,
+                                         event.step = NA,
+                                         ref.window,
+                                         ...){
 
-  #define the intervals over which to slide
-  slide.min <- (min(time,na.rm = TRUE)+ref.window)+event.window/2
-  slide.max <- (max(time,na.rm = TRUE)-ref.window)-event.window/2
 
-  window.vec <- seq(slide.min,slide.max,by =slide.step)
-  window.mid <- window.vec[-1]-event.window/2
+  #prep inputs
+  prepped <- prepareInput(ltt = ltt,
+                          time = time,
+                          vals = vals,
+                          time.variable.name = time.variable.name,
+                          vals.variable.name = vals.variable.name,
+                          time.units = time.units,
+                          vals.units = vals.units,
+                          dataset.name = dataset.name,
+                          expecting.one.row = TRUE,
+                          sort.by.time = TRUE,
+                          remove.time.nas = TRUE)
 
-  des <- function(ey,...){detectExcursion(event.yr = ey,...)}
-  slid <- purrr::map_dfr(window.mid,
-                         .f = des,
-                         time = time,
-                         vals = vals,
-                         event.window = event.window,
-                         ref.window = ref.window,
-                         n.ens = 100,
-                         ...)
+  time <- prepped$time[[1]]
+  vals <- prepped$paleoData_values[[1]]
 
-  return(slid)
+  if(nrow(prepped) != 1){
+    stop("there should only be 1 row in ltt")
+  }
+
+  #figure out event.yr.vec
+  if(any(is.na(event.yr.vec))){
+    if(all(is.na(event.step))){
+      stop("either event.yr.vec or event.step must be specified")
+    }
+    event.yr.vec <- seq(from = min(time,na.rm = TRUE) + min(ref.window),
+                        to = max(time,na.rm = TRUE) - max(ref.window),
+                        by = event.step)
+  }
+
+#run the detector over all the windows, potentially in parallel
+
+  out <- furrr::future_map_dfr(event.yr.vec,\(x) detectExcursion(ltt = prepped,
+                                                      event.yr = x,
+                                                      ref.window = ref.window,
+                                                      progress = FALSE,
+                                                      ...),
+                            .progress = TRUE)
+
+
+  return(out)
 
 }
+
+
 
 #helper function to allow pmapping over ts tibble rows
 todfr <- function(...){
@@ -120,6 +170,7 @@ out <- furrr::future_pmap(ltt,\(...) detectExcursion(todfr(...),
 #' @param output.figure.path path pointing to where should the output figure be saved? An NA will not produce a figure (default = NA)
 #' @param pvalue.method method for estimating a pvalue. Options are "kde" (the default) which will use a KDE to estimate the pvalue relative to the null, or "ecdf" which will use an empirical cumulative distribution function.
 #' @importFrom stats lm predict sd
+#' @importFrom tidyselect any_of
 #'
 #' @return a tibble that describes the positive and negative excursion results
 #' @export
@@ -201,20 +252,46 @@ detectExcursion = function(ltt = NA,
 
   nullEvents <- purrr::map_dbl(nullHyp,~ mean(.x$eventDetected,na.rm = TRUE)) %>%
     tibble::tibble(nulls = .)
+  nullEventsEither <- purrr::map_dbl(nullHyp,~ mean(.x$eventEither,na.rm = TRUE)) %>%
+    tibble::tibble(nulls = .)
+  nullEventsBoth <- purrr::map_dbl(nullHyp,~ mean(.x$eventBoth,na.rm = TRUE)) %>%
+    tibble::tibble(nulls = .)
+  nullEventsAbove <- purrr::map_dbl(nullHyp,~ mean(.x$eventAbove,na.rm = TRUE)) %>%
+    tibble::tibble(nulls = .)
+  nullEventsBelow <- purrr::map_dbl(nullHyp,~ mean(.x$eventBelow,na.rm = TRUE)) %>%
+    tibble::tibble(nulls = .)
+
   if(all(!is.finite(nullEvents$nulls))){
     return(eventSummarySafe)
   }
 
+  #get all event detections
   eventDetectionWithUncertainty <-  mean(dataEst$eventDetected,na.rm = TRUE)
-
+  eventDetectionWithUncertaintyEither <-  mean(dataEst$eventEither,na.rm = TRUE)
+  eventDetectionWithUncertaintyBoth <-  mean(dataEst$eventBoth,na.rm = TRUE)
+  eventDetectionWithUncertaintyAbove <-  mean(dataEst$eventAbove,na.rm = TRUE)
+  eventDetectionWithUncertaintyBelow <-  mean(dataEst$eventBelow,na.rm = TRUE)
 
   if(pvalue.method == "ecdf"){
 
     nullEcdf <- stats::ecdf(nullEvents$nulls)
     pval <- 1-nullEcdf(eventDetectionWithUncertainty)
+    nullEcdfEither <- stats::ecdf(nullEventsEither$nulls)
+    pvalEither <- 1-nullEcdf(eventDetectionWithUncertainty)
+    nullEcdfBoth <- stats::ecdf(nullEventsBoth$nulls)
+    pvalBoth <- 1-nullEcdf(eventDetectionWithUncertainty)
+    nullEcdfAbove <- stats::ecdf(nullEventsAbove$nulls)
+    pvalAbove <- 1-nullEcdf(eventDetectionWithUncertainty)
+    nullEcdfBelow <- stats::ecdf(nullEventsBelow$nulls)
+    pvalBelow <- 1-nullEcdf(eventDetectionWithUncertainty)
 
   }else if(pvalue.method == "kde"){
     pval <- kdePval(nullEvents$nulls,eventDetectionWithUncertainty)$pval
+    pvalEither <- kdePval(nullEventsEither$nulls,eventDetectionWithUncertaintyEither)$pval
+    pvalBoth <- kdePval(nullEventsBoth$nulls,eventDetectionWithUncertaintyBoth)$pval
+    pvalAbove <- kdePval(nullEventsAbove$nulls,eventDetectionWithUncertaintyAbove)$pval
+    pvalBelow <- kdePval(nullEventsBelow$nulls,eventDetectionWithUncertaintyBelow)$pval
+
   }else{
     stop("pvalue.method must be 'ecdf' or 'kde'")
   }
@@ -233,6 +310,10 @@ detectExcursion = function(ltt = NA,
                                  eventDetectionWithUncertainty = eventDetectionWithUncertainty,
                                  nullDetectionWithUncertainty = list(nullEvents$nulls),
                                  empirical_pvalue = pval,
+                                 pvalue_either = pvalEither,
+                                 pvalue_both = pvalBoth,
+                                 pvalue_above = pvalAbove,
+                                 pvalue_below = pvalBelow,
                                  eventDetection = list(dataEst),
                                  unc.prop.n = n.ens,
                                  null.hypothesis.n = null.hypothesis.n) %>%
@@ -240,7 +321,14 @@ detectExcursion = function(ltt = NA,
 
   paramTib <- createTibbleFromParameterString(as.character(dataEst$parameters[1]))
 
-  eventSummary <- dplyr::bind_cols(eventSummary,paramTib,prepped)
+
+  #trim down the prepped tibble to only the most common and important variables
+
+  goodVar <- c("paleoData_TSid","paleoData_variableName","paleoData_units","dataSetName","datasetId","geo_latitude","geo_longitude","geo_elevation","archiveType","paleoData_proxy","paleoData_proxyGeneral","interpretation1_variable","interpretation1_variableDetail","interpretation1_seasonality","interpretation1_direction","time","timeUnits","paleoData_values")
+
+  preppedSlim <- dplyr::select(prepped,tidyselect::any_of(goodVar))
+
+  eventSummary <- dplyr::bind_cols(eventSummary,paramTib,preppedSlim)
 
 # assign the appropriate class
   eventSummary <- new_excursion(eventSummary)
@@ -419,9 +507,23 @@ detectExcursionCore <- function(time,
     belowEvent <- FALSE
   }
 
+  #grab theinformation for all cases
+
+  eventEither <- any(c(aboveEvent,belowEvent))
+  timesEither <- time[event.i[c(exc.ind.above,exc.ind.below)]]
+
+  eventBoth <- all(c(aboveEvent,belowEvent))
+
+  eventAbove <- aboveEvent
+  timesAbove <- time[event.i[exc.ind.above]]
+
+  eventBelow <- belowEvent
+  timesBelow <- time[event.i[exc.ind.below]]
+
+  #now pick the one that was chosen
 
   if(grepl(pattern = "either",x = exc.type,ignore.case = TRUE)){
-    event <- any(c(aboveEvent,belowEvent))
+    event <- eventEither
     exc.ind <- c(exc.ind.above,exc.ind.below)
   }else if(grepl(pattern = "both",x = exc.type,ignore.case = TRUE)){
     event <- all(c(aboveEvent,belowEvent))
@@ -439,8 +541,8 @@ detectExcursionCore <- function(time,
   isExcursion <- seq_along(time) %in% event.i[exc.ind]
 
   if(any(isExcursion)){
-    excursionMeanTime = mean(time[isExcursion])
-    excursionMaxSd = max(abs(vals[isExcursion])/max(preSD,postSD))
+    excursionMeanTime = mean(time[event.i[isExcursion]])
+    excursionMaxSd = max(abs(vals[event.i[isExcursion]])/max(preSD,postSD))
   }else{
     excursionMeanTime = NA
     excursionMaxSd = NA
@@ -451,7 +553,10 @@ detectExcursionCore <- function(time,
   out <- tibble::tibble(time_start = event.start,
                         time_end = event.end,
                         eventDetected = event,
-                        eventProbability = NA,
+                        eventEither = eventEither,
+                        eventBoth = eventBoth,
+                        eventAbove = eventAbove,
+                        eventBelow = eventBelow,
                         time = list(time),
                         vals = list(values),
                         preMean = preAVG,
@@ -462,6 +567,9 @@ detectExcursionCore <- function(time,
                         excursionMeanTime = excursionMeanTime,
                         excursionMaxSd = excursionMaxSd,
                         isExcursion = list(isExcursion),
+                        timesEither = list(timesEither),
+                        timesAbove = list(timesAbove),
+                        timesBelow = list(timesBelow),
                         parameters = as.character(params)) %>%
     new_excursionCore()
 
@@ -486,4 +594,20 @@ arCumulative <- function(x){
   }
 
   return(arc)
+}
+
+#get the times from a single eventDetection object
+getAllTimes <- function(ed,exc.type = "Either"){
+  return(unlist(purrr::map(ed[paste0("times",exc.type)],magrittr::extract)))
+}
+
+#' Get all excursion times from an output
+#'
+#' @param x an excursion object
+#' @param exc.type can be Either, Above or Below
+#' @return a vector of ages that were identified to as excursions
+#' @export
+getAllExcursionTimes <- function(x,exc.type = "Either"){
+  allTimes <- unlist(purrr::map(x$eventDetection,getAllTimes,exc.type))
+  return(allTimes)
 }
