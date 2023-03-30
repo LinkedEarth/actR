@@ -581,7 +581,7 @@ for (i in 1:length(p_values_all)) {
     rect(xleft=ages_to_test[i]-(step/2),xright=ages_to_test[i]+(step/2),ybottom=par('usr')[3],ytop=par('usr')[4],
          col=adjustcolor('red',alpha=(1-p_values_all[i])/2),border='transparent')}
 }
-lines(x$age[[1]],x$paleoData_values[[1]],lwd=2) # Plot the record again, over top
+lines(x$time[[1]],x$paleoData_values[[1]],lwd=2) # Plot the record again, over top
 
 # Bottom panel: plot the p-values
 plot(ages_to_test,p_values_all,type='b',xlim=c(12000,0),ylim=c(1,0),xlab=xlabel,ylab="p-value",main='p-values (also shaded in red above)')
