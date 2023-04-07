@@ -132,7 +132,7 @@ detectMultipleExcursions <- function(ltt = NA,
     stop("you must enter at least 2 rows in your lipd-ts-tibble to use detectMultipleExcursions")
   }
 
-out <- furrr::future_pmap(ltt,\(...) detectExcursion(todfr(...),
+out <- furrr::future_pmap_dfr(ltt,\(...) detectExcursion(todfr(...),
                                                      n.ens = n.ens,
                                                      surrogate.method = surrogate.method,
                                                      null.hypothesis.n = null.hypothesis.n,
@@ -206,7 +206,11 @@ detectExcursion = function(ltt = NA,
   time <- prepped$time[[1]]
   vals <- prepped$paleoData_values[[1]]
 
+  #trim down the prepped tibble to only the most common and important variables
 
+  goodVar <- c("paleoData_TSid","paleoData_variableName","paleoData_units","dataSetName","datasetId","geo_latitude","geo_longitude","geo_elevation","archiveType","paleoData_proxy","paleoData_proxyGeneral","interpretation1_variable","interpretation1_variableDetail","interpretation1_seasonality","interpretation1_direction","time","timeUnits","paleoData_values")
+
+  preppedSlim <- dplyr::select(prepped,tidyselect::any_of(goodVar))
 
 
   # detect excursions while propagating time and data uncertainties
@@ -233,7 +237,7 @@ detectExcursion = function(ltt = NA,
 
   paramTib <- createTibbleFromParameterString(as.character(dataEst$parameters[1]))
 
-  eventSummarySafe <- dplyr::bind_cols(eventSummarySafe,paramTib,prepped)
+  eventSummarySafe <- dplyr::bind_cols(eventSummarySafe,paramTib,preppedSlim)
 
   eventSummarySafe <- new_excursion(eventSummarySafe)
   if(sum(!is.na(dataEst$eventDetected)) / nrow(dataEst) < 0.5){#safely exit
@@ -308,7 +312,15 @@ detectExcursion = function(ltt = NA,
                                  time_end = mean(dataEst$time_end,na.rm = TRUE),
                                  time_mid = mean(time_start,time_end),
                                  eventDetectionWithUncertainty = eventDetectionWithUncertainty,
+                                 eventDetectionWithUncertaintyEither = eventDetectionWithUncertaintyEither,
+                                 eventDetectionWithUncertaintyBoth = eventDetectionWithUncertaintyBoth,
+                                 eventDetectionWithUncertaintyAbove = eventDetectionWithUncertaintyAbove,
+                                 eventDetectionWithUncertaintyBelow = eventDetectionWithUncertaintyBelow,
                                  nullDetectionWithUncertainty = list(nullEvents$nulls),
+                                 nullDetectionWithUncertaintyAbove = list(nullEventsAbove$nulls),
+                                 nullDetectionWithUncertaintyBelow = list(nullEventsBelow$nulls),
+                                 nullDetectionWithUncertaintyBoth = list(nullEventsBoth$nulls),
+                                 nullDetectionWithUncertaintyEither = list(nullEventsEither$nulls),
                                  empirical_pvalue = pval,
                                  pvalue_either = pvalEither,
                                  pvalue_both = pvalBoth,
@@ -322,11 +334,7 @@ detectExcursion = function(ltt = NA,
   paramTib <- createTibbleFromParameterString(as.character(dataEst$parameters[1]))
 
 
-  #trim down the prepped tibble to only the most common and important variables
 
-  goodVar <- c("paleoData_TSid","paleoData_variableName","paleoData_units","dataSetName","datasetId","geo_latitude","geo_longitude","geo_elevation","archiveType","paleoData_proxy","paleoData_proxyGeneral","interpretation1_variable","interpretation1_variableDetail","interpretation1_seasonality","interpretation1_direction","time","timeUnits","paleoData_values")
-
-  preppedSlim <- dplyr::select(prepped,tidyselect::any_of(goodVar))
 
   eventSummary <- dplyr::bind_cols(eventSummary,paramTib,preppedSlim)
 

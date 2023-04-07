@@ -8,6 +8,8 @@ plotExcursionSliding(x, xlim = c(12000, 0))
 }
 \arguments{
 \item{x}{sliding excursion output}
+
+\item{xlim}{limits on the plot}
 }
 \value{
 a plot object

@@ -520,18 +520,21 @@ plotNullHistogram <- function(x,pal = "Paired",h = NA){
 #'
 #' @param nulls a vector of null hypothesis results
 #' @param real a single value for the real data
+#' @param xmin minimum value for the distribution
+#' @param xmax maximum value for the distribution
 #' @param h smoothing factor
+#'
 #' @importFrom ks kde
 #'
 #' @return a list with pvalues and kde data
 #' @export
-kdePval <- function(nulls,real,h = NA){
+kdePval <- function(nulls,real,h = NA,xmin = 0, xmax = 1){
 
   if(all(is.na(h))){
     h <- .03
   }
 #estimate kde
-kd <- ks::kde(nulls,h = h,xmin = 0,xmax = 1,density = TRUE,gridsize = 1000)
+kd <- ks::kde(nulls,h = h,xmin = xmin,xmax = xmax,density = TRUE,gridsize = 1000)
 if(real == 1){
   real <- kd$eval.points[length(kd$eval.points)-1]
 }

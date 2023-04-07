@@ -4,7 +4,7 @@
 \alias{kdePval}
 \title{Use a kde to estimate pvalue}
 \usage{
-kdePval(nulls, real, h = NA)
+kdePval(nulls, real, h = NA, xmin = 0, xmax = 1)
 }
 \arguments{
 \item{nulls}{a vector of null hypothesis results}
@@ -12,6 +12,10 @@ kdePval(nulls, real, h = NA)
 \item{real}{a single value for the real data}
 
 \item{h}{smoothing factor}
+
+\item{xmin}{minimum value for the distribution}
+
+\item{xmax}{maximum value for the distribution}
 }
 \value{
 a list with pvalues and kde data

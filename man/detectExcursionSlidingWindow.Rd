@@ -42,9 +42,7 @@ detectExcursionSlidingWindow(
 
 \item{ref.window}{width (in time units) of the reference windows}
 
-\item{...}{arguments to pass to pass to changeFun}
-
-\item{seed}{Set a seed for reproducibility. By default it will use current time meaning it will not be reproducible.}
+\item{...}{pass additional arguments to detectExcursion()}
 }
 \value{
 a tibble that describes the positive and negative excursion results
