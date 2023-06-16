@@ -528,18 +528,48 @@ plotNullHistogram <- function(x,pal = "Paired",h = NA){
 #'
 #' @return a list with pvalues and kde data
 #' @export
-kdePval <- function(nulls,real,h = NA,xmin = 0, xmax = 1){
+kdePval <- function(nulls,real,h = NA,xmin = NA, xmax = NA){
+  datarange <- range(c(nulls,real),na.rm = TRUE)
+  span <- abs(diff(datarange))
+
+  if(span == 0){
+    if(real == 0){
+      xmin <- 0
+      xmax <- 1
+      span <- 1
+    }else{
+      xmin <- real - 0.5
+      xmax <- real + 0.5
+      span <- 1
+    }
+  }
 
   if(all(is.na(h))){
-    h <- .03
+    h <- .03 * span
   }
+
+  if(all(is.na(xmin))){
+    xmin <- min(datarange,na.rm = TRUE) - span*.05
+  }
+
+  if(all(is.na(xmax))){
+    xmax <- max(datarange,na.rm = TRUE) + span*.05
+  }
+
+  #if xmin is less than 0, make symmetric
+  if(xmin < 0){
+    xmin <- -max(abs(c(xmin,xmax)))
+    xmax <- max(abs(c(xmin,xmax)))
+  }
+
+
 #estimate kde
-kd <- ks::kde(nulls,h = h,xmin = xmin,xmax = xmax,density = TRUE,gridsize = 1000)
-if(real == 1){
+kd <- ks::kde(nulls,h = h * span,xmin = xmin,xmax = xmax,density = TRUE,gridsize = 1000)
+if(real == xmax){
   real <- kd$eval.points[length(kd$eval.points)-1]
 }
 
-if(real == 0){
+if(real == xmin){
   real <- kd$eval.points[2]
 }
 
