@@ -104,7 +104,11 @@ preloaded in actR, and you can learn more about it with
 <p>actR uses an excursion detection algorithm developed and used by <a href="https://cp.copernicus.org/articles/9/423/2013/cp-9-423-2013.pdf" class="external-link">Morrill
 et al. (2013)</a>.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">actR</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">actR</span><span class="op">)</span></span>
+<span><span class="co">#&gt; The legacy packages maptools, rgdal, and rgeos, underpinning this package</span></span>
+<span><span class="co">#&gt; will retire shortly. Please refer to R-spatial evolution reports on</span></span>
+<span><span class="co">#&gt; https://r-spatial.org/r/2023/05/15/evolution4.html for details.</span></span>
+<span><span class="co">#&gt; This package is now running under evolution status 0</span></span></code></pre></div>
 <div class="section level3">
 <h3 id="excursion-detection-with-no-uncertainties">Excursion detection with no uncertainties<a class="anchor" aria-label="anchor" href="#excursion-detection-with-no-uncertainties"></a>
 </h3>
@@ -195,11 +199,6 @@ null hypothesis simulation 50 times.</p>
 <span>                          paleo.uncertainty <span class="op">=</span> <span class="fl">0.2</span>,</span>
 <span>                          paleo.ar1 <span class="op">=</span> <span class="fl">0.8</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Selected d18O</span></span>
-<span><span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■ </span>…</span></span>
-<span><span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span>
-<span><span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span>
-<span><span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span>
-<span><span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span>
 <span><span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span>
 <span><span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span>
 <span><span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span>
@@ -218,7 +217,7 @@ significant.</p>
 <span><span class="co">#&gt; <span style="font-weight: bold;">NGRIP.NGRIP.2004 - d18O: Excursion test results</span></span></span>
 <span><span class="co"><span style="font-weight: bold;">#&gt; </span><span style="color: #555555;">Searched for </span><span style="color: #555555; font-weight: bold;">negative</span><span style="color: #555555;"> excursions in a </span><span style="color: #555555; font-weight: bold;">200</span><span style="color: #555555;"> year window around </span><span style="color: #555555; font-weight: bold;">8200</span><span style="color: #555555;"> BP, with reference windows of </span><span style="color: #555555; font-weight: bold;">400</span><span style="color: #555555;"> years on either side.</span></span></span>
 <span><span class="co"><span style="color: #555555;">#&gt; </span></span></span>
-<span><span class="co">#&gt; <span style="font-weight: bold;">Overall result: Empirical p-value = </span><span style="color: #00BB00; font-weight: bold;">0.0261599254795717</span></span></span>
+<span><span class="co">#&gt; <span style="font-weight: bold;">Overall result: Empirical p-value = </span><span style="color: #00BB00; font-weight: bold;">0.0416088884409266</span></span></span>
 <span><span class="co"><span style="font-weight: bold;">#&gt; </span>Time uncertainty considered? <span style="color: #BB0000;">FALSE</span></span></span>
 <span><span class="co">#&gt; Paleo uncertainty considered? <span style="color: #00BB00;">TRUE</span></span></span>
 <span><span class="co">#&gt; Error propagation ensemble members = 50</span></span>
@@ -274,12 +273,6 @@ through our robust null hypothesis testing.</p>
 <span>                          simulate.paleo.uncertainty <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>                          paleo.uncertainty <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Selected d18O</span></span>
-<span><span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■ </span>…</span></span>
-<span><span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span>
-<span><span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span>
-<span><span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span>
-<span><span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span>
-<span><span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span>
 <span><span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span>
 <span><span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span>
 <span><span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span>
@@ -299,7 +292,7 @@ through our robust null hypothesis testing.</p>
 <span><span class="co">#&gt; <span style="font-weight: bold;">NGRIP.NGRIP.2004 - d18O: Excursion test results</span></span></span>
 <span><span class="co"><span style="font-weight: bold;">#&gt; </span><span style="color: #555555;">Searched for </span><span style="color: #555555; font-weight: bold;">negative</span><span style="color: #555555;"> excursions in a </span><span style="color: #555555; font-weight: bold;">200</span><span style="color: #555555;"> year window around </span><span style="color: #555555; font-weight: bold;">8200</span><span style="color: #555555;"> BP, with reference windows of </span><span style="color: #555555; font-weight: bold;">400</span><span style="color: #555555;"> years on either side.</span></span></span>
 <span><span class="co"><span style="color: #555555;">#&gt; </span></span></span>
-<span><span class="co">#&gt; <span style="font-weight: bold;">Overall result: Empirical p-value = </span><span style="color: #00BB00; font-weight: bold;">0.00677786694091553</span></span></span>
+<span><span class="co">#&gt; <span style="font-weight: bold;">Overall result: Empirical p-value = </span><span style="color: #00BB00; font-weight: bold;">0.00135829366463525</span></span></span>
 <span><span class="co"><span style="font-weight: bold;">#&gt; </span>Time uncertainty considered? <span style="color: #00BB00;">TRUE</span></span></span>
 <span><span class="co">#&gt; Paleo uncertainty considered? <span style="color: #00BB00;">TRUE</span></span></span>
 <span><span class="co">#&gt; Error propagation ensemble members = 50</span></span>
