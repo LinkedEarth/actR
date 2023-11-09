@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">actR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.9</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.10</span>
       </span>
     </div>
 
@@ -131,9 +131,9 @@
 
 
 <dt>surrogate.method</dt>
-<dd><p>What method to use to generage surrogate data for hypothesis testing? Options include:</p><ul><li><p>'isospectral': (Default) Following Ebisuzaki (1997), generate surrogates by scrambling the phases of the data while preserving their power spectrum. This uses the To generate these “isospectral” surrogates. Uses the rEDM::make_surrogate_data() function</p></li>
+<dd><p>What method to use to generage surrogate data for hypothesis testing? Options include:</p><ul><li><p>'isospectral': (Default) Following Ebisuzaki (1997), generate surrogates by scrambling the phases of the data while preserving their power spectrum. This uses the To generate these “isospectral” surrogates. Uses the rEDM::make_surrogate_data() or rEDM::SurrogateData() function depending on version</p></li>
 <li><p>'isopersistent':  Generates surrogates by simulating from an autoregressive process of order 1 (AR(1)), which has been fit to the data. Uses the geoChronR::createSyntheticTimeseries() function</p></li>
-<li><p>'shuffle': Randomly shuffles the data to create surrogates. Uses the rEDM::make_surrogate_data() function</p></li>
+<li><p>'shuffle': Randomly shuffles the data to create surrogates. Uses the rEDM::make_surrogate_data() or rEDM::SurrogateData() function depending on version</p></li>
 </ul></dd>
 
 

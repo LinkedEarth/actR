@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">actR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.9</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.10</span>
       </span>
     </div>
 
@@ -104,11 +104,7 @@ preloaded in actR, and you can learn more about it with
 <p>actR uses an excursion detection algorithm developed and used by <a href="https://cp.copernicus.org/articles/9/423/2013/cp-9-423-2013.pdf" class="external-link">Morrill
 et al. (2013)</a>.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">actR</span><span class="op">)</span></span>
-<span><span class="co">#&gt; The legacy packages maptools, rgdal, and rgeos, underpinning this package</span></span>
-<span><span class="co">#&gt; will retire shortly. Please refer to R-spatial evolution reports on</span></span>
-<span><span class="co">#&gt; https://r-spatial.org/r/2023/05/15/evolution4.html for details.</span></span>
-<span><span class="co">#&gt; This package is now running under evolution status 0</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">actR</span><span class="op">)</span></span></code></pre></div>
 <div class="section level3">
 <h3 id="excursion-detection-with-no-uncertainties">Excursion detection with no uncertainties<a class="anchor" aria-label="anchor" href="#excursion-detection-with-no-uncertainties"></a>
 </h3>
@@ -206,6 +202,7 @@ null hypothesis simulation 50 times.</p>
 <span><span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span>
 <span><span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span>
 <span><span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span>
+<span><span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span>
 <span><span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span></code></pre></div>
 <p>This time, when we summarize the results, we get more interesting
 output, including an empirical p-value, which is the fraction of null
@@ -273,6 +270,8 @@ through our robust null hypothesis testing.</p>
 <span>                          simulate.paleo.uncertainty <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>                          paleo.uncertainty <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Selected d18O</span></span>
+<span><span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span>
+<span><span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span>
 <span><span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span>
 <span><span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span>
 <span><span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span>
