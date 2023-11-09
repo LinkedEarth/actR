@@ -1,3 +1,5 @@
+# actR 0.1.10
+
 # actR 0.1.9
 
 * Excursion methods now export p-values for above, below, either or both options in all cases, to avoid unnecessary rerunning
