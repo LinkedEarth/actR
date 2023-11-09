@@ -1,5 +1,7 @@
 # actR 0.1.10
 
+* Attempted to fix the bug that resulted from the rEDM v1.15.0 name change of `make_surrogate_data` to `SurrogateData`
+
 # actR 0.1.9
 
 * Excursion methods now export p-values for above, below, either or both options in all cases, to avoid unnecessary rerunning

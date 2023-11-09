@@ -4,7 +4,7 @@
 \alias{kdePval}
 \title{Use a kde to estimate pvalue}
 \usage{
-kdePval(nulls, real, h = NA, xmin = 0, xmax = 1)
+kdePval(nulls, real, h = NA, xmin = NA, xmax = NA)
 }
 \arguments{
 \item{nulls}{a vector of null hypothesis results}

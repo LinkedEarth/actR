@@ -1,4 +1,20 @@
 
+#' Use the write function from rEDM depending on the version
+#'
+#' @param ... Arguments to pass to surrogate
+#'
+#' @return Surrogate output
+#' @export
+surrogateDataFun <- function(...){
+  if(packageVersion("rEDM") < "1.15"){
+    out <- rEDM::make_surrogate_data(...)
+  }else{
+    out <- rEDM::SurrogateData(...)
+  }
+  return(out)
+}
+
+
 #' Explore uncertainty space on abscissa or ordinate and propagate of any of actR's change functions
 #'
 #' @param time a time vector, or matrix of time ensemble members (ensembles in columns)
@@ -146,9 +162,9 @@ propagateUncertainty <- function(time,
 #' @inheritParams propagateUncertainty
 #' @param mc.ens How many Monte Carlo simulations to use for null hypothesis testing
 #' @param surrogate.method What method to use to generage surrogate data for hypothesis testing? Options include: \itemize{
-#' \item 'isospectral': (Default) Following Ebisuzaki (1997), generate surrogates by scrambling the phases of the data while preserving their power spectrum. This uses the To generate these “isospectral” surrogates. Uses the rEDM::make_surrogate_data() function
+#' \item 'isospectral': (Default) Following Ebisuzaki (1997), generate surrogates by scrambling the phases of the data while preserving their power spectrum. This uses the To generate these “isospectral” surrogates. Uses the rEDM::make_surrogate_data() or rEDM::SurrogateData() function depending on version
 #' \item 'isopersistent':  Generates surrogates by simulating from an autoregressive process of order 1 (AR(1)), which has been fit to the data. Uses the geoChronR::createSyntheticTimeseries() function
-#' \item 'shuffle': Randomly shuffles the data to create surrogates. Uses the rEDM::make_surrogate_data() function
+#' \item 'shuffle': Randomly shuffles the data to create surrogates. Uses the rEDM::make_surrogate_data() or rEDM::SurrogateData() function depending on version
 #' }
 #' @inheritDotParams propagateUncertainty
 #' @importFrom stats quantile
@@ -206,7 +222,7 @@ testNullHypothesis <- function(time,
 
     cstv <- function(x,...){
       g <- is.finite(x)
-      out <- rEDM::make_surrogate_data(ts = x[g],...)
+      out <- surrogateDataFun(ts = x[g],...)
       nc <- ncol(out)
       om <- matrix(NA,nrow = NROW(g),ncol = nc)
       om[g,] <- out
@@ -220,7 +236,7 @@ testNullHypothesis <- function(time,
   }else if(grepl(surrogate.method,pattern = "shuffle",ignore.case = T)){
     cstv <- function(x,...){
       g <- is.finite(x)
-      out <- rEDM::make_surrogate_data(ts = x[g],...)
+      out <- surrogateDataFun(ts = x[g],...)
       nc <- ncol(out)
       om <- matrix(NA,nrow = NROW(g),ncol = nc)
       om[g,] <- out
