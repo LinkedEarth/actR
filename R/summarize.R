@@ -45,11 +45,26 @@ return(tp)
 }
 
 
+#' Summarize the shift detection results using a uniform bin step
+#'
+#' @param exc.out   shiftCore (tbl_df) class result of propagateUncertainty()
+#' @param bin.vec   Vector by which to bin the data
+#' @param bin.step  Number of years to group shifts by
+#' @param max.time  Maximum age of bin.vec to summarize
+#' @param min.time  Minimum age of bin.vec to summarize
+#' @param shift.type Type of excursion to look for. "positive", "negative", "either" or "both" (default = "either")
+#'
+#' @return a tibble of event probability for each bin step
+#' @export
+#'
+#' @examples
 summarizeEventProbability <- function(exc.out,
-                                      bin.step = 10,
                                       bin.vec = NA,
+                                      bin.step = 10,
                                       max.time = NA,
-                                      min.time = NA){
+                                      min.time = NA,
+                                      shift.type = "either"
+                                      ){
   if(is.na(min.time)){
     min.time <- purrr::map_dbl(exc.out$time,min,na.rm=T) %>% median(na.rm = TRUE)
   }
@@ -71,18 +86,36 @@ summarizeEventProbability <- function(exc.out,
     dplyr::mutate(time_mid = (time_start + time_end)/2)
 
 
-  eventSums <- eventsInWindow(na.omit(good.exc$time_mid),start.vec = timeBins[-length(timeBins)],end.vec = timeBins[-1])
-  eventSumsPos <- eventsInWindow(na.omit((good.exc%>%filter(delta_mean>0))$time_mid),start.vec = timeBins[-length(timeBins)],end.vec = timeBins[-1])
-  eventSumsNeg <- eventsInWindow(na.omit((good.exc%>%filter(delta_mean<0))$time_mid),start.vec = timeBins[-length(timeBins)],end.vec = timeBins[-1])
+  eventSumsEither   <- eventsInWindow(na.omit(good.exc$time_mid),                         start.vec = timeBins[-length(timeBins)],end.vec = timeBins[-1])
+  eventSumsPositive <- eventsInWindow(na.omit((good.exc%>%filter(delta_mean<0))$time_mid),start.vec = timeBins[-length(timeBins)],end.vec = timeBins[-1])
+  eventSumsNegative <- eventsInWindow(na.omit((good.exc%>%filter(delta_mean>0))$time_mid),start.vec = timeBins[-length(timeBins)],end.vec = timeBins[-1])
+  eventSumsBoth     <- apply(matrix(c(eventSumsPositive,eventSumsNegative),length(eventSumsNegative)),1,min)
 
+  #now pick the one that was chosen
+
+  if(grepl(pattern = "either",x = shift.type,ignore.case = TRUE)){
+    event <- eventSumsEither
+  }else if(grepl(pattern = "both",x = shift.type,ignore.case = TRUE)){
+    event <- eventSumsBoth
+  }else if(grepl(pattern = "pos",x = shift.type,ignore.case = TRUE)){
+    event <- eventSumsPositive
+  }else if(grepl(pattern = "neg",x = shift.type,ignore.case = TRUE)){
+    event <- eventSumsNegative
+  }else{
+    stop(glue::glue("shift.type = {shift.type} is not recognized"))
+  }
+
+  #Create output tibble
   out <- tibble::tibble(time_start = timeBins[-length(timeBins)],
-                        time_end = timeBins[-1],
-                        event_probability =  eventSums/exc.out$nEns[1],
-                        event_probabilityPos =  eventSumsPos/exc.out$nEns[1],
-                        event_probabilityNeg =  eventSumsNeg/exc.out$nEns[1],
+                        time_end = timeBins[-1]
                         ) %>%
           dplyr::mutate(time_mid = (time_start + time_end)/2)
 
+  out$event_probability          =  event/exc.out$nEns[1]
+  out$event_probability_either   =  eventSumsEither/exc.out$nEns[1]
+  out$event_probability_positive =  eventSumsPositive/exc.out$nEns[1]
+  out$event_probability_negative =  eventSumsNegative/exc.out$nEns[1]
+  out$event_probability_both     =  eventSumsBoth/exc.out$nEns[1]
 
   return(out)
 
