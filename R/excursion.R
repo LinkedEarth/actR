@@ -226,16 +226,31 @@ detectExcursion = function(ltt = NA,
   eventSummarySafe <- tibble::tibble(time_start = mean(dataEst$time_start,na.rm = TRUE),
                                  time_end = mean(dataEst$time_end,na.rm = TRUE),
                                  time_mid = mean(time_start,time_end),
-                                 eventDetectionWithUncertainty = NA,
-                                 nullDetectionWithUncertainty = list(NA),
-                                 empirical_pvalue = NA,
-                                 eventDetection = list(dataEst),
+                                 event_probability = NA,
+                                 event_probability_either = NA,
+                                 event_probability_both = NA,
+                                 event_probability_positive = NA,
+                                 event_probability_negative = NA,
+                                 null_probability = list(NA),
+                                 null_probability_either = list(NA),
+                                 null_probability_both = list(NA),
+                                 null_probability_positive = list(NA),
+                                 null_probability_negative = list(NA),
+                                 pvalue = NA,
+                                 pvalue_either = NA,
+                                 pvalue_both = NA,
+                                 pvalue_positive = NA,
+                                 pvalue_negative = NA,
+                                 event_detection = list(NA),
                                  unc.prop.n = n.ens,
                                  null.hypothesis.n = null.hypothesis.n)
 
+
+
   eventSummarySafe[paste0("cl",null.quantiles)] <- NA
 
-  paramTib <- createTibbleFromParameterString(as.character(dataEst$parameters[1]))
+  paramTib <- purrr::map_dfr(dataEst$parameters,createTibbleFromParameterString) |>
+    purrr::map_dfr(summarizeParams)
 
   eventSummarySafe <- dplyr::bind_cols(eventSummarySafe,paramTib,preppedSlim)
 
@@ -311,29 +326,25 @@ detectExcursion = function(ltt = NA,
   eventSummary <- tibble::tibble(time_start = mean(dataEst$time_start,na.rm = TRUE),
                                  time_end = mean(dataEst$time_end,na.rm = TRUE),
                                  time_mid = mean(time_start,time_end),
-                                 eventDetectionWithUncertainty = eventDetectionWithUncertainty,
-                                 eventDetectionWithUncertaintyEither = eventDetectionWithUncertaintyEither,
-                                 eventDetectionWithUncertaintyBoth = eventDetectionWithUncertaintyBoth,
-                                 eventDetectionWithUncertaintyAbove = eventDetectionWithUncertaintyAbove,
-                                 eventDetectionWithUncertaintyBelow = eventDetectionWithUncertaintyBelow,
-                                 nullDetectionWithUncertainty = list(nullEvents$nulls),
-                                 nullDetectionWithUncertaintyAbove = list(nullEventsAbove$nulls),
-                                 nullDetectionWithUncertaintyBelow = list(nullEventsBelow$nulls),
-                                 nullDetectionWithUncertaintyBoth = list(nullEventsBoth$nulls),
-                                 nullDetectionWithUncertaintyEither = list(nullEventsEither$nulls),
-                                 empirical_pvalue = pval,
+                                 event_probability = eventDetectionWithUncertainty,
+                                 event_probability_either = eventDetectionWithUncertaintyEither,
+                                 event_probability_both = eventDetectionWithUncertaintyBoth,
+                                 event_probability_positive = eventDetectionWithUncertaintyAbove,
+                                 event_probability_negative = eventDetectionWithUncertaintyBelow,
+                                 null_probability = list(nullEvents$nulls),
+                                 null_probability_either = list(nullEventsEither$nulls),
+                                 null_probability_both = list(nullEventsBoth$nulls),
+                                 null_probability_positive = list(nullEventsAbove$nulls),
+                                 null_probability_negative = list(nullEventsBelow$nulls),
+                                 pvalue = pval,
                                  pvalue_either = pvalEither,
                                  pvalue_both = pvalBoth,
-                                 pvalue_above = pvalAbove,
-                                 pvalue_below = pvalBelow,
-                                 eventDetection = list(dataEst),
+                                 pvalue_positive = pvalAbove,
+                                 pvalue_negative = pvalBelow,
+                                 event_detection = list(dataEst),
                                  unc.prop.n = n.ens,
                                  null.hypothesis.n = null.hypothesis.n) %>%
     dplyr::bind_cols(nullLevels)
-
-  paramTib <- createTibbleFromParameterString(as.character(dataEst$parameters[1]))
-
-
 
 
   eventSummary <- dplyr::bind_cols(eventSummary,paramTib,preppedSlim)

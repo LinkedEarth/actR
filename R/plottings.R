@@ -50,9 +50,10 @@ plotExcursion <- function(x,
   }
 
   #determine what is ensemble
-  ensOut <- x$eventDetection[[1]]
+  ensOut <- x$event_detection[[1]]
   hasTimeEnsemble <- !identicalVectorsList(ensOut$time)
   hasPaleoEnsemble <- !identicalVectorsList(ensOut$vals)
+  hasParamEnsemble <- hasParameterEnsemble(x)
 
   if(hasTimeEnsemble){
     timeMat <- list2matrix(ensOut$time)
@@ -62,20 +63,40 @@ plotExcursion <- function(x,
 
   if(hasPaleoEnsemble){
     paleoMat <- list2matrix(ensOut$vals)
+
   }else{
     paleoMat <- ensOut$vals[[1]]
   }
 
+  if(hasParamEnsemble){
+    if(hasPaleoEnsemble){
+      #limit outliers
+      m95 <- quantile(paleoMat,na.rm = TRUE,c(.025,.975))
+      bad <- which(paleoMat < m95[1] | paleoMat > m95[2])
+      pmb <- paleoMat
+      pmb[bad] <- NA
+      nGoodInCol <- colSums(!is.na(pmb))
+      badCol <- which(nGoodInCol < max(nGoodInCol)/3)
+      paleoMat <- paleoMat[,-badCol]
+    }
+    if(hasTimeEnsemble){
+      timeMat <- timeMat[,-badCol]
+    }
+  }
+
+
   #if time or values are ensemble, plot as ribbons, with single line over top.
   if(hasPaleoEnsemble | hasTimeEnsemble){
-    ribbons <- geoChronR::plotTimeseriesEnsRibbons(X = timeMat,Y = paleoMat,probs = c(.025,.25,.75,.975))
+    ribbons <- geoChronR::plotTimeseriesEnsRibbons(X = timeMat,
+                                                   Y = paleoMat,
+                                                   probs = c(.025,.25,.75,.975))
 
     #check for significance
-    if(x$empirical_pvalue < alpha){
-      alpha.msg <- glue::glue("Empirical p-value {x$empirical_pvalue} is < {alpha}")
+    if(x$pvalue < alpha){
+      alpha.msg <- glue::glue("Empirical p-value {x$pvalue} is < {alpha}")
       ts <- dplyr::filter(ensOut,eventDetected == TRUE)
     }else{
-      alpha.msg <- glue::glue("Empirical p-value {x$empirical_pvalue} exceeds {alpha}")
+      alpha.msg <- glue::glue("Empirical p-value {x$pvalue} exceeds {alpha}")
       ts <- dplyr::filter(ensOut,eventDetected == FALSE)
     }
 

@@ -121,13 +121,17 @@ propagateUncertainty <- function(time,
   if(any(dl > 1)){#then we need to sample over
     #turn params into vectors that are n.ens long...
     dotsLong <- vector(mode = "list",length = length(dots))
+    dotsSummaryString <- c()
     for(d in 1:length(dots)){
       if(length(dots[[d]]) == 1){
         dotsLong[[d]] <- rep(dots[[d]],n.ens)
+        dotsSummaryString[d] <- glue::glue("{dots[[d]]}")
       }else if(length(dots[[d]]) <= n.ens){
         dotsLong[[d]] <- sample(dots[[d]],size = n.ens,replace = FALSE)
+        dotsSummaryString[d] <- glue::glue("{round(mean(dotsLong[[d]]))} ± {round(sd(dotsLong[[d]]))}")
       }else{
         dotsLong[[d]] <- sample(dots[[d]],size = n.ens,replace = TRUE)
+        dotsSummaryString[d] <- glue::glue("{round(mean(dotsLong[[d]]))} ± {round(sd(dotsLong[[d]]))}")
       }
     }
     names(dotsLong) <- names(dots)

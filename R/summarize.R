@@ -106,3 +106,16 @@ eventsInWindow <- function(val,start.vec,end.vec){
 
   return(totalEvents)
 }
+
+
+summarizeParams <- function(x){
+  if(length(unique(x)) == 1){
+    return(as.character(unique(x)))
+  }else{
+    if(all(is.numeric(x))){
+      return(glue::glue("{round(mean(x))} ± {round(sd(x))}"))
+    }else{
+      return(paste(unique(x),collapse = ", "))
+    }
+  }
+}

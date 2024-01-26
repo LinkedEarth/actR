@@ -25,20 +25,21 @@ summaryExcursion <- function(object, params.to.print = c("sig.num","n.consecutiv
   }
 
 
-  if(!is.na(object$empirical_pvalue)){
-    if(object$empirical_pvalue < 0.05){
+  if(!is.na(object$pvalue)){
+    if(object$pvalue < 0.05){
       resFun <- crayon::green
     }else{
       resFun <- crayon::red
     }
   }else{
     resFun <- crayon::red
-    object$empirical_pvalue <- "Excursion test failed to run."
+    object$pvalue <- "Excursion test failed to run."
   }
 
-  ensOut <- object$eventDetection[[1]]
+  ensOut <- object$event_detection[[1]]
   hasTimeEnsemble <- !identicalVectorsList(ensOut$time)
   hasPaleoEnsemble <- !identicalVectorsList(ensOut$vals)
+  hasParamEnsemble <-  hasParameterEnsemble(object)
 
   if(hasTimeEnsemble){
     hasTimeEnsemble <- crayon::green(hasTimeEnsemble)
@@ -50,6 +51,15 @@ summaryExcursion <- function(object, params.to.print = c("sig.num","n.consecutiv
     hasPaleoEnsemble <- crayon::green(hasPaleoEnsemble)
   }else{
     hasPaleoEnsemble <- crayon::red(hasPaleoEnsemble)
+  }
+
+  if(hasParamEnsemble){
+    hasParamEnsemblePrint <- crayon::green(hasParamEnsemble)
+
+
+
+  }else{
+    hasParamEnsemblePrint <- crayon::red(hasParamEnsemble)
   }
 
 if(object$exc.type == "either"){
@@ -65,9 +75,14 @@ exc.prefix <- "positive OR negative"
 cat(crayon::bold(glue::glue("{title} results\n\n")))
 cat(crayon::silver(glue::glue("Searched for {crayon::bold(exc.prefix)} excursions in a {crayon::bold(object$event.window)} year window around {crayon::bold(object$event.yr)} {object$timeUnits}, with reference windows of {crayon::bold(object$ref.window)} years on either side.\n\n")))
 cat("\n")
-cat(crayon::bold(glue::glue("Overall result: Empirical p-value = {resFun(object$empirical_pvalue)}\n\n")))
+cat(crayon::bold(glue::glue("Overall result: Empirical p-value = {resFun(round(object$pvalue,3))}\n\n")))
 cat(glue::glue("Time uncertainty considered? {hasTimeEnsemble}\n\n"))
 cat(glue::glue("Paleo uncertainty considered? {hasPaleoEnsemble}\n\n"))
+if(hasParamEnsemble){
+  cat(glue::glue("Parametric uncertainty considered? {hasParamEnsemblePrint}: {crayon::silver(crayon::italic(whichParametersInEnsemble(x)))}\n\n"))
+}else{
+  cat(glue::glue("Parametric uncertainty considered? {hasParamEnsemblePrint}\n\n"))
+}
 cat(glue::glue("Error propagation ensemble members = {object$unc.prop.n}\n\n"))
 cat(glue::glue("Null hypothesis testing ensemble members = {object$null.hypothesis.n}\n\n"))
 cat("\n")

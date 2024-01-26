@@ -75,3 +75,17 @@ list2matrix <- function(l){
   return(mat)
 
 }
+
+hasParameterEnsemble <- function(x){
+  np <- purrr::map_dfr(x$event_detection[[1]]$parameters,createTibbleFromParameterString) |>
+    purrr::map_dbl(\(x) length(unique(x)))
+
+  return(any(np > 1))
+}
+
+whichParametersInEnsemble <- function(x){
+  np <- purrr::map_dfr(x$event_detection[[1]]$parameters,createTibbleFromParameterString) |>
+    purrr::map_dbl(\(x) length(unique(x)))
+
+  return(paste(names(np)[np > 1],collapse = ","))
+}
