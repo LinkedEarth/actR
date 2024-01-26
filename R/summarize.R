@@ -47,6 +47,7 @@ return(tp)
 
 summarizeEventProbability <- function(exc.out,
                                       bin.step = 10,
+                                      bin.vec = NA,
                                       max.time = NA,
                                       min.time = NA){
   if(is.na(min.time)){
@@ -55,8 +56,17 @@ summarizeEventProbability <- function(exc.out,
   if(is.na(max.time)){
     max.time <- purrr::map_dbl(exc.out$time,max,na.rm=T) %>% median(na.rm = TRUE)
   }
-  timeBins <- seq(min.time,max.time,by = bin.step)
-  timeOut <- min.time+bin.step/2
+
+  if(!all(is.na(bin.vec))){#make one using bin.step
+    timeBins <- bin.vec
+    bin.step <- median(abs(diff(timeBins)),na.rm = TRUE)
+    min.time <- min(timeBins)
+    max.time <- max(timeBins)
+  }else{
+    timeBins <- seq(min.time,max.time,by = bin.step)
+  }
+
+  #timeOut <- min.time+bin.step/2
   good.exc <- dplyr::filter(exc.out,eventDetected == TRUE) %>%
     dplyr::mutate(time_mid = (time_start + time_end)/2)
 

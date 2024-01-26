@@ -134,6 +134,7 @@ detectShiftCore = function(time,
 #' @description detectShift() allows you to detect a shift in the mean and/or variance of a dataset, and assess its significance given age and data uncertainty relative to a robust null hypothesis. This approach uses the function changepoint::cpt.mean(), changepoint::cpt.var(), or changepoint::cpt.meanvar()  from the changepoint package, propagates inputted or modelled time and/or value ensembles, and summarizes their likelihoods relative to a robust null hypothesis (see ?testNullHypothesis)
 #' @inheritParams prepareInput
 #' @param summary.bin.step Time interval over which to summarize the results
+#' @param summary.bin.vec Optionally provide a vector over which to create the summary bins, this will supersede summary.bin.step if provided (default = NA)
 #' @param null.hypothesis.n How many simulations to run for null hypothesis testing (default = 100)
 #' @param null.quantiles What quantiles to report as output from null hypothesis testing (default = c(.95, .9))
 #' @inheritParams testNullHypothesis
@@ -152,6 +153,7 @@ detectShift <- function(ltt = NA,
                         dataset.name = NA,
                         surrogate.method = "isospectral",
                         summary.bin.step = 100,
+                        summary.bin.vec = NA,
                         null.hypothesis.n = 100,
                         null.quantiles = c(.95,.9),
                         time.range = NA,
@@ -185,6 +187,7 @@ detectShift <- function(ltt = NA,
 
   propSummary <- summarizeEventProbability(propagated,
                                            bin.step = summary.bin.step,
+                                           bin.vec = summary.bin.vec,
                                            min.time = min(time, na.rm = T),
                                            max.time = max(time, na.rm = T))
   #null hypothesis
@@ -200,6 +203,7 @@ detectShift <- function(ltt = NA,
   nhMat <- purrr::map(nh,
                       summarizeEventProbability,
                       bin.step = summary.bin.step,
+                      bin.vec = summary.bin.vec,
                       min.time = min(time, na.rm = T),
                       max.time = max(time, na.rm = T)) %>%
     setNames(paste0("nh",seq_along(nh))) %>%
