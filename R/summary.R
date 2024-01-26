@@ -79,7 +79,7 @@ cat(crayon::bold(glue::glue("Overall result: Empirical p-value = {resFun(round(o
 cat(glue::glue("Time uncertainty considered? {hasTimeEnsemble}\n\n"))
 cat(glue::glue("Paleo uncertainty considered? {hasPaleoEnsemble}\n\n"))
 if(hasParamEnsemble){
-  cat(glue::glue("Parametric uncertainty considered? {hasParamEnsemblePrint}: {crayon::silver(crayon::italic(whichParametersInEnsemble(x)))}\n\n"))
+  cat(glue::glue("Parametric uncertainty considered? {hasParamEnsemblePrint}: {crayon::silver(crayon::italic(whichParametersInEnsemble(object)))}\n\n"))
 }else{
   cat(glue::glue("Parametric uncertainty considered? {hasParamEnsemblePrint}\n\n"))
 }

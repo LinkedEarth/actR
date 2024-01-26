@@ -108,12 +108,21 @@ eventsInWindow <- function(val,start.vec,end.vec){
 }
 
 
+rounder <- function(x){
+  round(x,max(0,ceiling(1-log10(x))))
+}
+
+
 summarizeParams <- function(x){
   if(length(unique(x)) == 1){
     return(as.character(unique(x)))
   }else{
     if(all(is.numeric(x))){
-      return(glue::glue("{round(mean(x))} ± {round(sd(x))}"))
+      if(length(unique(x)) > 10){
+        return(glue::glue("{rounder(mean(x))} ± {rounder(sd(x))}"))
+      }else{
+        return(paste(sort(unique(x)),collapse = ", "))
+      }
     }else{
       return(paste(unique(x),collapse = ", "))
     }
