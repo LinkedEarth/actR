@@ -72,10 +72,15 @@ summarizeEventProbability <- function(exc.out,
 
 
   eventSums <- eventsInWindow(na.omit(good.exc$time_mid),start.vec = timeBins[-length(timeBins)],end.vec = timeBins[-1])
+  eventSumsPos <- eventsInWindow(na.omit((good.exc%>%filter(delta_mean>0))$time_mid),start.vec = timeBins[-length(timeBins)],end.vec = timeBins[-1])
+  eventSumsNeg <- eventsInWindow(na.omit((good.exc%>%filter(delta_mean<0))$time_mid),start.vec = timeBins[-length(timeBins)],end.vec = timeBins[-1])
 
   out <- tibble::tibble(time_start = timeBins[-length(timeBins)],
                         time_end = timeBins[-1],
-                        event_probability =  eventSums/exc.out$nEns[1]) %>%
+                        event_probability =  eventSums/exc.out$nEns[1],
+                        event_probabilityPos =  eventSumsPos/exc.out$nEns[1],
+                        event_probabilityNeg =  eventSumsNeg/exc.out$nEns[1],
+                        ) %>%
           dplyr::mutate(time_mid = (time_start + time_end)/2)
 
 
