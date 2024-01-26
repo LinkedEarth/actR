@@ -210,7 +210,15 @@ testNullHypothesis <- function(time,
 
   if(grepl(surrogate.method,pattern = "persis",ignore.case = T)){
     #surVals <- geoChronR::ar1Surrogates(time = time,vals = vals,detrend = TRUE,method = "redfit",n.ens = n.ens)
-    cstv <- function(x,...){geoChronR::createSyntheticTimeseries(values = x,...)}
+    if (ncol(time)==0){
+      cstv <- function(x,time=time, ...) {
+        geoChronR::createSyntheticTimeseries(values = x, ...)
+      }
+    } else{
+      cstv <- function(x,time=time, ...) {
+        geoChronR::createSyntheticTimeseries(values = x, time = time[,sample(seq(1,ncol(time)),1)], ...)
+      }
+    }
 
     surVals <- purrr::map(valList,
                           cstv,

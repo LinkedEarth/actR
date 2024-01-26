@@ -157,6 +157,7 @@ detectShift <- function(ltt = NA,
                         null.hypothesis.n = 100,
                         null.quantiles = c(.95,.9),
                         time.range = NA,
+                        calc.deltas = FALSE,
                         ...){
 
 
@@ -181,7 +182,7 @@ detectShift <- function(ltt = NA,
   vals.ens.supplied.n <- NCOL(vals)
 
   #ensemble with uncertainties
-  propagated <- propagateUncertainty(time,vals,changeFun = detectShiftCore,...)
+  propagated <- propagateUncertainty(time,vals,changeFun = detectShiftCore, calc.deltas = calc.deltas, ...)
 
 
 
@@ -190,6 +191,21 @@ detectShift <- function(ltt = NA,
                                            bin.vec = summary.bin.vec,
                                            min.time = min(time, na.rm = T),
                                            max.time = max(time, na.rm = T))
+                                           
+  #Add calc.deltas (by CH - July 2023)
+  if (calc.deltas){
+      propagated$time_mid <- (propagated$time_start+propagated$time_end)/2
+      propSummary$deltaMean <- NA
+      #propSummary$deltaMax  <- NA
+      for (row in 1:nrow(propSummary)){
+        deltas <- propagated %>%
+          filter(between(time_mid,propSummary$time_start[row],propSummary$time_end[row]))
+        if (nrow(deltas) > 0){
+          propSummary$deltaMean[row] <- mean(deltas$delta_mean,na.rm=TRUE)
+        }
+      }
+  }
+                                           
   #null hypothesis
   nh <- testNullHypothesis(time,
                            vals,
