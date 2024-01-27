@@ -141,7 +141,7 @@ detectShiftCore = function(time,
 #' @inheritParams detectShiftCore
 #'
 #'
-#' @return a list that includes error-propagated shift results, null hypothesis testing and metadata
+#' @return A tibble of output data and metadata. Each row represents a time step of the summary bin
 #' @export
 detectShift <- function(ltt = NA,
                         time = NA,
@@ -238,14 +238,14 @@ detectShift <- function(ltt = NA,
     dsout <- dplyr::bind_cols(dsout,nhSummary)
   }
 
-  #add in ensemble tables
-  ensData <- dplyr::select(propagated,time,vals,it_hash) %>%
-    dplyr::group_by(it_hash) %>%
-    dplyr::summarize(time = unique(time),
-                     vals = unique(vals))
-
-  timeEns <- list2matrix(ensData$time)
-  valEns <- list2matrix(ensData$vals)
+  # #add in ensemble tables
+  # ensData <- dplyr::select(propagated,time,vals,it_hash) %>%
+  #   dplyr::group_by(it_hash) %>%
+  #   dplyr::summarize(time = unique(time),
+  #                    vals = unique(vals))
+  #
+  # timeEns <- list2matrix(ensData$time)
+  # valEns <- list2matrix(ensData$vals)
 
   #add in metadata
   n.ens<- propagated$nEns[1] #pull example metadata
