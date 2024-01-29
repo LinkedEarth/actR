@@ -18,7 +18,7 @@ detectShiftCore = function(time,
                            minimum.segment.length = 1,
                            cpt.fun = changepoint::cpt.mean,
                            gaussianize = TRUE,
-                           calc.deltas = FALSE,
+                           calc.deltas = TRUE,
                            ...){
 
   # interpolation options
@@ -232,20 +232,20 @@ detectShift <- function(ltt = NA,
       do(vector = (as.numeric(.)))
     colnames(nhSummary) <- paste0("null_probability",direction)
 
-    nhSummary[[paste('pvalue',direction)]] <- purrr::array_branch(nhMat,margin = 1) %>%
+    nhSummary[[paste0('pvalue',direction)]] <- purrr::array_branch(nhMat,margin = 1) %>%
       purrr::map2_dbl(.y = propSummary[[paste0("event_probability",direction)]],.f = getEmpP)
 
     dsout <- dplyr::bind_cols(dsout,nhSummary)
   }
 
-  # #add in ensemble tables
-  # ensData <- dplyr::select(propagated,time,vals,it_hash) %>%
-  #   dplyr::group_by(it_hash) %>%
-  #   dplyr::summarize(time = unique(time),
-  #                    vals = unique(vals))
-  #
-  # timeEns <- list2matrix(ensData$time)
-  # valEns <- list2matrix(ensData$vals)
+  #add in ensemble tables
+  ensData <- dplyr::select(propagated,time,vals,it_hash) %>%
+    dplyr::group_by(it_hash) %>%
+    dplyr::summarize(time = unique(time),
+                     vals = unique(vals))
+
+  timeEns <- list2matrix(ensData$time)
+  valEns <- list2matrix(ensData$vals)
 
   #add in metadata
   n.ens<- propagated$nEns[1] #pull example metadata
@@ -261,6 +261,10 @@ detectShift <- function(ltt = NA,
   paramTib <- createTibbleFromParameterString(as.character(propagated$parameters[[1]]))
 
   eventSummary <- dplyr::bind_cols(dsout,paramTib,preppedSlim)
+
+  eventSummary$time <- rep(list(timeEns),nrow(eventSummary))
+  eventSummary$paleoData_values <- rep(list(valEns),nrow(eventSummary))
+  eventSummary$time_variableName <- ltt$timeVariableName
 
   # out <- list(shiftDetection = dsout,
   #             parameters = propagated$parameters,
@@ -283,7 +287,7 @@ detectShift <- function(ltt = NA,
 }
 
 
-summarizeShiftSignificance <- function(shiftDetection,alpha = 0.05,paramTib){
+summarizeShiftSignificance <- function(shiftDetection,alpha = 0.05,minimum.segment.length){
   #find significant events
   maxcli <- strsplit(names(shiftDetection),"q") %>%
     purrr::map(pluck,2) %>%
@@ -291,9 +295,9 @@ summarizeShiftSignificance <- function(shiftDetection,alpha = 0.05,paramTib){
     which.max()
 
   sig.event <- shiftDetection %>%
-    dplyr::filter(empirical_pvalue < alpha) %>%
+    dplyr::filter(pvalue < alpha) %>%
     dplyr::mutate(exceedance = event_probability - .[[maxcli]]) %>%
-    dplyr::arrange(empirical_pvalue,dplyr::desc(exceedance))
+    dplyr::arrange(pvalue,dplyr::desc(exceedance))
 
   #remove those within minimum distance
   bm <- sig.event$time_mid
