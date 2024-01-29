@@ -425,9 +425,7 @@ plotShift <- function(x,
   #plot shift frequency and cls
   probPlot <- ggplot()+
     actR_ggtheme()+
-    geom_hline(yintercept = 0)+
-    xlab(x.axis.label)+
-    ylab("Shift Frequency")
+    geom_hline(yintercept = 0)
 
   #Plot the data for the paleoData
   if (shift.direction == 'positive/negative'){
@@ -497,8 +495,15 @@ plotShift <- function(x,
     this_x_scale <- scale_x_continuous
   }
 
+  if(y.lims.direction<0){
+    this_y_scale <- scale_y_reverse
+  }else{
+    this_y_scale <- scale_y_continuous
+  }
+
   probPlot <- probPlot +
-   this_x_scale(limits = x.lims)
+    this_y_scale(name="Shift Frequency")+
+    this_x_scale(name=x.axis.label,limits = x.lims)
 
 
   if(plot.sig.vlines & any.sig){
@@ -513,7 +518,7 @@ plotShift <- function(x,
 
   timeSeries <- plotSectionMeans(add.to.plot = ribbons,sig.event,time = timeMed,vals = valMed)+
     this_x_scale(name = x.axis.label, position = "top")+
-    scale_y_continuous(name = y.axis.label, position = "right")+
+    this_y_scale(name = y.axis.label, position = "right")+
     theme(axis.ticks.x.bottom = element_blank(),
           plot.margin=unit(c(1,1,-.2,1), "cm"))+
     ggtitle(title)+
