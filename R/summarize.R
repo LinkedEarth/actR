@@ -87,8 +87,13 @@ summarizeEventProbability <- function(exc.out,
 
 
   eventSumsEither   <- eventsInWindow(na.omit(good.exc$time_mid),                         start.vec = timeBins[-length(timeBins)],end.vec = timeBins[-1])
-  eventSumsPositive <- eventsInWindow(na.omit((good.exc%>%filter(delta_mean<0))$time_mid),start.vec = timeBins[-length(timeBins)],end.vec = timeBins[-1])
-  eventSumsNegative <- eventsInWindow(na.omit((good.exc%>%filter(delta_mean>0))$time_mid),start.vec = timeBins[-length(timeBins)],end.vec = timeBins[-1])
+  if(grepl("cpt.mean",exc.out$parameters[[1]])){
+    eventSumsPositive <- eventsInWindow(na.omit((good.exc%>%filter(delta_mean<0))$time_mid),start.vec = timeBins[-length(timeBins)],end.vec = timeBins[-1])
+    eventSumsNegative <- eventsInWindow(na.omit((good.exc%>%filter(delta_mean>0))$time_mid),start.vec = timeBins[-length(timeBins)],end.vec = timeBins[-1])
+  }else if(grepl("cpt.var",exc.out$parameters[[1]])){
+    eventSumsPositive <- eventsInWindow(na.omit((good.exc%>%filter(delta_mean<0))$time_mid),start.vec = timeBins[-length(timeBins)],end.vec = timeBins[-1])
+    eventSumsNegative <- eventsInWindow(na.omit((good.exc%>%filter(delta_mean>0))$time_mid),start.vec = timeBins[-length(timeBins)],end.vec = timeBins[-1])
+  }
   eventSumsBoth     <- apply(matrix(c(eventSumsPositive,eventSumsNegative),length(eventSumsNegative)),1,min)
 
   #now pick the one that was chosen
