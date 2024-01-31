@@ -251,7 +251,7 @@ detectShift <- function(ltt = NA,
   n.ens<- propagated$nEns[1] #pull example metadata
 
   #Add parameters
-  #dsout$event_detection <- list(propagated)
+  dsout$event_detection <- list(propagated)
   dsout$unc.prop.n <- n.ens
   dsout$null.hypothesis.n <- null.hypothesis.n
 
