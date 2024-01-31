@@ -87,10 +87,10 @@ summarizeEventProbability <- function(exc.out,
 
 
   eventSumsEither   <- eventsInWindow(na.omit(good.exc$time_mid),                         start.vec = timeBins[-length(timeBins)],end.vec = timeBins[-1])
-  if(grepl("cpt.mean",exc.out$parameters[[1]])){
-    eventSumsPositive <- eventsInWindow(na.omit((good.exc%>%filter(delta_mean<0))$time_mid),start.vec = timeBins[-length(timeBins)],end.vec = timeBins[-1])
-    eventSumsNegative <- eventsInWindow(na.omit((good.exc%>%filter(delta_mean>0))$time_mid),start.vec = timeBins[-length(timeBins)],end.vec = timeBins[-1])
-  }else if(grepl("cpt.var",exc.out$parameters[[1]])){
+  if(grepl("cpt.var",exc.out$parameters[[1]])){
+    eventSumsPositive <- eventsInWindow(na.omit((good.exc%>%filter(delta_sd<0))$time_mid),start.vec = timeBins[-length(timeBins)],end.vec = timeBins[-1])
+    eventSumsNegative <- eventsInWindow(na.omit((good.exc%>%filter(delta_sd>0))$time_mid),start.vec = timeBins[-length(timeBins)],end.vec = timeBins[-1])
+  }else{
     eventSumsPositive <- eventsInWindow(na.omit((good.exc%>%filter(delta_mean<0))$time_mid),start.vec = timeBins[-length(timeBins)],end.vec = timeBins[-1])
     eventSumsNegative <- eventsInWindow(na.omit((good.exc%>%filter(delta_mean>0))$time_mid),start.vec = timeBins[-length(timeBins)],end.vec = timeBins[-1])
   }
@@ -121,6 +121,24 @@ summarizeEventProbability <- function(exc.out,
   out$event_probability_positive =  eventSumsPositive/exc.out$nEns[1]
   out$event_probability_negative =  eventSumsNegative/exc.out$nEns[1]
   out$event_probability_both     =  eventSumsBoth/exc.out$nEns[1]
+  out$event_probability_both     =  eventSumsBoth/exc.out$nEns[1]
+
+  #add delta for each shift
+  out$deltas  <- NA
+
+  deltas <- good.exc %>%
+         mutate(bin = cut(time_mid, breaks = timeBins, labels = FALSE)) %>%
+         group_by(bin)
+
+  if(grepl("cpt.var",exc.out$parameters[[1]])){
+    deltas <- deltas %>% summarise(mean_value = median(delta_sd))
+  }else{
+    deltas <- deltas %>% summarise(mean_value = median(delta_mean))
+  }
+  deltas <- deltas %>% filter(!is.na(bin))
+
+  out$deltas[deltas$bin] <- deltas$mean_value*-1
+
 
   return(out)
 

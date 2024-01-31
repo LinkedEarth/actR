@@ -258,13 +258,17 @@ detectShift <- function(ltt = NA,
   #Add ltt data
   goodVar <- c("paleoData_TSid","paleoData_variableName","paleoData_units","dataSetName","datasetId","geo_latitude","geo_longitude","geo_elevation","archiveType","paleoData_proxy","paleoData_proxyGeneral","interpretation1_variable","interpretation1_variableDetail","interpretation1_seasonality","interpretation1_direction","time","timeUnits","paleoData_values")
   preppedSlim <- dplyr::select(prepped,tidyselect::any_of(goodVar))
-  paramTib <- createTibbleFromParameterString(as.character(propagated$parameters[[1]]))
+  paramTib <- createTibbleFromParameterString(as.character(propagated$parameters))
 
   eventSummary <- dplyr::bind_cols(dsout,paramTib,preppedSlim)
 
   eventSummary$time <- rep(list(timeEns),nrow(eventSummary))
   eventSummary$paleoData_values <- rep(list(valEns),nrow(eventSummary))
   eventSummary$time_variableName <- ltt$timeVariableName
+  eventSummary$time.ens.supplied.n <- time.ens.supplied.n
+  eventSummary$vals.ens.supplied.n <- vals.ens.supplied.n
+  eventSummary$surrogate.method <- surrogate.method
+  eventSummary$summary.bin.step <- median(propSummary$time_mid)
 
   # out <- list(shiftDetection = dsout,
   #             parameters = propagated$parameters,
@@ -305,7 +309,7 @@ summarizeShiftSignificance <- function(shiftDetection,alpha = 0.05,minimum.segme
     tr <- c()
     for(i in 1:(length(bm) - 1)){
       diffs <- abs(bm-bm[i])
-      close <- which(diffs < paramTib$minimum.segment.length)
+      close <- which(diffs < shiftDetection$minimum.segment.length[1])
       ttr <- intersect(close,seq(i+1,length(bm)))
       tr <- c(tr,ttr)
     }

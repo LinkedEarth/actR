@@ -463,8 +463,8 @@ plotShift <- function(x,
 
   #get significant events
   cpp_sig <- rbind(cpp,cpp2)
-
-  sig.event <- summarizeShiftSignificance(cpp_sig, alpha = 1-qs[1])
+  cpp_sig$minimum.segment.length <- x$minimum.segment.length[1]
+  sig.event <- summarizeShiftSignificance(cpp_sig, alpha = 1-qs[1],x$minimum.segment.length[1])
 
   if(nrow(sig.event) == 0){
     any.sig = FALSE
