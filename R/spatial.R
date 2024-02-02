@@ -60,83 +60,29 @@ gaspari_cohn <- function(r, rmax) {
 #' @return distances
 #' @export
 #'
-distanceGridPar <- function(wts=NULL,
-                            grid.resolution = 10,
-                            radius.group=1000){
-
-
-  allLon <- seq(-179.5, 179.5, grid.resolution)
-  allLat <- seq(-89.5, 89.5, grid.resolution)
-  countA <- 0
-  allDistances <- list()
-  totalRuns <- length(allLon)*length(seq(-89.5, 89.5, grid.resolution))
-
-  a1 <- foreach::foreach(lonNow = allLon) %:%
-    foreach::foreach(latNow = allLat) %dopar% {
-      countA <- countA + 1
-      TS1 <- NULL
-      dist1 <- apply(wts, 1, function(x) geosphere::distm(c(lonNow, latNow), c(x$geo_longitude, x$geo_latitude), fun = geosphere::distHaversine)/1000)
-      weight1 <- 1 / (dist1 * 10/radius.group)
-      Distances <- data.frame("TSid" = wts$paleoData_TSid,
-                              "distance" = dist1,
-                              "weight" = weight1)
-      Distances <- Distances[Distances$distance < radius.group,]
-      allDistances[[countA]] <- list(lat=latNow, lon=lonNow, dist=Distances)
-    }
-
-
-  b1 <- do.call('c', a1)
-
-  return(b1)
-}
-
-
-#' Distance from grid cells to TS objects
-#'
-#' @param wts a lipd TS object
-#' @param grid.resolution grid cell size resolution, eg. 1 deg x 1 deg
-#' @param radius.group radius of filter for each grid cell in km
-#'
-#' @return distances
-#' @export
-#'
 distanceGrid <- function(wts=NULL,
                          lon.range = c(-179.5, 179.5),
                          lat.range = c(-89.5, 89.5),
-                         grid.resolution = 1,
-                         radius.group=NULL){
+                         grid.resolution = 1){
 
   #prep run
   allLon <- seq(min(lon.range),max(lon.range), grid.resolution)
-  countA <- 0
-  allDistances <- list()
   allLat <- seq(min(lat.range),max(lat.range), grid.resolution)
-  totalRuns <- length(allLon)*length(allLat)
+  grid <- expand.grid(allLon,allLat) |> setNames(c("lon","lat"))
 
-  for (lonNow in allLon){
-    for (latNow in allLat){
-      countA <- countA + 1
-      TS1 <- NULL
-      Distances <- data.frame("TSid" = wts$paleoData_TSid,
-                              "distance" = apply(wts, 1, function(x) geosphere::distm(c(lonNow, latNow), c(x$geo_longitude, x$geo_latitude), fun = geosphere::distHaversine)/1000)
-      )
-      allDistances[[countA]] <- list(lat=latNow, lon=lonNow, dist=Distances)
-    }
-    cat(round(countA/totalRuns,2)*100, "%\r")
+  getAllDistances <- function(lat,lon,wts){
+    list(lat = lat,
+         lon = lon,
+         dist = data.frame(TSid = wts$paleoData_TSid,
+                      distance = t(geosphere::distm(c(lon, lat), cbind(wts$geo_longitude, wts$geo_latitude),fun = geosphere::distHaversine)/1000))
+         )
+
   }
 
-  allDistances2 <- allDistances[which(unlist(lapply(allDistances, function(x) !is.null(x))))]
-  allDistances2 <- allDistances2[which(unlist(lapply(allDistances2, function(x) !is.na(x))))]
 
-  if (!is.null(radius.group)){
-    for (i in 1:length(allDistances2)){
-      if (!is.null(allDistances2[[i]])){
-        allDistances2[[i]]$dist <- allDistances2[[i]]$dist[which(unlist(allDistances2[[i]]$dist$distance < radius.group)),]
-      }
-    }
-  }
+  allDistances <- purrr::map2(grid$lat,grid$lon,getAllDistances,wts,.progress = TRUE)
 
-  return(allDistances2)
+  return(allDistances)
 }
 
 
@@ -182,154 +128,7 @@ plotDataDensity <- function(distance.grid=NULL,
 }
 
 
-#' test for excusions accross many sime series and return error messages
-#'
-#' @param wts2test a lipd TS object
-#' @param nulls numer of null hypothesis tests
-#' @param eventWindows length of event window
-#' @param refWindows length of reference window
-#' @param sdCrit sd threshhold
-#'
-#' @return excursion test results
-#' @export
-#'
-excursionTestHighRes <- function(wts2test=NULL, nulls=100,
-                                 eventWindows=sample(rnorm(100,mean = 400, sd = 100), size = 1),
-                                 refWindows=sample(rnorm(100,mean = 600, sd = 100), size = 1),
-                                 sdCrit=sample(rnorm(100,mean = 2,sd = .25), size = 1)){
 
-
-
-  excursionTrySingle <- function(wts, nulls=100){
-    out <- tryCatch(
-      {
-        testResults <- detectExcursion(wts,
-                                       n.ens = 10,
-                                       null.hypothesis.n = nulls,
-                                       event.yr = 8200,
-                                       event.window = eventWindows,
-                                       ref.window = refWindows,
-                                       sig.num = sdCrit,
-                                       min.vals = 4,
-                                       simulate.time.uncertainty = FALSE,
-                                       simulate.paleo.uncertainty = FALSE)
-        testResults$empirical_pvalue
-      },
-      error=function(cond){
-        print(cond)
-        return(NA)
-      }
-    )
-  }
-
-
-
-  results <- data.frame(matrix(nrow = nrow(wts2test), ncol = 4))
-  names(results) <- c("TSid","pval", "lat", "lon")
-  for (jj in 1:nrow(wts2test)){
-    results[jj,1] <- wts2test[jj,]$paleoData_TSid
-    results[jj,2] <- suppressMessages(excursionTrySingle(wts2test[jj,], nulls = 100))
-    if (is.na(results[jj,2])){
-      results[jj,2] <- NA
-    }else{
-      if (results[jj,2]==0){
-        results[jj,2] <- suppressMessages(excursionTrySingle(wts2test[jj,], nulls = 1000))
-        if (results[jj,2]==0){
-          results[jj,2] <- .0001
-          # results[jj,2] <- suppressMessages(excursionTrySingle(wts2test[jj,], nulls = 10000))
-          # if (results[jj,2]==0){
-          #   results[jj,2] <- .00001
-          #}
-        }
-      }
-    }
-
-
-    results[jj,3] <- wts2test[jj,]$geo_latitude
-    results[jj,4] <- wts2test[jj,]$geo_longitude
-
-
-
-    cat("\r\r", round(jj/nrow(wts2test),2)*100, "% ")
-  }
-  return(results)
-
-}
-
-
-#' sam as excursionTestHighRes but run in parallel (beta)
-#'
-#' @param wts2test lipd.ts
-#' @param nulls numer of null hypothesis tests
-#' @param eventWindows length of event window
-#' @param refWindows length of ref window
-#' @param sdCrit sd threshold for event
-#'
-#' @return excursion test results
-excursionTestHighResPar <- function(wts2test=NULL, nulls=100,
-                                    eventWindows=sample(rnorm(100,mean = 400, sd = 100), size = 1),
-                                    refWindows=sample(rnorm(100,mean = 600, sd = 100), size = 1),
-                                    sdCrit=sample(rnorm(100,mean = 2,sd = .25), size = 1)){
-
-
-  resultsDF <- data.frame(matrix(nrow = nrow(wts2test), ncol = 4))
-  names(resultsDF) <- c("TSid","pval", "lat", "lon")
-
-  results <- foreach (jj = 1:nrow(wts2test), .errorhandling = 'pass') %dopar%  {
-    res1 <- testResults <- actR::detectExcursion(wts2test[jj,],
-                                                 n.ens = 10,
-                                                 null.hypothesis.n = 100,
-                                                 event.yr = 8200,
-                                                 event.window = eventWindows,
-                                                 ref.window = refWindows,
-                                                 sig.num = sdCrit,
-                                                 min.vals = 4,
-                                                 simulate.time.uncertainty = FALSE,
-                                                 simulate.paleo.uncertainty = FALSE)$empirical_pvalue
-    if (is.na(res1)){
-      NA
-    }else if (res1 > 0){
-      res1
-    }else{
-      if (res1==0){
-        actR::detectExcursion(wts2test[jj,],
-                              n.ens = 10,
-                              null.hypothesis.n = 1000,
-                              event.yr = 8200,
-                              event.window = eventWindows,
-                              ref.window = refWindows,
-                              sig.num = sdCrit,
-                              min.vals = 4,
-                              simulate.time.uncertainty = FALSE,
-                              simulate.paleo.uncertainty = FALSE)$empirical_pvalue
-
-        if (res1==0){
-          actR::detectExcursion(wts2test[jj,],
-                                n.ens = 10,
-                                null.hypothesis.n = 10000,
-                                event.yr = 8200,
-                                event.window = eventWindows,
-                                ref.window = refWindows,
-                                sig.num = sdCrit,
-                                min.vals = 4,
-                                simulate.time.uncertainty = FALSE,
-                                simulate.paleo.uncertainty = FALSE)$empirical_pvalue
-          if (res1==0){
-            .00001
-          }
-        }
-      }
-    }
-  }
-
-  resultsDF$TSid <- wts2test$paleoData_TSid
-  resultsDF$pval <- unlist(results)
-  resultsDF$lat <- wts2test$geo_latitude
-  resultsDF$lon <- wts2test$geo_longitude
-
-  return(results)
-
-}
 
 #' Title
 #'
@@ -384,7 +183,10 @@ stop("the null is missing")
 calculateMultiTestSignificance <- function(events,weights = NA,n.ens = 1000){
 
   #only include events with results
+  events$weights <- weights
   events <- dplyr::filter(events,!is.na(event_probability))
+
+  weights <- events$weights
 
   if(nrow(events) == 0){
     out <- list()
@@ -465,9 +267,9 @@ calculateMultiTestSignificance <- function(events,weights = NA,n.ens = 1000){
                              use.weights = TRUE){
 
     TSids <- map.grid.cell$dist %>%
-      filter(distance < distance.cutoff)  %>%
+      dplyr::filter(distance < distance.cutoff)  %>%
  #     mutate(weight = 1 / (distance * 10/distance.cutoff)) %>%
-      distinct()
+      dplyr::distinct()
 
     if(nrow(TSids) == 0){
       map.grid.cell$pvalAbove <- NA
@@ -545,9 +347,9 @@ calculateMultiTestSignificance <- function(events,weights = NA,n.ens = 1000){
       }else if (agg.method=="robustNull"){
         if(use.weights){
           resultsNow$weight <- map_dbl(resultsNow$weight,\(x) max(0.0001,min(x,1)))
-          map.grid.cell <- append(map.grid.cell,calculateMultiTestPvalue(resultsNow,weights = resultsNow$weight))
+          map.grid.cell <- append(map.grid.cell,calculateMultiTestSignificance(resultsNow,weights = resultsNow$weight))
         }else{
-          map.grid.cell <- append(map.grid.cell,calculateMultiTestPvalue(resultsNow))
+          map.grid.cell <- append(map.grid.cell,calculateMultiTestSignificance(resultsNow))
         }
       }else{
         stop("agg.method must be one of: fisher, sidak, lancaster or robustNull")
@@ -591,12 +393,9 @@ plotSignificance <- function(pval.grid=NULL,
                              restrict.sites = TRUE,
                              alpha.by.weight = TRUE,
                              cutoff.distance = 1500,
+                             x.lim = c(-180,180),
+                             y.lim = c(-90,90),
                              projection = "+proj=robin +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs"){
-
-
-  # plotData <- data.frame("pval"= unlist(lapply(pval.grid, function(x) x$pval)),
-  #                        "lat"=unlist(lapply(pval.grid, function(x) x$lat)),
-  #                        "lon"=unlist(lapply(pval.grid, function(x) x$lon)))
 
   getPvals <- function(grid,which.test){
     if(is.null(grid[[which.test]])){
@@ -619,25 +418,25 @@ plotSignificance <- function(pval.grid=NULL,
 
   plotData <- data.frame(pval = pvals[good],lat = lat[good],lon = lon[good],weight = weight)
 
-  pvalOptions <- c("pvalAbove","pvalBelow","pvalEither","pvalNet")
+  pvalOptions <- c("pvalPos","pvalNeg","pvalEither","pvalNet")
 
 
-  handleNet <- function(above,below){
-    if(above > 0.5 & below > 0.5){
+  handleNet <- function(positive,negative){
+    if(positive > 0.5 & negative > 0.5){
       return(0.5)
     }
 
-    out <- ifelse(above > below, 1 - below,  above)
+    out <- ifelse(positive > negative, 1 - negative,  positive)
 
     return(out)
   }
 
   sigTestResults$pvalPlot <- dplyr::case_when(
-    which.test == "pvalAbove" ~  sigTestResults$pvalue_above,
-    which.test == "pvalBelow" ~  sigTestResults$pvalue_below,
+    which.test == "pvalPos" ~  sigTestResults$pvalue_positive,
+    which.test == "pvalNeg" ~  sigTestResults$pvalue_negative,
     which.test == "pvalEither" ~  sigTestResults$pvalue_either,
     which.test == "pvalBoth" ~  sigTestResults$pvalue_both,
-    which.test == "pvalNet" ~  purrr::map2_dbl(sigTestResults$pvalue_above, sigTestResults$pvalue_below, handleNet)
+    which.test == "pvalNet" ~  purrr::map2_dbl(sigTestResults$pvalue_positive, sigTestResults$pvalue_negative, handleNet)
   )
 
   #optionally only plot the most significant
@@ -680,42 +479,11 @@ plotSignificance <- function(pval.grid=NULL,
     filter(abs(long) < 180-cut,
            abs(lat) < 90-cut)
 
-  # world_rob <- project(cbind(world$long,world$lat), proj = projection) %>% as.data.frame()
-  # names(world_rob) <- c("x_proj","y_proj")
-  # world <- bind_cols(world, world_rob)
-  # #crs_goode <- "+proj=igh"
-
   toPlot <- filter(plotData,
                    !is.na(pval),
                    abs(lat) < 90-cut,
                    abs(lon) < 180-cut)
 
-  #get corners
-  # latSpacing <- 3
-  # lonSpacing <- 3
-  #
-  # toPlot$xmin <- toPlot$lon-lonSpacing/2
-  # toPlot$xmin[toPlot$xmin < -180] <- -180
-  #
-  # toPlot$xmax <- toPlot$lon+lonSpacing/2
-  # toPlot$xmax[toPlot$xmax > 180] <- 180
-  #
-  # toPlot$ymin <- toPlot$lat-latSpacing/2
-  # toPlot$ymin[toPlot$ymin < -90] <- -90
-  #
-  # toPlot$ymax <- toPlot$lat+latSpacing/2
-  # toPlot$ymax[toPlot$ymax > 90] <- 90
-  #
-  #
-  # toPlot_rob_min <- project(cbind(toPlot$xmin,toPlot$ymin),
-  #                       proj = projection) %>% as.data.frame()
-  # toPlot_rob_max <- project(cbind(toPlot$xmax,toPlot$ymax),
-  #                           proj = projection) %>% as.data.frame()
-  #
-  # toPlot_rob <- bind_cols(toPlot_rob_min,toPlot_rob_max)
-  #
-  # names(toPlot_rob) <- c("xmin_proj","ymin_proj","xmax_proj","ymax_proj")
-  # toPlot <- bind_cols(toPlot, toPlot_rob)
 
   p1 <- ggplot(data = toPlot,mapping = aes(x = lon,y = lat, fill = pval))
 
@@ -728,20 +496,14 @@ plotSignificance <- function(pval.grid=NULL,
 
   p1 <- p1 +
     geom_polygon(data=world, aes(x = long, y = lat, group = group), color="gray50", fill=alpha("white",0.1), inherit.aes = FALSE) +
-    #geom_point(inherit.aes = FALSE, data = wts2test, mapping = aes(y=geo_latitude,x=geo_longitude),color="white")+
     geom_point(inherit.aes = FALSE, data=sigTestResults, aes(x=geo_longitude, y=geo_latitude, fill=pvalPlot), size = 2, shape=21, color="black")+
     scale_fill_viridis_b(breaks=color.breaks)+
-    #geom_point(inherit.aes = FALSE, data=sigTestResults[complete.cases(sigTestResults),], aes(x=lon, y=lat), color="black", size=1.5, shape=8)+
     scale_x_continuous("",breaks = seq(-180,180,by = 60)) +
     scale_y_continuous("",breaks = c(-87.5,seq(-60,60,by = 30),87.5)) +
-    #title(main = "Excursion Significance")+
     theme(legend.title = element_blank())+
     cowplot::theme_minimal_grid()+
-    #coord_map(xlim=c(-180,180),
-              # ylim = c(-90,90),
-              # projection="robinson")
-    coord_sf(xlim=c(-180,180),
-             ylim = c(-90,90),
+    coord_sf(xlim=x.lim,
+             ylim = y.lim,
              crs = projection,
              expand = TRUE,
              datum = sf::st_crs(4326),

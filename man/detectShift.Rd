@@ -15,9 +15,11 @@ detectShift(
   dataset.name = NA,
   surrogate.method = "isospectral",
   summary.bin.step = 100,
+  summary.bin.vec = NA,
   null.hypothesis.n = 100,
   null.quantiles = c(0.95, 0.9),
   time.range = NA,
+  calc.deltas = TRUE,
   ...
 )
 }
@@ -46,16 +48,20 @@ detectShift(
 
 \item{summary.bin.step}{Time interval over which to summarize the results}
 
+\item{summary.bin.vec}{Optionally provide a vector over which to create the summary bins, this will supersede summary.bin.step if provided (default = NA)}
+
 \item{null.hypothesis.n}{How many simulations to run for null hypothesis testing (default = 100)}
 
 \item{null.quantiles}{What quantiles to report as output from null hypothesis testing (default = c(.95, .9))}
 
 \item{time.range}{Optionally enter a time range (as minimum and maximum) that you'd like to restrict the analysis to. (default = NA)}
 
+\item{calc.deltas}{Calculate the difference in means between change point sections. Default FALSE}
+
 \item{...}{arguments to pass to pass to changeFun}
 }
 \value{
-a list that includes error-propagated shift results, null hypothesis testing and metadata
+A tibble of output data and metadata. Each row represents a time step of the summary bin
 }
 \description{
 detectShift() allows you to detect a shift in the mean and/or variance of a dataset, and assess its significance given age and data uncertainty relative to a robust null hypothesis. This approach uses the function changepoint::cpt.mean(), changepoint::cpt.var(), or changepoint::cpt.meanvar()  from the changepoint package, propagates inputted or modelled time and/or value ensembles, and summarizes their likelihoods relative to a robust null hypothesis (see ?testNullHypothesis)

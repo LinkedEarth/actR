@@ -7,32 +7,39 @@
 plotShift(
   x,
   cl.color = "Reds",
-  plot.sig.vlines = TRUE,
-  label.sig = TRUE,
-  alpha = 0.05,
+  sf.fill = c("navy", "firebrick"),
+  plot.sig.vlines = FALSE,
+  label.sig = FALSE,
+  qs = c(0.95, 0.9),
   x.axis.label = NA,
   x.lims = NA,
   y.axis.label = NA,
+  y.lims.direction = 1,
   combine.plots = TRUE,
+  shift.direction = "positive/negative",
   ...
 )
 }
 \arguments{
-\item{x}{Output from actR::detectShift}
+\item{x}{Output from actR::detectShift (tibble)}
 
 \item{cl.color}{Color palette, single color, or vector of colors to use for confidence intervals (default = "Reds"s)}
+
+\item{sf.fill}{Color palette, single color, or vector of colors to use for confidence intervals (default = c("grey"))}
 
 \item{plot.sig.vlines}{Plot vertical lines at significant change points? (default = TRUE)}
 
 \item{label.sig}{Label significant change points (default = TRUE)}
 
-\item{alpha}{significance level (default = 0.05)}
+\item{qs}{significance levels to plot. The first value will be used to calculate the alpha for significant shifts (default = c(0.95,0.9))}
 
 \item{x.axis.label}{Label the x-axis (default = NA, which will automatically generate from input)}
 
-\item{x.lims}{2-element vector to usee as x-axis limits (default = NA)}
+\item{x.lims}{2-element vector to use as x-axis limits (default = NA)}
 
 \item{y.axis.label}{Label the y-axis (default = NA, which will automatically generate from input)}
+
+\item{y.lims.direction}{A value of -1 will flip the y-axis for both panels (default = 1) #TODO}
 
 \item{combine.plots}{Combine the probability and timeseries plots into a single plot (TRUE)? Or return a list with each plot as a separate object (FALSE)?}
 

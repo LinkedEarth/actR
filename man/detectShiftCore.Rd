@@ -10,7 +10,7 @@ detectShiftCore(
   minimum.segment.length = 1,
   cpt.fun = changepoint::cpt.mean,
   gaussianize = TRUE,
-  calc.deltas = FALSE,
+  calc.deltas = TRUE,
   ...
 )
 }

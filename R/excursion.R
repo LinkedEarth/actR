@@ -449,7 +449,7 @@ detectExcursionCore <- function(time,
 
   mpp <- min(post.range,pre.range)
   if(mpp < min.ref.window.coverage.fraction){
-    warning(paste("insufficient reference window coverage:",mpp))
+    #warning(paste("insufficient reference window coverage:",mpp))
     return(safeOut)
   }
 
@@ -463,7 +463,7 @@ detectExcursionCore <- function(time,
 
   #test for sufficient values in each window
   if(min( length(pre.i)*effective.n.adjustment, length(event.i), length(post.i)*effective.n.adjustment )  < min.vals){
-    warning("insufficient minimum values")
+    #warning("insufficient minimum values")
     return(safeOut)
   }
 
