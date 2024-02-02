@@ -1,0 +1,106 @@
+---
+title: "mapping_excursions"
+output: rmarkdown::html_vignette
+vignette: >
+%\VignetteIndexEntry{mapping_excursions}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+  ---
+  
+```{r, include = FALSE}
+  knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+  )
+```
+  
+```{r setup}
+  library(actR)
+  library(lipdR)
+  library(dplyr)
+```
+  
+  
+  
+```{r}
+#query the lipdverse as a first pass
+northAtlanticSites <- lipdR::queryLipdverse(coord = c(50, 90, -80, 10),
+                                            archive.type = "GlacierIce",
+                                            interp.vars = "Temperature", 
+                                            age.min = 7600, 
+                                            age.max = 8800) |> 
+  filter(medianResolution < 50)
+
+
+#download the corresponding data
+northAtlanticData <- readLipd(northAtlanticSites)
+
+#create a timeseries tibble
+nats <- as.lipdTsTibble(northAtlanticData)
+
+#filter down to just the data we want
+filtNats <- nats |> 
+filter(interpretation1_variable == "temperature",
+hasResolution_hasMedian < 50,
+duplicated(dataSetName))
+
+```
+
+
+
+```{r}
+#look for the 8.2 ka event at these sites:
+
+tp <- split(filtNats,seq(nrow(filtNats)))
+
+test <- detectExcursion(filtNats[5,],
+                        event.yr = 8200,
+                  event.window = 400,
+                  ref.window = rnorm(50,400,100),
+                  exc.type = "negative",
+                  n.ens = 50,
+                  sig.num = 2,
+                  n.consecutive = 2,
+                  null.hypothesis.n = 50,
+                  simulate.time.uncertainty = FALSE,
+                  simulate.paleo.uncertainty = TRUE,
+                  paleo.uncertainty = 0.2,
+                  min.vals = 4,
+                  paleo.ar1 = 0.8)
+
+
+
+events8.2 <- purrr::map(tp,
+                  detectExcursion,
+                  event.yr = 8200,
+                  event.window = 200,
+                  ref.window = rnorm(50,400,100),
+                  exc.type = "negative",
+                  n.ens = 50,
+                  sig.num = rnorm(50,2,.1),
+                  n.consecutive = sample(c(2,3,4),size = 50,replace = TRUE),
+                  null.hypothesis.n = 50,
+                  simulate.time.uncertainty = FALSE,
+                  simulate.paleo.uncertainty = TRUE,
+                  paleo.uncertainty = 0.2,
+                  paleo.ar1 = 0.8) |> 
+  purrr::list_rbind()
+
+```
+
+
+```{r}
+dist.grid <- distanceGrid(events8.2,lon.range = c(-80, 10),lat.range = c(50, 90),grid.resolution = 5)
+
+
+pval.grid.weight.temp <- map(dist.grid,
+                             spatialSigTest,
+                             excursion.results=events8.2,
+                             agg.method="robustNull",
+                             use.weights = TRUE,
+                             distance.cutoff = 1000,
+                             .progress = TRUE)
+
+
+```
+

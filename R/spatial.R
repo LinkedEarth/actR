@@ -101,21 +101,24 @@ distanceGridPar <- function(wts=NULL,
 #' @export
 #'
 distanceGrid <- function(wts=NULL,
+                         lon.range = c(-179.5, 179.5),
+                         lat.range = c(-89.5, 89.5),
                          grid.resolution = 1,
                          radius.group=NULL){
 
   #prep run
-  allLon <- seq(-179.5, 179.5, grid.resolution)
+  allLon <- seq(min(lon.range),max(lon.range), grid.resolution)
   countA <- 0
   allDistances <- list()
-  totalRuns <- length(allLon)*length(seq(-89.5, 89.5, grid.resolution))
+  allLat <- seq(min(lat.range),max(lat.range), grid.resolution)
+  totalRuns <- length(allLon)*length(allLat)
 
   for (lonNow in allLon){
-    for (latNow in seq(-89.5, 89.5, grid.resolution)){
+    for (latNow in allLat){
       countA <- countA + 1
       TS1 <- NULL
       Distances <- data.frame("TSid" = wts$paleoData_TSid,
-                              "distance" = apply(wts, 1, function(x) distm(c(lonNow, latNow), c(x$geo_longitude, x$geo_latitude), fun = distHaversine)/1000)
+                              "distance" = apply(wts, 1, function(x) geosphere::distm(c(lonNow, latNow), c(x$geo_longitude, x$geo_latitude), fun = geosphere::distHaversine)/1000)
       )
       allDistances[[countA]] <- list(lat=latNow, lon=lonNow, dist=Distances)
     }
@@ -455,7 +458,7 @@ calculateMultiTestSignificance <- function(events,weights = NA,n.ens = 1000){
 #' @export
 #'
   spatialSigTest <- function(map.grid.cell,
-                             excursion.results,
+                             events,
                              agg.method="robustNull",
                              min.pval = 0.001,
                              distance.cutoff = 2000,
@@ -475,7 +478,7 @@ calculateMultiTestSignificance <- function(events,weights = NA,n.ens = 1000){
     }
 
     #get the data within range for this grid cell
-    resultsNow <- filter(excursion.results,paleoData_TSid %in% TSids$TSid) %>%
+    resultsNow <- filter(events,paleoData_TSid %in% TSids$TSid) %>%
       rename(TSid = paleoData_TSid) %>%
       left_join(TSids,by = "TSid") %>%
       mutate(weight = gaspari_cohn(distance,distance.cutoff))

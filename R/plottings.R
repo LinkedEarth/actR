@@ -76,7 +76,7 @@ plotExcursion <- function(x,
       pmb <- paleoMat
       pmb[bad] <- NA
       nGoodInCol <- colSums(!is.na(pmb))
-      badCol <- which(nGoodInCol < max(nGoodInCol)/3)
+      badCol <- which(nGoodInCol < quantile(nGoodInCol,probs = .25))
       paleoMat <- paleoMat[,-badCol]
     }
     if(hasTimeEnsemble){

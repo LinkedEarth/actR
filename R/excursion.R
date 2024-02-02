@@ -447,8 +447,9 @@ detectExcursionCore <- function(time,
   pre.range <- abs(diff(range(time[pre.i])))/ref.window
   post.range <- abs(diff(range(time[post.i])))/ref.window
 
-  if(min(post.range,pre.range) < min.ref.window.coverage.fraction){
-    warning("insufficient reference window coverage")
+  mpp <- min(post.range,pre.range)
+  if(mpp < min.ref.window.coverage.fraction){
+    warning(paste("insufficient reference window coverage:",mpp))
     return(safeOut)
   }
 
