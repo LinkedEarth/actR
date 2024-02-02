@@ -327,90 +327,107 @@ plot.shift <- function(x,...){
 #' @importFrom geoChronR plotTimeseriesEnsRibbons
 #' @import ggplot2 tidyr RColorBrewer purrr dplyr egg
 #'
-#' @param x Output from actR::detectShift
+#' @param x Output from actR::detectShift (tibble)
 #' @param cl.color Color palette, single color, or vector of colors to use for confidence intervals (default = "Reds"s)
+#' @param sf.fill Color palette, single color, or vector of colors to use for confidence intervals (default = c("grey"))
 #' @param plot.sig.vlines Plot vertical lines at significant change points? (default = TRUE)
 #' @param label.sig Label significant change points (default = TRUE)
-#' @param alpha significance level (default = 0.05)
+#' @param qs significance levels to plot. The first value will be used to calculate the alpha for significant shifts (default = c(0.95,0.9))
 #' @param x.axis.label Label the x-axis (default = NA, which will automatically generate from input)
 #' @param y.axis.label Label the y-axis (default = NA, which will automatically generate from input)
+#' @param x.lims 2-element vector to use as x-axis limits (default = NA)
+#' @param y.lims.direction A value of -1 will flip the y-axis for both panels (default = 1) #TODO
 #' @param combine.plots Combine the probability and timeseries plots into a single plot (TRUE)? Or return a list with each plot as a separate object (FALSE)?
-#' @param x.lims 2-element vector to usee as x-axis limits (default = NA)
 #' @inheritDotParams geoChronR::plotTimeseriesEnsRibbons
 #' @export
 #' @return a ggplot object
 plotShift <- function(x,
                        cl.color = "Reds",
-                       plot.sig.vlines = TRUE,
-                       label.sig = TRUE,
-                       alpha = 0.05,
+                       sf.fill = c('navy','firebrick'), #todo
+                       plot.sig.vlines = FALSE,
+                       label.sig = FALSE,
+                       qs = c(0.95,0.9),
                        x.axis.label = NA,
                        x.lims = NA,
                        y.axis.label = NA,
+                       y.lims.direction = 1,
                        combine.plots = TRUE,
+                       shift.direction = "positive/negative",
                        ...){
 
 
 
   if(any(is.na(x.axis.label))){
-    x.axis.label <- glue::glue("{x$input$timeVariableName} ({x$input$timeUnits})")
+    x.axis.label <- glue::glue("{unique(x$time_variableName)} ({unique(x$timeUnits)})")
   }
   if(any(is.na(y.axis.label))){
-    y.axis.label <- glue::glue("{x$input$paleoData_variableName} ({x$input$paleoData_units})")
+    y.axis.label <- glue::glue("{unique(x$paleoData_variableName)} ({unique(x$paleoData_units)})")
   }
 
 
-  paramTib <- createTibbleFromParameterString(x$parameters[1])
+  #paramTib <-  (x$parameters[1])
 
   #plot ensemble ribbons
-  ribbons <- geoChronR::plotTimeseriesEnsRibbons(X = x$timeEns,Y = x$valEns,...) + actR_ggtheme()
+  ribbons <- geoChronR::plotTimeseriesEnsRibbons(X = x$time[[1]],Y = x$paleoData_values[[1]],...) + actR_ggtheme()
 
   #get shift type
-  if(grepl(pattern = "cpt.mean",paramTib$cpt.fun,ignore.case = T) & !grepl(pattern = "cpt.meanVar",paramTib$cpt.fun,ignore.case = T)){
+  if(grepl(pattern = "cpt.mean",x$cpt.fun[[1]],ignore.case = T) & !grepl(pattern = "cpt.meanVar",x$cpt.fun[[1]],ignore.case = T)){
     shift.type <- "Shift in Mean"
-  }else if(grepl(pattern = "cpt.var",paramTib$cpt.fun,ignore.case = T)){
+  }else if(grepl(pattern = "cpt.var",x$cpt.fun[[1]],ignore.case = T)){
     shift.type <- "Shift in Variance"
-  }else if(grepl(pattern = "cpt.meanVar",paramTib$cpt.fun,ignore.case = T)){
+  }else if(grepl(pattern = "cpt.meanVar",x$cpt.fun[[1]],ignore.case = T)){
     shift.type <- "Shift in Mean and Variance"
   }else{
-    shift.type <- paramTib$cpt.fun
+    shift.type <- x$cpt.fun[[1]]
   }
+
   #title
-  if(!any(is.na(x$input$dataSetName)) & !any(is.na(x$input$paleoData_variableName))){
-    title <- glue::glue("{x$input$dataSetName} - {x$input$paleoData_variableName}: {shift.type}")
-  }else if(any(is.na(x$input$dataSetName)) & !any(is.na(x$input$paleoData_variableName))){
-    title <- glue::glue("{x$input$paleoData_variableName}: {shift.type}")
+  if(!any(is.na(x$dataSetName)) & !any(is.na(x$paleoData_variableName))){
+    title <- glue::glue("{x$dataSetName} - {x$paleoData_variableName}: {shift.type}")
+  }else if(any(is.na(x$input$dataSetName)) & !any(is.na(x$paleoData_variableName))){
+    title <- glue::glue("{x$paleoData_variableName}: {shift.type}")
   }else if(!any(is.na(x$input$dataSetName)) & any(is.na(x$paleoData_variableName))){
-    title <- glue::glue("{x$input$dataSetName}: {shift.type}")
+    title <- glue::glue("{x$dataSetName}: {shift.type}")
   }else{
     title <- glue::glue("{shift.type}")
   }
 
-  #add title and labels
-
-
-
-  timeMed <- apply(x$timeEns,1,median,na.rm = TRUE)
-  valMed <- apply(x$valEns,1,median,na.rm = TRUE)
-
-  #plot changepoint probabilities
-  #make step plot
-
-  cpp <- x$shiftDetection %>%
-    dplyr::mutate(time_end = time_end - .001) %>%
-    tidyr::pivot_longer(c("time_start","time_end"),values_to = "time_edges") %>%
-    dplyr::arrange(time_edges)
+  #Median line
+  timeMed <- apply(x$time[[1]],1,median,na.rm = TRUE)
+  valMed <- apply(x$paleoData_values[[1]],1,median,na.rm = TRUE)
 
   #get x.range
   if(any(is.na(x.lims))){
-    x.lims <- range(cpp$time_edges)
+    x.lims <- c(min(x$time_start),max(x$time_end))
   }
 
-  npp <- cpp %>%
-    tidyr::pivot_longer(starts_with("q"),names_to = "cl",values_to = "nullProbs")
+  #Create dataframe of probabilities to plot
+  if (shift.direction == 'positive/negative'){
+    cpp  <- x[,c("time_start","time_end","time_mid","event_probability_positive","null_probability_positive","pvalue_positive")]
+    cpp2 <- x[,c("time_start","time_end","time_mid","event_probability_negative","null_probability_negative","pvalue_negative")]
+  }else{
+    cpp <- x[,c("time_start","time_end","time_mid",paste0("event_probability_",shift.direction),paste0("null_probability_",shift.direction),paste0("pvalue_",shift.direction))]
+    cpp2 <- NULL
+  }
+  colnames(cpp) <- c("time_start","time_end","time_mid","event_probability","null_probability","pvalue")
+  if(!is.null(cpp2)){colnames(cpp2) <- c("time_start","time_end","time_mid","event_probability","null_probability","pvalue")}
 
-  np <- length(unique(npp$cl))
+  #Add in null quantiles
+  for (q in qs){
+    cpp[[paste0('q',q)]] <- unlist(lapply(cpp$null_probability,quantile,q))
+    if(!is.null(cpp2)){cpp2[[paste0('q',q)]] <- unlist(lapply(cpp2$null_probability,quantile,q))}
+  }
+  npp <- cpp %>%
+    tidyr::pivot_longer(c("time_start","time_end"),values_to = "time_edges") %>%
+    tidyr::pivot_longer(starts_with("q"),names_to = "cl",values_to = "nullProbs")
+  if(!is.null(cpp2)){
+    npp2 <- cpp2 %>%
+      tidyr::pivot_longer(c("time_start","time_end"),values_to = "time_edges") %>%
+      tidyr::pivot_longer(starts_with("q"),names_to = "cl",values_to = "nullProbs")
+  }
+
   #deal with line colors
+  np <- length(qs)
   if(cl.color %in% rownames(RColorBrewer::brewer.pal.info)){#
     #then it's an RColorBrewer pallette
     colorScale <- rep_len(suppressWarnings(RColorBrewer::brewer.pal(n = np,name = cl.color)),length.out = np)
@@ -426,8 +443,49 @@ plotShift <- function(x,
     }
   }
 
+  #plot shift frequency and cls
+  probPlot <- ggplot()+
+    actR_ggtheme()+
+    geom_hline(yintercept = 0)
+
+  #Plot the data for the paleoData
+  if (shift.direction == 'positive/negative'){
+    probPlot <- probPlot +
+      geom_col(data = cpp, aes(x=time_mid, y=event_probability,fill='positive'),
+               width=median(diff(x$time_mid)), color='black', linewidth=0.1, alpha=0.5)+
+      #geom_col(data = cpp%>%filter(pvalue<1-qs[1]), aes(x=time_mid, y=event_probability,fill='positive'),
+      #         width=median(diff(x$time_mid)), color='black', linewidth=0.1, alpha=1)+
+      geom_col(data = cpp[which(cpp$event_probability >= cpp[paste0('q',qs[1])]),], aes(x=time_mid, y=event_probability,fill='positive'),
+               width=median(diff(x$time_mid)), color='black', linewidth=0.1, alpha=1)+
+      geom_col(data = cpp2, aes(x=time_mid, y=event_probability*-1,fill='negative'),
+               width=median(diff(x$time_mid)), color='black', linewidth=0.1, alpha=0.5)+
+      geom_col(data = cpp2[which(cpp2$event_probability >= cpp2[paste0('q',qs[1])]),], aes(x=time_mid, y=-event_probability,fill='negative'),
+               width=median(diff(x$time_mid)), color='black', linewidth=0.1, alpha=1)+
+      geom_path(data = npp,aes(x = time_edges, y = nullProbs, color = cl)) +
+      geom_path(data = npp2,aes(x = time_edges, y = nullProbs*-1, color = cl))
+
+
+  } else{
+    probPlot <- probPlot +
+      geom_col(data = cpp, aes(x=time_mid, y=event_probability,fill=shift.direction),
+               width=median(diff(x$time_mid)), color='black', linewidth=0.1, alpha=0.5)+
+      geom_col(data = cpp[which(cpp$event_probability >= cpp[paste0('q',qs[1])]),], aes(x=time_mid, y=event_probability,fill=shift.direction),
+              width=median(diff(x$time_mid)), color='black', linewidth=0.1, alpha=1)+
+      geom_path(data = npp,aes(x = time_edges,y = nullProbs,color = cl))
+  }
+
+
+  probPlot <- probPlot +
+    scale_color_manual(values = colorScale,name='Confidence\nLevel') +
+    scale_fill_manual(values = sf.fill,name='Direction') #+
+    #theme(#legend.position = c(0.9,0.8),
+      #legend.background = element_rect(fill='white',color='black'),
+      #legend.title = element_blank())
+
   #get significant events
-  sig.event <- summarizeShiftSignificance(x$shiftDetection, alpha = alpha, paramTib = paramTib )
+  cpp_sig <- rbind(cpp,cpp2)
+  cpp_sig$minimum.segment.length <- x$minimum.segment.length[1]
+  sig.event <- summarizeShiftSignificance(cpp_sig, alpha = 1-qs[1],x$minimum.segment.length[1])
 
   if(nrow(sig.event) == 0){
     any.sig = FALSE
@@ -435,49 +493,43 @@ plotShift <- function(x,
     any.sig = TRUE
   }
 
-  if(max(x$shiftDetection$empirical_pvalue,na.rm = TRUE) > 0){
-    minp <- x$shiftDetection %>%
-      dplyr::select(empirical_pvalue) %>%
-      dplyr::filter(empirical_pvalue > 0) %>%
+  if(max(cpp_sig$pvalue,na.rm = TRUE) > 0){
+    minp <- cpp_sig %>%
+      dplyr::select(pvalue) %>%
+      dplyr::filter(pvalue > 0) %>%
       min(na.rm = TRUE)
   }else{
     minp <- 0
   }
 
-  max.y <- x$shiftDetection %>%
+  max.y <- cpp %>%
     dplyr::select("event_probability" | starts_with("q")) %>%
     max(na.rm = TRUE)
 
-  sig.event$pvallab <- paste("p =",sig.event$empirical_pvalue)
-  sig.event$pvallab[sig.event$empirical_pvalue == 0] <- glue::glue("p < {minp}")
+  sig.event$pvallab <- paste("p =",sig.event$pvalue)
+  sig.event$pvallab[sig.event$pvalue == 0] <- glue::glue("p < {minp}")
 
-  #plot shift frequency and cls
-  probPlot <- ggplot()+
-    actR_ggtheme()+
-    geom_ribbon(data = cpp,aes(x = time_edges,ymin = 0,ymax = event_probability)) +
-    geom_line(data = npp,aes(x = time_edges,y = nullProbs,color = cl))+
-    scale_color_manual(values = colorScale)+
-    xlab(x.axis.label) +
-    ylab("Shift Frequency")+
-    theme(legend.position = c(0.9,0.8),
-          legend.background = element_blank(),
-          legend.title = element_blank())
-
-
-  if(grepl(x = x$input$timeUnits,, pattern = "ky",ignore.case = TRUE) | grepl(x = x$input$timeUnits, pattern = "bp",ignore.case = TRUE)){
+  if(grepl(x = x$timeUnits[[1]], pattern = "ky",ignore.case = TRUE) | grepl(x = x$timeUnits[[1]], pattern = "bp",ignore.case = TRUE)){
     this_x_scale <- scale_x_reverse
-    x.lims <- rev(x.lims)
+    x.lims <- rev(sort(x.lims))
   }else{
     this_x_scale <- scale_x_continuous
   }
 
+  if(y.lims.direction<0){
+    this_y_scale <- scale_y_reverse
+  }else{
+    this_y_scale <- scale_y_continuous
+  }
+
   probPlot <- probPlot +
-    this_x_scale(limits = x.lims)
+    this_y_scale(name="Shift Frequency")+
+    this_x_scale(name=x.axis.label,limits = x.lims)
 
 
   if(plot.sig.vlines & any.sig){
     probPlot <- probPlot +
-      geom_vline(data = sig.event,aes(xintercept = time_mid),linetype = "dashed",color = "gray50")
+      geom_vline(data = sig.event,aes(xintercept = time_mid),linewidth=0.5,linetype = "dashed",color = "gray50")
   }
   if(label.sig & any.sig){
     probPlot <- probPlot +
@@ -487,7 +539,7 @@ plotShift <- function(x,
 
   timeSeries <- plotSectionMeans(add.to.plot = ribbons,sig.event,time = timeMed,vals = valMed)+
     this_x_scale(name = x.axis.label, position = "top")+
-    scale_y_continuous(name = y.axis.label, position = "right")+
+    this_y_scale(name = y.axis.label, position = "right")+
     theme(axis.ticks.x.bottom = element_blank(),
           plot.margin=unit(c(1,1,-.2,1), "cm"))+
     ggtitle(title)+

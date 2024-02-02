@@ -18,7 +18,7 @@ detectShiftCore = function(time,
                            minimum.segment.length = 1,
                            cpt.fun = changepoint::cpt.mean,
                            gaussianize = TRUE,
-                           calc.deltas = FALSE,
+                           calc.deltas = TRUE,
                            ...){
 
   # interpolation options
@@ -141,7 +141,7 @@ detectShiftCore = function(time,
 #' @inheritParams detectShiftCore
 #'
 #'
-#' @return a list that includes error-propagated shift results, null hypothesis testing and metadata
+#' @return A tibble of output data and metadata. Each row represents a time step of the summary bin
 #' @export
 detectShift <- function(ltt = NA,
                         time = NA,
@@ -157,7 +157,7 @@ detectShift <- function(ltt = NA,
                         null.hypothesis.n = 100,
                         null.quantiles = c(.95,.9),
                         time.range = NA,
-                        calc.deltas = FALSE,
+                        calc.deltas = TRUE,
                         ...){
 
 
@@ -191,49 +191,17 @@ detectShift <- function(ltt = NA,
                                            bin.vec = summary.bin.vec,
                                            min.time = min(time, na.rm = T),
                                            max.time = max(time, na.rm = T))
-                                           
-  #Add calc.deltas (by CH - July 2023)
-  if (calc.deltas){
-      propagated$time_mid <- (propagated$time_start+propagated$time_end)/2
-      propSummary$deltaMean <- NA
-      #propSummary$deltaMax  <- NA
-      for (row in 1:nrow(propSummary)){
-        deltas <- propagated %>%
-          filter(between(time_mid,propSummary$time_start[row],propSummary$time_end[row]))
-        if (nrow(deltas) > 0){
-          propSummary$deltaMean[row] <- mean(deltas$delta_mean,na.rm=TRUE)
-        }
-      }
-  }
-                                           
+
+
   #null hypothesis
   nh <- testNullHypothesis(time,
                            vals,
                            changeFun = detectShiftCore,
                            surrogate.method = surrogate.method,
                            mc.ens = null.hypothesis.n,
+                           calc.deltas=calc.deltas,
                            ...)
 
-
-  #get a matrix of nulls
-  nhMat <- purrr::map(nh,
-                      summarizeEventProbability,
-                      bin.step = summary.bin.step,
-                      bin.vec = summary.bin.vec,
-                      min.time = min(time, na.rm = T),
-                      max.time = max(time, na.rm = T)) %>%
-    setNames(paste0("nh",seq_along(nh))) %>%
-    purrr::map_dfc(purrr::pluck,"event_probability") %>%
-    as.matrix()
-
-  nhMat[is.na(nhMat)] <- 0
-
-  #get quantiles for nulls
-  nhSummary <- nhMat %>%
-    apply(1,quantile,probs = null.quantiles) %>%
-    t() %>%
-    tibble::as_tibble() %>%
-    setNames(paste0("q",null.quantiles))
 
   #calculate empirical pvalues
 
@@ -244,12 +212,31 @@ detectShift <- function(ltt = NA,
     return(p)
   }
 
-  nhSummary$empirical_pvalue <- purrr::array_branch(nhMat,margin = 1) %>%
-    purrr::map2_dbl(.y = propSummary$event_probability,.f = getEmpP)
+  #get a matrix of nulls
+  dsout<-propSummary
+  for (direction in c('','_either','_positive','_negative','_both')){
+    nhMat <- purrr::map(nh,
+                        summarizeEventProbability,
+                        bin.step = summary.bin.step,
+                        bin.vec = summary.bin.vec,
+                        min.time = min(time, na.rm = T),
+                        max.time = max(time, na.rm = T)) %>%
+      setNames(paste0("nh",seq_along(nh))) %>%
+      purrr::map_dfc(purrr::pluck,paste0("event_probability",direction)) %>%
+      as.matrix()
 
-  dsout <- dplyr::bind_cols(propSummary,nhSummary)
+    nhMat[is.na(nhMat)] <- 0
 
+    nhSummary <- nhMat %>% as.data.frame() %>%
+      rowwise() %>%
+      do(vector = (as.numeric(.)))
+    colnames(nhSummary) <- paste0("null_probability",direction)
 
+    nhSummary[[paste0('pvalue',direction)]] <- purrr::array_branch(nhMat,margin = 1) %>%
+      purrr::map2_dbl(.y = propSummary[[paste0("event_probability",direction)]],.f = getEmpP)
+
+    dsout <- dplyr::bind_cols(dsout,nhSummary)
+  }
 
   #add in ensemble tables
   ensData <- dplyr::select(propagated,time,vals,it_hash) %>%
@@ -263,26 +250,48 @@ detectShift <- function(ltt = NA,
   #add in metadata
   n.ens<- propagated$nEns[1] #pull example metadata
 
-  out <- list(shiftDetection = dsout,
-              parameters = propagated$parameters,
-              summary.bin.step = summary.bin.step,
-              surrogate.method = surrogate.method,
-              unc.prop.n = n.ens,
-              null.hypothesis.n = null.hypothesis.n,
-              timeEns = timeEns,
-              valEns = valEns,
-              time.ens.supplied.n = time.ens.supplied.n,
-              vals.ens.supplied.n = vals.ens.supplied.n,
-              input = prepped) %>%
-    new_shift()
+  #Add parameters
+  dsout$event_detection <- list(propagated)
+  dsout$unc.prop.n <- n.ens
+  dsout$null.hypothesis.n <- null.hypothesis.n
 
-  return(out)
+  #Add ltt data
+  goodVar <- c("paleoData_TSid","paleoData_variableName","paleoData_units","dataSetName","datasetId","geo_latitude","geo_longitude","geo_elevation","archiveType","paleoData_proxy","paleoData_proxyGeneral","interpretation1_variable","interpretation1_variableDetail","interpretation1_seasonality","interpretation1_direction","time","timeUnits","paleoData_values")
+  preppedSlim <- dplyr::select(prepped,tidyselect::any_of(goodVar))
+  paramTib <- createTibbleFromParameterString(as.character(propagated$parameters))
+
+  eventSummary <- dplyr::bind_cols(dsout,paramTib,preppedSlim)
+
+  eventSummary$time <- rep(list(timeEns),nrow(eventSummary))
+  eventSummary$paleoData_values <- rep(list(valEns),nrow(eventSummary))
+  eventSummary$time_variableName <- ltt$timeVariableName
+  eventSummary$time.ens.supplied.n <- time.ens.supplied.n
+  eventSummary$vals.ens.supplied.n <- vals.ens.supplied.n
+  eventSummary$surrogate.method <- surrogate.method
+  eventSummary$summary.bin.step <- median(propSummary$time_mid)
+
+  # out <- list(shiftDetection = dsout,
+  #             parameters = propagated$parameters,
+  #             summary.bin.step = summary.bin.step,
+  #             surrogate.method = surrogate.method,
+  #             unc.prop.n = n.ens,
+  #             null.hypothesis.n = null.hypothesis.n,
+  #             timeEns = timeEns,
+  #             valEns = valEns,
+  #             time.ens.supplied.n = time.ens.supplied.n,
+  #             vals.ens.supplied.n = vals.ens.supplied.n,
+  #             input = prepped) %>%
+  #   new_shift()
+
+  eventSummary<- structure(eventSummary,class = c("excursionCore",class(tibble::tibble())))
+
+  return(eventSummary)
 
 
 }
 
 
-summarizeShiftSignificance <- function(shiftDetection,alpha = 0.05,paramTib){
+summarizeShiftSignificance <- function(shiftDetection,alpha = 0.05,minimum.segment.length){
   #find significant events
   maxcli <- strsplit(names(shiftDetection),"q") %>%
     purrr::map(pluck,2) %>%
@@ -290,9 +299,9 @@ summarizeShiftSignificance <- function(shiftDetection,alpha = 0.05,paramTib){
     which.max()
 
   sig.event <- shiftDetection %>%
-    dplyr::filter(empirical_pvalue < alpha) %>%
+    dplyr::filter(pvalue < alpha) %>%
     dplyr::mutate(exceedance = event_probability - .[[maxcli]]) %>%
-    dplyr::arrange(empirical_pvalue,dplyr::desc(exceedance))
+    dplyr::arrange(pvalue,dplyr::desc(exceedance))
 
   #remove those within minimum distance
   bm <- sig.event$time_mid
@@ -300,7 +309,7 @@ summarizeShiftSignificance <- function(shiftDetection,alpha = 0.05,paramTib){
     tr <- c()
     for(i in 1:(length(bm) - 1)){
       diffs <- abs(bm-bm[i])
-      close <- which(diffs < paramTib$minimum.segment.length)
+      close <- which(diffs < shiftDetection$minimum.segment.length[1])
       ttr <- intersect(close,seq(i+1,length(bm)))
       tr <- c(tr,ttr)
     }
