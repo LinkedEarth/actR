@@ -35,8 +35,9 @@ msGeob <- detectShift(geob7926_2,
                     vals.variable.name = "SST_from_uk37_ensemble",
                     method = "PELT",
                     null.hypothesis.n = 50,
-                    summary.bin.step = 500,
-                    minimum.segment.length = 8000,
+                    summary.bin.step = NA,
+                    summary.bin.vec = seq(10000,40000,by = 1000),
+                    minimum.segment.length = 1000,
                     n.ens = 50)
 ```
 
