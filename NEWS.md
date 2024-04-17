@@ -1,3 +1,5 @@
+# actR 0.1.11
+
 # actR 0.1.10
 
 * Attempted to fix the bug that resulted from the rEDM v1.15.0 name change of `make_surrogate_data` to `SurrogateData`
