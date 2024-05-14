@@ -6,7 +6,6 @@
 "palmyra"
 
 
-
 #' Salzer et al. Great basin tree ring record
 #'
 #'
@@ -16,7 +15,7 @@
 
 
 
-#' deMenocal et al. ODP 658C Marine Sedimeent record
+#' deMenocal et al. ODP 658C Marine Sediment record
 #'
 #'
 #' @format A LiPD-TS-tibble with 8 LiPD variable columns

@@ -616,7 +616,13 @@ arCumulative <- function(x){
   return(arc)
 }
 
-#get the times from a single eventDetection object
+#' get the times from a single eventDetection object
+#'
+#' @importFrom magrittr extract
+#' @param ed event detection object
+#' @param exc.type excursion type
+#'
+#' @return return an unlisted vector of times
 getAllTimes <- function(ed,exc.type = "Either"){
   return(unlist(purrr::map(ed[paste0("times",exc.type)],magrittr::extract)))
 }
