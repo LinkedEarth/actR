@@ -68,6 +68,7 @@ detectShiftCore = function(time,
   }
 
   #calculate differences in stats before and after.
+  delta.mean <- delta.sd <- NA
 
   if(calc.deltas){
 
@@ -92,8 +93,6 @@ detectShiftCore = function(time,
       }
 
     }
-  }else{
-    delta.mean <- delta.sd <- NA
   }
 
   # create a hash for each unique time-value pair
@@ -184,13 +183,23 @@ detectShift <- function(ltt = NA,
   #ensemble with uncertainties
   propagated <- propagateUncertainty(time,vals,changeFun = detectShiftCore, calc.deltas = calc.deltas, ...)
 
+  if(!is.character(time.units)){
+    time.units <- geoChronR::heuristicUnits(time)
+  }
+
+  if(time.units %in% c("AD","CE")){
+    time.dir <- "prograde"
+  }else{
+    time.dir <- "retrograde"
+  }
 
 
   propSummary <- summarizeEventProbability(propagated,
                                            bin.step = summary.bin.step,
                                            bin.vec = summary.bin.vec,
                                            min.time = min(time, na.rm = T),
-                                           max.time = max(time, na.rm = T))
+                                           max.time = max(time, na.rm = T),
+                                           time.dir = time.dir)
 
 
   #null hypothesis
@@ -213,7 +222,7 @@ detectShift <- function(ltt = NA,
   }
 
   #get a matrix of nulls
-  dsout<-propSummary
+  dsout <- propSummary
   for (direction in c('','_either','_positive','_negative','_both')){
     nhMat <- purrr::map(nh,
                         summarizeEventProbability,
@@ -270,22 +279,24 @@ detectShift <- function(ltt = NA,
   eventSummary$surrogate.method <- surrogate.method
   eventSummary$summary.bin.step <- median(propSummary$time_mid)
 
-  # out <- list(shiftDetection = dsout,
-  #             parameters = propagated$parameters,
-  #             summary.bin.step = summary.bin.step,
-  #             surrogate.method = surrogate.method,
-  #             unc.prop.n = n.ens,
-  #             null.hypothesis.n = null.hypothesis.n,
-  #             timeEns = timeEns,
-  #             valEns = valEns,
-  #             time.ens.supplied.n = time.ens.supplied.n,
-  #             vals.ens.supplied.n = vals.ens.supplied.n,
-  #             input = prepped) %>%
-  #   new_shift()
+  out <- eventSummary |>
+    new_shift()
 
-  eventSummary<- structure(eventSummary,class = c("excursionCore",class(tibble::tibble())))
+  # old output
+  #. list(shiftDetection = dsout,
+  #      parameters = propagated$parameters,
+  #      summary.bin.step = summary.bin.step,
+  #      surrogate.method = surrogate.method,
+  #      unc.prop.n = n.ens,
+  #      null.hypothesis.n = null.hypothesis.n,
+  #      timeEns = timeEns,
+  #      valEns = valEns,
+  #      time.ens.supplied.n = time.ens.supplied.n,
+  #      vals.ens.supplied.n = vals.ens.supplied.n,
+  #      input = prepped)
+  #eventSummary<- structure(eventSummary,class = c("excursionCore",class(tibble::tibble())))
 
-  return(eventSummary)
+  return(out)
 
 
 }

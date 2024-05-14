@@ -10,7 +10,8 @@ summarizeEventProbability(
   bin.step = 10,
   max.time = NA,
   min.time = NA,
-  shift.type = "either"
+  shift.type = "either",
+  time.dir = "retrograde"
 )
 }
 \arguments{

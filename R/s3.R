@@ -11,9 +11,9 @@ new_excursionCore <- function(x = tibble::tibble()) {
 }
 
 new_shift <- function(x = list()) {
-  stopifnot(is.list(x))
+  stopifnot(tibble::is_tibble(x))
 
-  structure(x,class = c("shift",class(list())))
+  structure(x,class = c("shift",class(tibble::tibble())))
 }
 
 new_shiftCore <- function(x = tibble::tibble()) {
