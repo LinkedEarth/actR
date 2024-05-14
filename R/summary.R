@@ -1,3 +1,53 @@
+View <- function(x) {
+  UseMethod("View",x)
+}
+
+#' viewSafely
+#'
+#' @param tib a tibble
+#'
+#' @return
+#' @export
+viewSafely <- function(tib){
+  if(tibble::is_tibble(tib)){
+    out <- dplyr::mutate(tib,dplyr::across(dplyr::where(\(x) is.list(x)),\(y) y <- "Nested data not shown"))
+    tibble::view(out)
+
+  }else{
+    tibble::view(out)
+  }
+}
+
+#' Modify view for shifts
+#'
+#' @param x a shift object
+#'
+#' @return
+#' @export
+View.shift <- function(x){
+  viewSafely(x)
+}
+
+#' Default method for View
+#'
+#' @param x
+#'
+#' @return
+#' @export
+View.default <- function(x){
+  View(x)
+}
+
+#' Modify view for excursions
+#'
+#' @param x
+#'
+#' @return
+#' @export
+View.excursion <- function(x){
+  viewSafely(x)
+}
+
 #' Summarize Excursion Output
 #'
 #' @param object excursion class output
@@ -194,7 +244,7 @@ summaryShift <- function(object,
   cat("\n")
   cat(crayon::bold(glue::glue("Overall result: {sigMessage}\n\n")))
   if(n.sig > 0 ){
-    print(sig.event %>% dplyr::select(time_start,time_end,pvalue,deltas),n=nrow(sig.event))
+    print(tibble::as_tibble(sig.event) %>% dplyr::select(time_start,time_end,pvalue,deltas),n=nrow(sig.event))
   }
   cat(glue::glue("{crayon::bold('Time uncertainty considered?')} {hasTimeEnsemble}\n\n"))
   cat(glue::glue("{crayon::bold('Paleo uncertainty considered?')} {hasPaleoEnsemble}\n\n"))

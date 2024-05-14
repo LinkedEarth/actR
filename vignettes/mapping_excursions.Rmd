@@ -46,6 +46,22 @@ filter(paleoData_TSid %in% sites$paleoData_TSid)
 
 tp <- split(filtNats,seq(nrow(filtNats)))
 
+
+test <- detectExcursion(tp[[1]],
+                  event.yr = 8200,
+                  event.window = rnorm(50,400,100),
+                  ref.window = rnorm(50,400,100),
+                  exc.type = "negative",
+                  n.ens = 50,
+                  sig.num = rnorm(50,2,.1),
+                  n.consecutive = sample(c(2,3,4),size = 50,replace = TRUE),
+                  null.hypothesis.n = 50,
+                  simulate.time.uncertainty = FALSE,
+                  simulate.paleo.uncertainty = TRUE,
+                  paleo.uncertainty = 0.2,
+                  min.vals = 4,
+                  paleo.ar1 = 0.8)
+
 events8.2 <- purrr::map(tp,
                   detectExcursion,
                   event.yr = 8200,

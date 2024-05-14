@@ -63,7 +63,8 @@ summarizeEventProbability <- function(exc.out,
                                       bin.step = 10,
                                       max.time = NA,
                                       min.time = NA,
-                                      shift.type = "either"
+                                      shift.type = "either",
+                                      time.dir = "retrograde"
                                       ){
   if(is.na(min.time)){
     min.time <- purrr::map_dbl(exc.out$time,min,na.rm=T) %>% median(na.rm = TRUE)
@@ -86,14 +87,35 @@ summarizeEventProbability <- function(exc.out,
     dplyr::mutate(time_mid = (time_start + time_end)/2)
 
 
-  eventSumsEither   <- eventsInWindow(na.omit(good.exc$time_mid),                         start.vec = timeBins[-length(timeBins)],end.vec = timeBins[-1])
-  if(grepl("cpt.var",exc.out$parameters[[1]])){
-    eventSumsPositive <- eventsInWindow(na.omit((good.exc%>%filter(delta_sd<0))$time_mid),start.vec = timeBins[-length(timeBins)],end.vec = timeBins[-1])
-    eventSumsNegative <- eventsInWindow(na.omit((good.exc%>%filter(delta_sd>0))$time_mid),start.vec = timeBins[-length(timeBins)],end.vec = timeBins[-1])
-  }else{
-    eventSumsPositive <- eventsInWindow(na.omit((good.exc%>%filter(delta_mean<0))$time_mid),start.vec = timeBins[-length(timeBins)],end.vec = timeBins[-1])
-    eventSumsNegative <- eventsInWindow(na.omit((good.exc%>%filter(delta_mean>0))$time_mid),start.vec = timeBins[-length(timeBins)],end.vec = timeBins[-1])
+  eventSumsEither   <- eventsInWindow(na.omit(good.exc$time_mid),
+                                      start.vec = timeBins[-length(timeBins)],end.vec = timeBins[-1])
+
+  is.cpt.var <- grepl("cpt.var",exc.out$parameters[[1]])
+
+
+  if(time.dir == "retrograde" & is.cpt.var){
+    filtPos <- dplyr::filter(good.exc,delta_sd < 0)
+  }else if(time.dir == "prograde" & is.cpt.var){
+    filtPos <- dplyr::filter(good.exc,delta_sd >= 0)
+  }else if(time.dir == "retrograde" & !is.cpt.var){
+    filtPos <- dplyr::filter(good.exc,delta_mean < 0)
+  }else if(time.dir == "prograde" & !is.cpt.var){
+    filtPos <-dplyr::filter(good.exc,delta_mean >= 0)
   }
+
+  if(time.dir == "retrograde" & is.cpt.var){
+    filtNeg <- dplyr::filter(good.exc,delta_sd >= 0)
+  }else if(time.dir == "prograde" & is.cpt.var){
+    filtNeg <- dplyr::filter(good.exc,delta_sd < 0)
+  }else if(time.dir == "retrograde" & !is.cpt.var){
+    filtNeg <- dplyr::filter(good.exc,delta_mean >= 0)
+  }else if(time.dir == "prograde" & !is.cpt.var){
+    filtNeg <-dplyr::filter(good.exc,delta_mean < 0)
+  }
+
+
+  eventSumsPositive <- eventsInWindow(na.omit(filtPos$time_mid),start.vec = timeBins[-length(timeBins)],end.vec = timeBins[-1])
+  eventSumsNegative <- eventsInWindow(na.omit(filtNeg$time_mid),start.vec = timeBins[-length(timeBins)],end.vec = timeBins[-1])
   eventSumsBoth     <- apply(matrix(c(eventSumsPositive,eventSumsNegative),length(eventSumsNegative)),1,min)
 
   #now pick the one that was chosen
