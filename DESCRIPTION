@@ -44,7 +44,9 @@ Suggests:
     cowplot,
     devtools,
     knitr,
-    rmarkdown
+    rmarkdown,
+    googlesheets4,
+    future
 Remotes:
     github::nickmckay/geoChronR,
     github::nickmckay/lipdR
