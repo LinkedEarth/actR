@@ -21,6 +21,10 @@ spatialSigTest(
 \item{agg.method}{What method do you want to use to aggregate the p-values? Choose from robustNull (default), fisher, sidak or lancaster}
 
 \item{min.pval}{min p value}
+
+\item{distance.cutoff}{distance (in km) to cut off the test (default = 2000 km)}
+
+\item{use.weights}{weight sites in the calculation using the "weight" column? (default = TRUE)}
 }
 \value{
 gridded significance results

@@ -44,7 +44,7 @@ detectExcursion(
 \item{output.figure.path}{path pointing to where should the output figure be saved? An NA will not produce a figure (default = NA)}
 
 \item{surrogate.method}{What method to use to generage surrogate data for hypothesis testing? Options include: \itemize{
-\item 'isospectral': (Default) Following Ebisuzaki (1997), generate surrogates by scrambling the phases of the data while preserving their power spectrum. This uses the To generate these “isospectral” surrogates. Uses the rEDM::make_surrogate_data() or rEDM::SurrogateData() function depending on version
+\item 'isospectral': (Default) Following Ebisuzaki (1997), generate surrogates by scrambling the phases of the data while preserving their power spectrum. This uses the To generate these "isospectral" surrogates. Uses the rEDM::make_surrogate_data() or rEDM::SurrogateData() function depending on version
 \item 'isopersistent':  Generates surrogates by simulating from an autoregressive process of order 1 (AR(1)), which has been fit to the data. Uses the geoChronR::createSyntheticTimeseries() function
 \item 'shuffle': Randomly shuffles the data to create surrogates. Uses the rEDM::make_surrogate_data() or rEDM::SurrogateData() function depending on version
 }}

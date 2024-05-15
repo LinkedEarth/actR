@@ -52,7 +52,12 @@ createTibbleFromParameterString <- function(params){
 }
 
 identicalVectorsList <- function(l){
-  return(all(purrr::map2_lgl(l,l[1],~ all(.x==.y))))
+  #same length?
+  t1 <- all(purrr::map2_lgl(l,l[1],~ all(length(.x) == length(.y))))
+  if(t1){
+    t1 <- all(purrr::map2_lgl(l,l[1],~ all(.x==.y)))
+  }
+  return(t1)
 }
 
 identicalMatrixColumns <- function(l){

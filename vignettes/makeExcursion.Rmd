@@ -46,8 +46,8 @@ detectedExcusion <- detectExcursion(syntheticExcursion,
                           ref.window = rnorm(1000,mean = 400,sd = 100),
                           sig.num = rnorm(1000,mean = 2,sd = 0.5),
                           exc.type = "either",
-                          n.ens = 10,
-                          null.hypothesis.n = 10,
+                          n.ens = 100,
+                          null.hypothesis.n = 100,
                           simulate.time.uncertainty = FALSE,
                           simulate.paleo.uncertainty = FALSE)
 ```
@@ -61,7 +61,7 @@ print(detectedExcusion)
 Let's plot the results
 
 ```{r}
-plot(detectedExcusion)
+plotExcursion(detectedExcusion)
 ```
 
 

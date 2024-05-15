@@ -171,6 +171,7 @@ out <- furrr::future_pmap_dfr(ltt,\(...) detectExcursion(todfr(...),
 #' @param pvalue.method method for estimating a pvalue. Options are "kde" (the default) which will use a KDE to estimate the pvalue relative to the null, or "ecdf" which will use an empirical cumulative distribution function.
 #' @importFrom stats lm predict sd
 #' @importFrom tidyselect any_of
+#' @importFrom tidyr pivot_wider
 #'
 #' @return a tibble that describes the positive and negative excursion results
 #' @export

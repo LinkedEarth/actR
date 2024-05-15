@@ -54,8 +54,9 @@ gaspari_cohn <- function(r, rmax) {
 #' Distance from grid cells to TS objects
 #'
 #' @param wts a lipd TS object
+#' @param lon.range longitude range to grid
+#' @param lat.range latitude range to grid
 #' @param grid.resolution grid cell size resolution, eg. 1 deg x 1 deg
-#' @param radius.group radius of filter for each grid cell in km
 #'
 #' @return distances
 #' @export
@@ -251,6 +252,8 @@ calculateMultiTestSignificance <- function(events,weights = NA,n.ens = 1000){
 #' @param events an events object
 #' @param agg.method What method do you want to use to aggregate the p-values? Choose from robustNull (default), fisher, sidak or lancaster
 #' @param min.pval min p value
+#' @param distance.cutoff distance (in km) to cut off the test (default = 2000 km)
+#' @param use.weights weight sites in the calculation using the "weight" column? (default = TRUE)
 #'
 #' @return gridded significance results
 #' @export
@@ -377,6 +380,14 @@ calculateMultiTestSignificance <- function(events,weights = NA,n.ens = 1000){
 #' @param pval.grid from spatialSigTest()
 #' @param sigTestResults from excursionTestHighRes()
 #' @param color.breaks at what significance levels should we put the color breaks?
+#' @param which.test which test result to map ("pvalNet" default , "pvalPos","pvalNeg","pvalEither")
+#' @param restrict.sites optionally only plot the most significant
+#' @param alpha.by.weight show weights in the grid as a function of transparency
+#' @param cutoff.distance what cutoff distance (in km) for the search radius
+#' @param x.lim longitude range of the map
+#' @param y.lim latitude range of the map
+#' @param projection CRS string for map projection (default = "+proj=robin +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs")
+#'
 #' @import ggplot2
 #'
 #' @return plot and plot data
@@ -385,7 +396,7 @@ calculateMultiTestSignificance <- function(events,weights = NA,n.ens = 1000){
 plotSignificance <- function(pval.grid=NULL,
                              sigTestResults,
                              color.breaks = c(.001,.01,.05,.1,.2),
-                             which.test = "pval",
+                             which.test = "pvalNet",
                              restrict.sites = TRUE,
                              alpha.by.weight = TRUE,
                              cutoff.distance = 1500,
@@ -414,7 +425,7 @@ plotSignificance <- function(pval.grid=NULL,
 
   plotData <- data.frame(pval = pvals[good],lat = lat[good],lon = lon[good],weight = weight)
 
-  pvalOptions <- c("pvalPos","pvalNeg","pvalEither","pvalNet")
+#  pvalOptions <- c("pvalPos","pvalNeg","pvalEither","pvalNet")
 
 
   handleNet <- function(positive,negative){
