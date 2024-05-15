@@ -36,9 +36,11 @@ Imports:
     furrr,
     future,
     ks,
-    tidyselect
+    tidyselect,
+    geosphere
 Suggests:
     testthat,
+    cowplot,
     devtools,
     knitr,
     rmarkdown

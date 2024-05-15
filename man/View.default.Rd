@@ -7,7 +7,7 @@
 \method{View}{default}(x)
 }
 \arguments{
-\item{x}{}
+\item{x}{any object}
 }
 \description{
 Default method for View

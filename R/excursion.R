@@ -634,6 +634,6 @@ getAllTimes <- function(ed,exc.type = "Either"){
 #' @return a vector of ages that were identified to as excursions
 #' @export
 getAllExcursionTimes <- function(x,exc.type = "Either"){
-  allTimes <- unlist(purrr::map(x$eventDetection,getAllTimes,exc.type))
+  allTimes <- unlist(purrr::map(x$event_detection,getAllTimes,exc.type))
   return(allTimes)
 }

@@ -56,8 +56,6 @@ return(tp)
 #'
 #' @return a tibble of event probability for each bin step
 #' @export
-#'
-#' @examples
 summarizeEventProbability <- function(exc.out,
                                       bin.vec = NA,
                                       bin.step = 10,

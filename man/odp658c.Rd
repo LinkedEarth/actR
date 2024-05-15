@@ -3,7 +3,7 @@
 \docType{data}
 \name{odp658c}
 \alias{odp658c}
-\title{deMenocal et al. ODP 658C Marine Sedimeent record}
+\title{deMenocal et al. ODP 658C Marine Sediment record}
 \format{
 A LiPD-TS-tibble with 8 LiPD variable columns
 }
@@ -14,6 +14,6 @@ A LiPD-TS-tibble with 8 LiPD variable columns
 odp658c
 }
 \description{
-deMenocal et al. ODP 658C Marine Sedimeent record
+deMenocal et al. ODP 658C Marine Sediment record
 }
 \keyword{datasets}

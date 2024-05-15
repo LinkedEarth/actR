@@ -668,8 +668,8 @@ return(out)
 plotExcursionSliding <- function(x,xlim = c(12000,0)){
 
   # Make a basic plot
-  p_values_all = x$empirical_pvalue
-  ages_to_test <- x$event.yr
+  p_values_all <- x$pvalue
+  ages_to_test <- x$time_mid
   step <- abs(mean(diff(ages_to_test)))
 
 
@@ -692,8 +692,8 @@ for (i in 1:length(p_values_all)) {
 lines(x$time[[1]],x$paleoData_values[[1]],lwd=2) # Plot the record again, over top
 
 # Bottom panel: plot the p-values
-plot(ages_to_test,x$pvalue_above,type='l',col = 'red',xlim=c(12000,0),ylim=c(1,0),xlab=xlabel,ylab="p-value",main='p-values (above in red, below in blue)')
-lines(ages_to_test,x$pvalue_below,col = 'blue')
+plot(ages_to_test,x$pvalue_positive,type='l',col = 'red',xlim=c(12000,0),ylim=c(1,0),xlab=xlabel,ylab="p-value",main='p-values (above in red, below in blue)')
+lines(ages_to_test,x$pvalue_negative,col = 'blue')
 
 abline(h=0.05,col='black',lty = 'dotted')
 

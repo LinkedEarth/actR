@@ -2,13 +2,20 @@
 % Please edit documentation in R/spatial.R
 \name{calculateMultiTestSignificance}
 \alias{calculateMultiTestSignificance}
-\title{Title}
+\title{Calculate the significance of multiple tests}
 \usage{
 calculateMultiTestSignificance(events, weights = NA, n.ens = 1000)
 }
 \arguments{
-\item{n.ens}{}
+\item{events}{a data.frame of events to consider, output of detectExcursion or detectShift}
+
+\item{weights}{optionally weight the events}
+
+\item{n.ens}{number of ensembles to consider}
+}
+\value{
+data frame of results
 }
 \description{
-Title
+Calculate the significance of multiple tests
 }

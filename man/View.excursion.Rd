@@ -7,7 +7,7 @@
 \method{View}{excursion}(x)
 }
 \arguments{
-\item{x}{}
+\item{x}{any object}
 }
 \description{
 Modify view for excursions

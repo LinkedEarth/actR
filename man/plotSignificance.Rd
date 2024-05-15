@@ -22,6 +22,8 @@ plotSignificance(
 \item{pval.grid}{from spatialSigTest()}
 
 \item{sigTestResults}{from excursionTestHighRes()}
+
+\item{color.breaks}{at what significance levels should we put the color breaks?}
 }
 \value{
 plot and plot data

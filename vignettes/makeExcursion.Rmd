@@ -1,9 +1,12 @@
 ---
 title: "Synthetic Data in  detectExcursion"
-author: "Dave Edge and Nick McKay"
-date: "2022-10-27"
-output: html_document
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Synthetic Data in detectExcursion}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
+
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)

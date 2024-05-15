@@ -9,6 +9,9 @@ viewSafely(tib)
 \arguments{
 \item{tib}{a tibble}
 }
+\value{
+No output - just the viewport
+}
 \description{
 viewSafely
 }

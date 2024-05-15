@@ -6,7 +6,7 @@ View <- function(x) {
 #'
 #' @param tib a tibble
 #'
-#' @return
+#' @return No output - just the viewport
 #' @export
 viewSafely <- function(tib){
   if(tibble::is_tibble(tib)){
@@ -21,8 +21,6 @@ viewSafely <- function(tib){
 #' Modify view for shifts
 #'
 #' @param x a shift object
-#'
-#' @return
 #' @export
 View.shift <- function(x){
   viewSafely(x)
@@ -30,19 +28,15 @@ View.shift <- function(x){
 
 #' Default method for View
 #'
-#' @param x
-#'
-#' @return
+#' @param x any object
 #' @export
 View.default <- function(x){
-  View(x)
+  tibble::view(x)
 }
 
 #' Modify view for excursions
 #'
-#' @param x
-#'
-#' @return
+#' @param x any object
 #' @export
 View.excursion <- function(x){
   viewSafely(x)

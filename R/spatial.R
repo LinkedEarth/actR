@@ -132,15 +132,13 @@ plotDataDensity <- function(distance.grid=NULL,
 
 #' Title
 #'
-#' @param allNulls
-#' @param nrows
-#' @param n.ens
-#' @param weights
+#' @param allNulls all the null data
+#' @param nrows number of rows
+#' @param n.ens number of ensembles
+#' @param weights a vector to optionally weight the nulls
 #'
-#' @return
+#' @return a vector of null outputs
 #' @export
-#'
-#' @examples
 getNulls <- function(allNulls,nrows,n.ens,weights = NA){
 
   if(all(is.na(weights))){
@@ -170,16 +168,14 @@ stop("the null is missing")
   return(nulls)
 }
 
-#' Title
+#' Calculate the significance of multiple tests
 #'
-#' @param events
-#' @param weights
-#' @param n.ens
+#' @param events a data.frame of events to consider, output of detectExcursion or detectShift
+#' @param weights optionally weight the events
+#' @param n.ens number of ensembles to consider
 #'
-#' @return
+#' @return data frame of results
 #' @export
-#'
-#' @examples
 calculateMultiTestSignificance <- function(events,weights = NA,n.ens = 1000){
 
   #only include events with results
@@ -380,7 +376,7 @@ calculateMultiTestSignificance <- function(events,weights = NA,n.ens = 1000){
 #'
 #' @param pval.grid from spatialSigTest()
 #' @param sigTestResults from excursionTestHighRes()
-#' @param color.breaks
+#' @param color.breaks at what significance levels should we put the color breaks?
 #' @import ggplot2
 #'
 #' @return plot and plot data

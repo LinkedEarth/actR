@@ -7,7 +7,16 @@
 getNulls(allNulls, nrows, n.ens, weights = NA)
 }
 \arguments{
-\item{weights}{}
+\item{allNulls}{all the null data}
+
+\item{nrows}{number of rows}
+
+\item{n.ens}{number of ensembles}
+
+\item{weights}{a vector to optionally weight the nulls}
+}
+\value{
+a vector of null outputs
 }
 \description{
 Title
