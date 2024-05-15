@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Synthetic Data in  detectExcursion • actR</title>
-<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
+<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../bootstrap-toc.css">
 <script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">actR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.10</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0</span>
       </span>
     </div>
 
@@ -64,6 +64,9 @@
     <li>
       <a href="../articles/makeShift.html">makeShift</a>
     </li>
+    <li>
+      <a href="../articles/mapping_excursions.html">mapping_excursions</a>
+    </li>
   </ul>
 </li>
 <li>
@@ -84,10 +87,7 @@
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Synthetic Data in detectExcursion</h1>
-                        <h4 data-toc-skip class="author">Dave Edge and
-Nick McKay</h4>
             
-            <h4 data-toc-skip class="date">2022-10-27</h4>
       
       
       <div class="hidden name"><code>makeExcursion.Rmd</code></div>
@@ -130,78 +130,50 @@ hypothesis testing.</p>
 <span>                          ref.window <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">1000</span>,mean <span class="op">=</span> <span class="fl">400</span>,sd <span class="op">=</span> <span class="fl">100</span><span class="op">)</span>,</span>
 <span>                          sig.num <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">1000</span>,mean <span class="op">=</span> <span class="fl">2</span>,sd <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span>,</span>
 <span>                          exc.type <span class="op">=</span> <span class="st">"either"</span>,</span>
-<span>                          n.ens <span class="op">=</span> <span class="fl">10</span>,</span>
-<span>                          null.hypothesis.n <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>                          n.ens <span class="op">=</span> <span class="fl">100</span>,</span>
+<span>                          null.hypothesis.n <span class="op">=</span> <span class="fl">100</span>,</span>
 <span>                          simulate.time.uncertainty <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>                          simulate.paleo.uncertainty <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Testing null hypothesis with 100 simulations, each with 100 ensemble members. <span style="color: #00BB00;">■</span>…</span></span>
+<span><span class="co">## Testing null hypothesis with 100 simulations, each with 100 ensemble members. <span style="color: #00BB00;">■</span>…</span></span>
+<span><span class="co">## Testing null hypothesis with 100 simulations, each with 100 ensemble members. <span style="color: #00BB00;">■</span>…</span></span>
+<span><span class="co">## Testing null hypothesis with 100 simulations, each with 100 ensemble members. <span style="color: #00BB00;">■</span>…</span></span>
+<span><span class="co">## Testing null hypothesis with 100 simulations, each with 100 ensemble members. <span style="color: #00BB00;">■</span>…</span></span>
+<span><span class="co">## Testing null hypothesis with 100 simulations, each with 100 ensemble members. <span style="color: #00BB00;">■</span>…</span></span>
+<span><span class="co">## Testing null hypothesis with 100 simulations, each with 100 ensemble members. <span style="color: #00BB00;">■</span>…</span></span>
+<span><span class="co">## Testing null hypothesis with 100 simulations, each with 100 ensemble members. <span style="color: #00BB00;">■</span>…</span></span>
+<span><span class="co">## Testing null hypothesis with 100 simulations, each with 100 ensemble members. <span style="color: #00BB00;">■</span>…</span></span>
+<span><span class="co">## Testing null hypothesis with 100 simulations, each with 100 ensemble members. <span style="color: #00BB00;">■</span>…</span></span>
+<span><span class="co">## Testing null hypothesis with 100 simulations, each with 100 ensemble members. <span style="color: #00BB00;">■</span>…</span></span>
+<span><span class="co">## Testing null hypothesis with 100 simulations, each with 100 ensemble members. <span style="color: #00BB00;">■</span>…</span></span>
+<span><span class="co">## Testing null hypothesis with 100 simulations, each with 100 ensemble members. <span style="color: #00BB00;">■</span>…</span></span>
+<span><span class="co">## Testing null hypothesis with 100 simulations, each with 100 ensemble members. <span style="color: #00BB00;">■</span>…</span></span>
+<span><span class="co">## Testing null hypothesis with 100 simulations, each with 100 ensemble members. <span style="color: #00BB00;">■</span>…</span></span>
+<span><span class="co">## Testing null hypothesis with 100 simulations, each with 100 ensemble members. <span style="color: #00BB00;">■</span>…</span></span>
+<span><span class="co">## Testing null hypothesis with 100 simulations, each with 100 ensemble members. <span style="color: #00BB00;">■</span>…</span></span>
+<span><span class="co">## Testing null hypothesis with 100 simulations, each with 100 ensemble members. <span style="color: #00BB00;">■</span>…</span></span>
+<span><span class="co">## Testing null hypothesis with 100 simulations, each with 100 ensemble members. <span style="color: #00BB00;">■</span>…</span></span>
+<span><span class="co">## Testing null hypothesis with 100 simulations, each with 100 ensemble members. <span style="color: #00BB00;">■</span>…</span></span>
+<span><span class="co">## Testing null hypothesis with 100 simulations, each with 100 ensemble members. <span style="color: #00BB00;">■</span>…</span></span>
+<span><span class="co">## Testing null hypothesis with 100 simulations, each with 100 ensemble members. <span style="color: #00BB00;">■</span>…</span></span>
+<span><span class="co">## Testing null hypothesis with 100 simulations, each with 100 ensemble members. <span style="color: #00BB00;">■</span>…</span></span>
+<span><span class="co">## Testing null hypothesis with 100 simulations, each with 100 ensemble members. <span style="color: #00BB00;">■</span>…</span></span></code></pre>
 <p>Now we can use <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code> and plot to check out the
 results</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">detectedExcusion</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Warning in .x == .y: longer object length is not a multiple of shorter object</span></span>
-<span><span class="co">## length</span></span>
-<span></span>
-<span><span class="co">## Warning in .x == .y: longer object length is not a multiple of shorter object</span></span>
-<span><span class="co">## length</span></span>
-<span></span>
-<span><span class="co">## Warning in .x == .y: longer object length is not a multiple of shorter object</span></span>
-<span><span class="co">## length</span></span>
-<span></span>
-<span><span class="co">## Warning in .x == .y: longer object length is not a multiple of shorter object</span></span>
-<span><span class="co">## length</span></span>
-<span></span>
-<span><span class="co">## Warning in .x == .y: longer object length is not a multiple of shorter object</span></span>
-<span><span class="co">## length</span></span>
-<span></span>
-<span><span class="co">## Warning in .x == .y: longer object length is not a multiple of shorter object</span></span>
-<span><span class="co">## length</span></span>
-<span></span>
-<span><span class="co">## Warning in .x == .y: longer object length is not a multiple of shorter object</span></span>
-<span><span class="co">## length</span></span>
-<span></span>
-<span><span class="co">## Warning in .x == .y: longer object length is not a multiple of shorter object</span></span>
-<span><span class="co">## length</span></span>
-<span></span>
-<span><span class="co">## Warning in .x == .y: longer object length is not a multiple of shorter object</span></span>
-<span><span class="co">## length</span></span>
-<span></span>
-<span><span class="co">## Warning in .x == .y: longer object length is not a multiple of shorter object</span></span>
-<span><span class="co">## length</span></span>
-<span></span>
-<span><span class="co">## Warning in .x == .y: longer object length is not a multiple of shorter object</span></span>
-<span><span class="co">## length</span></span>
-<span></span>
-<span><span class="co">## Warning in .x == .y: longer object length is not a multiple of shorter object</span></span>
-<span><span class="co">## length</span></span>
-<span></span>
-<span><span class="co">## Warning in .x == .y: longer object length is not a multiple of shorter object</span></span>
-<span><span class="co">## length</span></span>
-<span></span>
-<span><span class="co">## Warning in .x == .y: longer object length is not a multiple of shorter object</span></span>
-<span><span class="co">## length</span></span>
-<span></span>
-<span><span class="co">## Warning in .x == .y: longer object length is not a multiple of shorter object</span></span>
-<span><span class="co">## length</span></span>
-<span></span>
-<span><span class="co">## Warning in .x == .y: longer object length is not a multiple of shorter object</span></span>
-<span><span class="co">## length</span></span>
-<span></span>
-<span><span class="co">## Warning in .x == .y: longer object length is not a multiple of shorter object</span></span>
-<span><span class="co">## length</span></span>
-<span></span>
-<span><span class="co">## Warning in .x == .y: longer object length is not a multiple of shorter object</span></span>
-<span><span class="co">## length</span></span></code></pre>
 <pre><code><span><span class="co">## <span style="font-weight: bold;">Synthetic excursion - Excursion test: Excursion test results</span></span></span>
-<span><span class="co"><span style="font-weight: bold;">## </span><span style="color: #555555;">Searched for </span><span style="color: #555555; font-weight: bold;">positive OR negative</span><span style="color: #555555;"> excursions in a </span><span style="color: #555555; font-weight: bold;">516.898311400518</span><span style="color: #555555;"> year window around </span><span style="color: #555555; font-weight: bold;">4200</span><span style="color: #555555;"> yr BP, with reference windows of </span><span style="color: #555555; font-weight: bold;">488.62872365251</span><span style="color: #555555;"> years on either side.</span></span></span>
+<span><span class="co"><span style="font-weight: bold;">## </span><span style="color: #555555;">Searched for </span><span style="color: #555555; font-weight: bold;">positive OR negative</span><span style="color: #555555;"> excursions in a </span><span style="color: #555555; font-weight: bold;">403 ± 97</span><span style="color: #555555;"> year window around </span><span style="color: #555555; font-weight: bold;">4200</span><span style="color: #555555;"> yr BP, with reference windows of </span><span style="color: #555555; font-weight: bold;">396 ± 103</span><span style="color: #555555;"> years on either side.</span></span></span>
 <span><span class="co"><span style="color: #555555;">## </span></span></span>
-<span><span class="co">## <span style="font-weight: bold;">Overall result: Empirical p-value = </span><span style="color: #00BB00; font-weight: bold;">0.0443589468214566</span></span></span>
+<span><span class="co">## <span style="font-weight: bold;">Overall result: Empirical p-value = </span><span style="color: #00BB00; font-weight: bold;">0.012</span></span></span>
 <span><span class="co"><span style="font-weight: bold;">## </span>Time uncertainty considered? <span style="color: #00BB00;">TRUE</span></span></span>
 <span><span class="co">## Paleo uncertainty considered? <span style="color: #00BB00;">TRUE</span></span></span>
-<span><span class="co">## Error propagation ensemble members = 10</span></span>
-<span><span class="co">## Null hypothesis testing ensemble members = 10</span></span>
+<span><span class="co">## Parametric uncertainty considered? <span style="color: #00BB00;">TRUE</span>: <span style="color: #555555; font-style: italic;">event.window, ref.window, sig.num</span></span></span>
+<span><span class="co">## Error propagation ensemble members = 100</span></span>
+<span><span class="co">## Null hypothesis testing ensemble members = 100</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## <span style="font-weight: bold;">Parameter choices:</span></span></span>
-<span><span class="co"><span style="font-weight: bold;">## </span><span style="color: #555555;">sig.num = 2.2854998252122</span></span></span>
+<span><span class="co"><span style="font-weight: bold;">## </span><span style="color: #555555;">sig.num = 2 ± 0.47</span></span></span>
 <span><span class="co"><span style="color: #555555;">## n.consecutive = 2</span></span></span>
 <span><span class="co"><span style="color: #555555;">## exc.type = either</span></span></span>
 <span><span class="co"><span style="color: #555555;">## min.vals = 8</span></span></span>
@@ -209,61 +181,8 @@ results</p>
 <span><span class="co"><span style="color: #555555;">## </span></span></span></code></pre>
 <p>Let’s plot the results</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">detectedExcusion</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plotExcursion.html">plotExcursion</a></span><span class="op">(</span><span class="va">detectedExcusion</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Warning: Unknown or uninitialised column: `timeVariableName`.</span></span></code></pre>
-<pre><code><span><span class="co">## Warning in .x == .y: longer object length is not a multiple of shorter object</span></span>
-<span><span class="co">## length</span></span>
-<span></span>
-<span><span class="co">## Warning in .x == .y: longer object length is not a multiple of shorter object</span></span>
-<span><span class="co">## length</span></span>
-<span></span>
-<span><span class="co">## Warning in .x == .y: longer object length is not a multiple of shorter object</span></span>
-<span><span class="co">## length</span></span>
-<span></span>
-<span><span class="co">## Warning in .x == .y: longer object length is not a multiple of shorter object</span></span>
-<span><span class="co">## length</span></span>
-<span></span>
-<span><span class="co">## Warning in .x == .y: longer object length is not a multiple of shorter object</span></span>
-<span><span class="co">## length</span></span>
-<span></span>
-<span><span class="co">## Warning in .x == .y: longer object length is not a multiple of shorter object</span></span>
-<span><span class="co">## length</span></span>
-<span></span>
-<span><span class="co">## Warning in .x == .y: longer object length is not a multiple of shorter object</span></span>
-<span><span class="co">## length</span></span>
-<span></span>
-<span><span class="co">## Warning in .x == .y: longer object length is not a multiple of shorter object</span></span>
-<span><span class="co">## length</span></span>
-<span></span>
-<span><span class="co">## Warning in .x == .y: longer object length is not a multiple of shorter object</span></span>
-<span><span class="co">## length</span></span>
-<span></span>
-<span><span class="co">## Warning in .x == .y: longer object length is not a multiple of shorter object</span></span>
-<span><span class="co">## length</span></span>
-<span></span>
-<span><span class="co">## Warning in .x == .y: longer object length is not a multiple of shorter object</span></span>
-<span><span class="co">## length</span></span>
-<span></span>
-<span><span class="co">## Warning in .x == .y: longer object length is not a multiple of shorter object</span></span>
-<span><span class="co">## length</span></span>
-<span></span>
-<span><span class="co">## Warning in .x == .y: longer object length is not a multiple of shorter object</span></span>
-<span><span class="co">## length</span></span>
-<span></span>
-<span><span class="co">## Warning in .x == .y: longer object length is not a multiple of shorter object</span></span>
-<span><span class="co">## length</span></span>
-<span></span>
-<span><span class="co">## Warning in .x == .y: longer object length is not a multiple of shorter object</span></span>
-<span><span class="co">## length</span></span>
-<span></span>
-<span><span class="co">## Warning in .x == .y: longer object length is not a multiple of shorter object</span></span>
-<span><span class="co">## length</span></span>
-<span></span>
-<span><span class="co">## Warning in .x == .y: longer object length is not a multiple of shorter object</span></span>
-<span><span class="co">## length</span></span>
-<span></span>
-<span><span class="co">## Warning in .x == .y: longer object length is not a multiple of shorter object</span></span>
-<span><span class="co">## length</span></span></code></pre>
 <p><img src="makeExcursion_files/figure-html/unnamed-chunk-4-1.png" width="700"></p>
 </div>
 <div class="section level3">
@@ -273,7 +192,7 @@ results</p>
 excursions. This could be done with age or paleo ensembles included in
 the data, but for our synthetic experiment, we’ll simulate age and paleo
 uncertainty.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">detectedExcusionEns</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/detectExcursion.html">detectExcursion</a></span><span class="op">(</span><span class="va">syntheticExcursion</span>,</span>
 <span>                          event.yr <span class="op">=</span> <span class="fl">4200</span>,</span>
 <span>                          event.window <span class="op">=</span> <span class="fl">400</span>,</span>
@@ -284,25 +203,22 @@ uncertainty.</p>
 <span>                          null.hypothesis.n <span class="op">=</span> <span class="fl">50</span>, <span class="co">#how many null hypothesis members to test</span></span>
 <span>                          simulate.time.uncertainty <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>                          simulate.paleo.uncertainty <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■ </span>…</span></span></code></pre>
 <pre><code><span><span class="co">## Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span>
-<span><span class="co">## Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span>
-<span><span class="co">## Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span>
-<span><span class="co">## Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span>
 <span><span class="co">## Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span>
 <span><span class="co">## Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span>
 <span><span class="co">## Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span>
 <span><span class="co">## Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span>
 <span><span class="co">## Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span></code></pre>
 <p>Now let’s look at the results</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">detectedExcusionEns</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## <span style="font-weight: bold;">Synthetic excursion - Excursion test: Excursion test results</span></span></span>
 <span><span class="co"><span style="font-weight: bold;">## </span><span style="color: #555555;">Searched for </span><span style="color: #555555; font-weight: bold;">positive</span><span style="color: #555555;"> excursions in a </span><span style="color: #555555; font-weight: bold;">400</span><span style="color: #555555;"> year window around </span><span style="color: #555555; font-weight: bold;">4200</span><span style="color: #555555;"> yr BP, with reference windows of </span><span style="color: #555555; font-weight: bold;">400</span><span style="color: #555555;"> years on either side.</span></span></span>
 <span><span class="co"><span style="color: #555555;">## </span></span></span>
-<span><span class="co">## <span style="font-weight: bold;">Overall result: Empirical p-value = </span><span style="color: #00BB00; font-weight: bold;">0.00910839777219397</span></span></span>
+<span><span class="co">## <span style="font-weight: bold;">Overall result: Empirical p-value = </span><span style="color: #00BB00; font-weight: bold;">0</span></span></span>
 <span><span class="co"><span style="font-weight: bold;">## </span>Time uncertainty considered? <span style="color: #00BB00;">TRUE</span></span></span>
 <span><span class="co">## Paleo uncertainty considered? <span style="color: #00BB00;">TRUE</span></span></span>
+<span><span class="co">## Parametric uncertainty considered? <span style="color: #BB0000;">FALSE</span></span></span>
 <span><span class="co">## Error propagation ensemble members = 50</span></span>
 <span><span class="co">## Null hypothesis testing ensemble members = 50</span></span>
 <span><span class="co">## </span></span>
@@ -314,7 +230,7 @@ uncertainty.</p>
 <span><span class="co"><span style="color: #555555;">## na.rm = TRUE</span></span></span>
 <span><span class="co"><span style="color: #555555;">## </span></span></span></code></pre>
 <p>and make a plot</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">detectedExcusionEns</span><span class="op">)</span></span></code></pre></div>
 <p><img src="makeExcursion_files/figure-html/unnamed-chunk-7-1.png" width="700"></p>
 </div>
@@ -338,7 +254,7 @@ uncertainty.</p>
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.9.</p>
 </div>
 
       </footer>

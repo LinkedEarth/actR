@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>makeShift • actR</title>
-<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
+<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../bootstrap-toc.css">
 <script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">actR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.10</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0</span>
       </span>
     </div>
 
@@ -63,6 +63,9 @@
     </li>
     <li>
       <a href="../articles/makeShift.html">makeShift</a>
+    </li>
+    <li>
+      <a href="../articles/mapping_excursions.html">mapping_excursions</a>
     </li>
   </ul>
 </li>
@@ -102,7 +105,7 @@
 time 20</p>
 <p>The mean shift will have a magnitude of 0.5</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">syntheticTransition</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/makeShift.html">makeShift</a></span><span class="op">(</span>length <span class="op">=</span> <span class="fl">100</span>, amp<span class="op">=</span><span class="fl">0.5</span>, start <span class="op">=</span> <span class="fl">20</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">syntheticTransition</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/makeShift.html">makeShift</a></span><span class="op">(</span>length <span class="op">=</span> <span class="fl">300</span>, amp<span class="op">=</span><span class="fl">0.5</span>, start <span class="op">=</span> <span class="fl">65</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #BB00BB;">timeUnits is at least partially absent in the input data</span></span></span>
 <span><span class="co"><span style="color: #BB00BB;">#&gt; timeVariableName is at least partially absent in the input data</span></span></span>
 <span><span class="co"><span style="color: #BB00BB;">#&gt; paleoData_units is at least partially absent in the input data</span></span></span>
@@ -115,7 +118,7 @@ time 20</p>
 <p>we will test the synthetic time series with
 <code>detectShift</code></p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">msGb</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/detectShift.html">detectShift</a></span><span class="op">(</span><span class="va">syntheticTransition</span>,</span>
+<code class="sourceCode R"><span><span class="va">synTrans</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/detectShift.html">detectShift</a></span><span class="op">(</span><span class="va">syntheticTransition</span>,</span>
 <span>                     time.variable.name <span class="op">=</span> <span class="st">"year"</span>,</span>
 <span>                     null.hypothesis.n <span class="op">=</span> <span class="fl">50</span>,</span>
 <span>                     summary.bin.step <span class="op">=</span> <span class="fl">1</span>,</span>
@@ -126,14 +129,12 @@ time 20</p>
 <span>                     paleo.uncertainty <span class="op">=</span> <span class="fl">0.1</span>,</span>
 <span>                     n.ens <span class="op">=</span> <span class="fl">50</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span>
-<span><span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span>
-<span><span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span>
 <span><span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span></code></pre></div>
 <p>###Plot shift</p>
 <p>Let’s plot the results</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">msGb</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/plotShift.html">plotShift</a></span><span class="op">(</span><span class="va">synTrans</span><span class="op">)</span></span></code></pre></div>
 <p><img src="makeShift_files/figure-html/unnamed-chunk-4-1.png" width="700"><img src="makeShift_files/figure-html/unnamed-chunk-4-2.png" width="700"></p>
 </div>
   </div>
@@ -153,7 +154,7 @@ time 20</p>
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.9.</p>
 </div>
 
       </footer>

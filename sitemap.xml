@@ -28,6 +28,9 @@
     <loc>/articles/makeShift.html</loc>
   </url>
   <url>
+    <loc>/articles/mapping_excursions.html</loc>
+  </url>
+  <url>
     <loc>/authors.html</loc>
   </url>
   <url>
@@ -40,10 +43,22 @@
     <loc>/news/index.html</loc>
   </url>
   <url>
+    <loc>/reference/View.default.html</loc>
+  </url>
+  <url>
+    <loc>/reference/View.excursion.html</loc>
+  </url>
+  <url>
+    <loc>/reference/View.shift.html</loc>
+  </url>
+  <url>
     <loc>/reference/actR_ggtheme.html</loc>
   </url>
   <url>
     <loc>/reference/ar1noise.html</loc>
+  </url>
+  <url>
+    <loc>/reference/calculateMultiTestSignificance.html</loc>
   </url>
   <url>
     <loc>/reference/detectExcursion.html</loc>
@@ -64,10 +79,19 @@
     <loc>/reference/detectShiftCore.html</loc>
   </url>
   <url>
+    <loc>/reference/distanceGrid.html</loc>
+  </url>
+  <url>
     <loc>/reference/geob7926_2.html</loc>
   </url>
   <url>
     <loc>/reference/getAllExcursionTimes.html</loc>
+  </url>
+  <url>
+    <loc>/reference/getAllTimes.html</loc>
+  </url>
+  <url>
+    <loc>/reference/getNulls.html</loc>
   </url>
   <url>
     <loc>/reference/great_basin.html</loc>
@@ -112,6 +136,9 @@
     <loc>/reference/plot.shiftCore.html</loc>
   </url>
   <url>
+    <loc>/reference/plotDataDensity.html</loc>
+  </url>
+  <url>
     <loc>/reference/plotExcursion.html</loc>
   </url>
   <url>
@@ -133,6 +160,9 @@
     <loc>/reference/plotShiftCore.html</loc>
   </url>
   <url>
+    <loc>/reference/plotSignificance.html</loc>
+  </url>
+  <url>
     <loc>/reference/prepareInput.html</loc>
   </url>
   <url>
@@ -148,7 +178,13 @@
     <loc>/reference/pseudoShifts.html</loc>
   </url>
   <url>
+    <loc>/reference/spatialSigTest.html</loc>
+  </url>
+  <url>
     <loc>/reference/summarizeChangepointMeanChanges.html</loc>
+  </url>
+  <url>
+    <loc>/reference/summarizeEventProbability.html</loc>
   </url>
   <url>
     <loc>/reference/summary.excursion.html</loc>
@@ -167,5 +203,8 @@
   </url>
   <url>
     <loc>/reference/testNullHypothesis.html</loc>
+  </url>
+  <url>
+    <loc>/reference/viewSafely.html</loc>
   </url>
 </urlset>
