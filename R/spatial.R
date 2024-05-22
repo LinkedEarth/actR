@@ -181,6 +181,7 @@ calculateMultiTestSignificance <- function(events,weights = NA,n.ens = 1000){
 
   #only include events with results
   events$weights <- weights
+
   events <- dplyr::filter(events,!is.na(event_probability))
 
   weights <- events$weights
@@ -237,10 +238,10 @@ calculateMultiTestSignificance <- function(events,weights = NA,n.ens = 1000){
   out$allEventNet <- allEventNet
 
   out$clPos <- quantile(nullsPos,probs = c(.975))
-  out$clNeg <- quantile(nullsPos,probs = c(.975))
-  out$clEither <- quantile(nullsEither,probs = c(.9,.95,.99))
-  out$clBoth <- quantile(nullsBoth,probs = c(.9,.95,.99))
-  out$clNet <- quantile(nullsNet,probs = c(.005,.025,.05,.95,.975,.995))
+  out$clNeg <- quantile(nullsNeg,probs = c(.975))
+  out$clEither <- list(clEither = quantile(nullsEither,probs = c(.9,.95,.99)))
+  out$clBoth <- list(clBoth = quantile(nullsBoth,probs = c(.9,.95,.99)))
+  out$clNet <- list(clNet = quantile(nullsNet,probs = c(.005,.025,.05,.95,.975,.995)))
 
 
   return(out)

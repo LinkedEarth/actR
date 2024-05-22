@@ -62,7 +62,7 @@ detectExcursionSlidingWindow <- function(ltt = NA,
 
 #run the detector over all the windows, potentially in parallel
 
-  out <- furrr::future_map_dfr(event.yr.vec,\(x) detectExcursion(ltt = prepped,
+  out <- purrr::map_dfr(event.yr.vec,\(x) detectExcursion(ltt = prepped,
                                                       event.yr = x,
                                                       ref.window = ref.window,
                                                       progress = FALSE,

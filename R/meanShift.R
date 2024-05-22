@@ -273,7 +273,7 @@ detectShift <- function(ltt = NA,
 
   eventSummary$time <- rep(list(timeEns),nrow(eventSummary))
   eventSummary$paleoData_values <- rep(list(valEns),nrow(eventSummary))
-  eventSummary$time_variableName <- ltt$timeVariableName
+  eventSummary$time_variableName <- prepped$timeVariableName
   eventSummary$time.ens.supplied.n <- time.ens.supplied.n
   eventSummary$vals.ens.supplied.n <- vals.ens.supplied.n
   eventSummary$surrogate.method <- surrogate.method
