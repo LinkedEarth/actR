@@ -184,6 +184,7 @@ attempt to detect changes in the mean.</p>
 <span><span class="co">#&gt; Selected trsgi</span></span>
 <span><span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span>
 <span><span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span>
+<span><span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span>
 <span><span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span></code></pre></div>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">gbmPlot</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">msGb</span><span class="op">)</span></span></code></pre></div>
@@ -216,8 +217,7 @@ surrogates, as detailed in the documentation. The default is
 that to the rEDM “shuffle” method, just specify
 <code>surrogate.method = "shuffle"</code>.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">gbvPlot</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">vsGb</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `time_variableName`.</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">gbvPlot</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">vsGb</span><span class="op">)</span></span></code></pre></div>
 <p><img src="detectShift_files/figure-html/unnamed-chunk-8-1.png" width="700"></p>
 <p>Now a change in variance is detected at the very end of the record.
 To check its robustness, we should probably inquire more about the
