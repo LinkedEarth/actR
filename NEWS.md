@@ -1,6 +1,6 @@
 # actR 0.2.0
 
-* Integrated some new features and plotting - most notably multi site and spatial significance testing, as well as mapping.
+* Integrated some new features and plotting - most notably multisite and spatial significance testing, as well as mapping.
 
 # actR 0.1.10
 
