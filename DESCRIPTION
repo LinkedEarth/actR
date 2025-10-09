@@ -1,6 +1,6 @@
 Package: actR
 Title: Abrupt Change Toolkit in R (actR) - Detect, Quantify and Visualize Abrupt Changes
-Version: 0.2.0
+Version: 0.2.1
 Authors@R: c(
     person(given = "Nicholas",
            family = "McKay",
