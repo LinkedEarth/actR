@@ -43,6 +43,8 @@ plotShift(
 
 \item{combine.plots}{Combine the probability and timeseries plots into a single plot (TRUE)? Or return a list with each plot as a separate object (FALSE)?}
 
+\item{shift.direction}{plot positive, negative or both ("positive/negative" - the default)}
+
 \item{...}{
   Arguments passed on to \code{\link[geoChronR:plotTimeseriesEnsRibbons]{geoChronR::plotTimeseriesEnsRibbons}}
   \describe{

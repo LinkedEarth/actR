@@ -25,7 +25,7 @@ The time series will have 100 time steps, with a shift in mean at time 20
 The mean shift will have a magnitude of 0.5
 
 ```{r}
-syntheticTransition <- makeShift(length = 100, amp=0.5, start = 20)
+syntheticTransition <- makeShift(length = 300, amp=0.5, start = 65)
 ```
 
 ### Detect Shift
@@ -33,7 +33,7 @@ syntheticTransition <- makeShift(length = 100, amp=0.5, start = 20)
 we will test the synthetic time series with `detectShift`
 
 ```{r}
-msGb <- detectShift(syntheticTransition,
+synTrans <- detectShift(syntheticTransition,
                      time.variable.name = "year",
                      null.hypothesis.n = 50,
                      summary.bin.step = 1,
@@ -52,6 +52,6 @@ Let's plot the results
 
 ```{r}
 
-plot(msGb)
+plotShift(synTrans)
 
 ```

@@ -51,8 +51,8 @@ plotExcursion <- function(x,
 
   #determine what is ensemble
   ensOut <- x$event_detection[[1]]
-  hasTimeEnsemble <- !identicalVectorsList(ensOut$time)
-  hasPaleoEnsemble <- !identicalVectorsList(ensOut$vals)
+  hasTimeEnsemble <- suppressWarnings(!identicalVectorsList(ensOut$time))
+  hasPaleoEnsemble <- suppressWarnings(!identicalVectorsList(ensOut$vals))
   hasParamEnsemble <- hasParameterEnsemble(x)
 
   if(hasTimeEnsemble){
@@ -98,6 +98,10 @@ plotExcursion <- function(x,
     }else{
       alpha.msg <- glue::glue("Empirical p-value {x$pvalue} exceeds {alpha}")
       ts <- dplyr::filter(ensOut,eventDetected == FALSE)
+    }
+
+    if(nrow(ts) == 0){
+      stop("No representative ensemble member found, which is a problem. It probably means you should increase n.ens and maybe null.hypothesis.n in detectExcursion.")
     }
 
     #pick a representative ensemble member
@@ -168,7 +172,7 @@ plot.excursionCore <- function(x,...){
 #' @import ggplot2
 #' @param x the output of detectExcursionCore()
 #' @param add.to.plot a ggplot object upon which to add this plot
-#'
+#' @importFrom tidyr unchop
 #' @return a ggplot object
 #' @export
 plotExcursionCore <- function(x,
@@ -311,7 +315,6 @@ plotShiftCore <- function(x,line.color = "black", mean.color = "red"){
 #' Plot mean or variance shifts, with uncertainties and null hypothesis testing
 #'
 #' @importFrom geoChronR plotTimeseriesEnsRibbons
-#' @import ggplot2 tidyr RColorBrewer purrr dplyr egg
 #' @param x Output from actR::detectShift
 #' @param ... more inputs, see (plotShift)
 #'
@@ -325,7 +328,8 @@ plot.shift <- function(x,...){
 #' Plot mean or variance shifts, with uncertainties and null hypothesis testing
 #'
 #' @importFrom geoChronR plotTimeseriesEnsRibbons
-#' @import ggplot2 tidyr RColorBrewer purrr dplyr egg
+#' @import ggplot2  RColorBrewer purrr dplyr egg
+#' @importFrom tidyr pivot_longer
 #'
 #' @param x Output from actR::detectShift (tibble)
 #' @param cl.color Color palette, single color, or vector of colors to use for confidence intervals (default = "Reds"s)
@@ -337,7 +341,9 @@ plot.shift <- function(x,...){
 #' @param y.axis.label Label the y-axis (default = NA, which will automatically generate from input)
 #' @param x.lims 2-element vector to use as x-axis limits (default = NA)
 #' @param y.lims.direction A value of -1 will flip the y-axis for both panels (default = 1) #TODO
+#' @param shift.direction plot positive, negative or both ("positive/negative" - the default)
 #' @param combine.plots Combine the probability and timeseries plots into a single plot (TRUE)? Or return a list with each plot as a separate object (FALSE)?
+#'
 #' @inheritDotParams geoChronR::plotTimeseriesEnsRibbons
 #' @export
 #' @return a ggplot object
@@ -383,11 +389,11 @@ plotShift <- function(x,
 
   #title
   if(!any(is.na(x$dataSetName)) & !any(is.na(x$paleoData_variableName))){
-    title <- glue::glue("{x$dataSetName} - {x$paleoData_variableName}: {shift.type}")
-  }else if(any(is.na(x$input$dataSetName)) & !any(is.na(x$paleoData_variableName))){
-    title <- glue::glue("{x$paleoData_variableName}: {shift.type}")
-  }else if(!any(is.na(x$input$dataSetName)) & any(is.na(x$paleoData_variableName))){
-    title <- glue::glue("{x$dataSetName}: {shift.type}")
+    title <- glue::glue("{x$dataSetName} - {x$paleoData_variableName}: {shift.type}") |> unique()
+  }else if(suppressWarnings(any(is.na(x$input$dataSetName)) & !any(is.na(x$paleoData_variableName)))){
+    title <- glue::glue("{x$paleoData_variableName}: {shift.type}") |> unique()
+  }else if(suppressWarnings(!any(is.na(x$input$dataSetName)) & any(is.na(x$paleoData_variableName)))){
+    title <- glue::glue("{x$dataSetName}: {shift.type}") |> unique()
   }else{
     title <- glue::glue("{shift.type}")
   }

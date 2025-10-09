@@ -26,6 +26,8 @@ summarizeEventProbability(
 \item{min.time}{Minimum age of bin.vec to summarize}
 
 \item{shift.type}{Type of excursion to look for. "positive", "negative", "either" or "both" (default = "either")}
+
+\item{time.dir}{what way does time go, "retrograde" (default) (backwards, e.g. yr BP units) or "prograde" (forward e.g AD units)}
 }
 \value{
 a tibble of event probability for each bin step

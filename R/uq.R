@@ -6,11 +6,11 @@
 #' @return Surrogate output
 #' @export
 surrogateDataFun <- function(...){
-  if(packageVersion("rEDM") < "1.15"){
-    out <- rEDM::make_surrogate_data(...)
-  }else{
+  # if(packageVersion("rEDM") < "1.15"){
+  #   out <- rEDM::make_surrogate_data(...)
+  # }else{
     out <- rEDM::SurrogateData(...)
-  }
+  # }
   return(out)
 }
 
@@ -128,10 +128,10 @@ propagateUncertainty <- function(time,
         dotsSummaryString[d] <- glue::glue("{dots[[d]]}")
       }else if(length(dots[[d]]) <= n.ens){
         dotsLong[[d]] <- sample(dots[[d]],size = n.ens,replace = FALSE)
-        dotsSummaryString[d] <- glue::glue("{round(mean(dotsLong[[d]]))} ± {round(sd(dotsLong[[d]]))}")
+        dotsSummaryString[d] <- glue::glue("{round(mean(dotsLong[[d]]))} \u00B1 {round(sd(dotsLong[[d]]))}")
       }else{
         dotsLong[[d]] <- sample(dots[[d]],size = n.ens,replace = TRUE)
-        dotsSummaryString[d] <- glue::glue("{round(mean(dotsLong[[d]]))} ± {round(sd(dotsLong[[d]]))}")
+        dotsSummaryString[d] <- glue::glue("{round(mean(dotsLong[[d]]))} \u00B1 {round(sd(dotsLong[[d]]))}")
       }
     }
     names(dotsLong) <- names(dots)
@@ -166,7 +166,7 @@ propagateUncertainty <- function(time,
 #' @inheritParams propagateUncertainty
 #' @param mc.ens How many Monte Carlo simulations to use for null hypothesis testing
 #' @param surrogate.method What method to use to generage surrogate data for hypothesis testing? Options include: \itemize{
-#' \item 'isospectral': (Default) Following Ebisuzaki (1997), generate surrogates by scrambling the phases of the data while preserving their power spectrum. This uses the To generate these “isospectral” surrogates. Uses the rEDM::make_surrogate_data() or rEDM::SurrogateData() function depending on version
+#' \item 'isospectral': (Default) Following Ebisuzaki (1997), generate surrogates by scrambling the phases of the data while preserving their power spectrum. This uses the To generate these "isospectral" surrogates. Uses the rEDM::make_surrogate_data() or rEDM::SurrogateData() function depending on version
 #' \item 'isopersistent':  Generates surrogates by simulating from an autoregressive process of order 1 (AR(1)), which has been fit to the data. Uses the geoChronR::createSyntheticTimeseries() function
 #' \item 'shuffle': Randomly shuffles the data to create surrogates. Uses the rEDM::make_surrogate_data() or rEDM::SurrogateData() function depending on version
 #' }

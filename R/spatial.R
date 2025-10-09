@@ -54,8 +54,9 @@ gaspari_cohn <- function(r, rmax) {
 #' Distance from grid cells to TS objects
 #'
 #' @param wts a lipd TS object
+#' @param lon.range longitude range to grid
+#' @param lat.range latitude range to grid
 #' @param grid.resolution grid cell size resolution, eg. 1 deg x 1 deg
-#' @param radius.group radius of filter for each grid cell in km
 #'
 #' @return distances
 #' @export
@@ -180,6 +181,7 @@ calculateMultiTestSignificance <- function(events,weights = NA,n.ens = 1000){
 
   #only include events with results
   events$weights <- weights
+
   events <- dplyr::filter(events,!is.na(event_probability))
 
   weights <- events$weights
@@ -236,10 +238,10 @@ calculateMultiTestSignificance <- function(events,weights = NA,n.ens = 1000){
   out$allEventNet <- allEventNet
 
   out$clPos <- quantile(nullsPos,probs = c(.975))
-  out$clNeg <- quantile(nullsPos,probs = c(.975))
-  out$clEither <- quantile(nullsEither,probs = c(.9,.95,.99))
-  out$clBoth <- quantile(nullsBoth,probs = c(.9,.95,.99))
-  out$clNet <- quantile(nullsNet,probs = c(.005,.025,.05,.95,.975,.995))
+  out$clNeg <- quantile(nullsNeg,probs = c(.975))
+  out$clEither <- list(clEither = quantile(nullsEither,probs = c(.9,.95,.99)))
+  out$clBoth <- list(clBoth = quantile(nullsBoth,probs = c(.9,.95,.99)))
+  out$clNet <- list(clNet = quantile(nullsNet,probs = c(.005,.025,.05,.95,.975,.995)))
 
 
   return(out)
@@ -251,6 +253,8 @@ calculateMultiTestSignificance <- function(events,weights = NA,n.ens = 1000){
 #' @param events an events object
 #' @param agg.method What method do you want to use to aggregate the p-values? Choose from robustNull (default), fisher, sidak or lancaster
 #' @param min.pval min p value
+#' @param distance.cutoff distance (in km) to cut off the test (default = 2000 km)
+#' @param use.weights weight sites in the calculation using the "weight" column? (default = TRUE)
 #'
 #' @return gridded significance results
 #' @export
@@ -377,6 +381,14 @@ calculateMultiTestSignificance <- function(events,weights = NA,n.ens = 1000){
 #' @param pval.grid from spatialSigTest()
 #' @param sigTestResults from excursionTestHighRes()
 #' @param color.breaks at what significance levels should we put the color breaks?
+#' @param which.test which test result to map ("pvalNet" default , "pvalPos","pvalNeg","pvalEither")
+#' @param restrict.sites optionally only plot the most significant
+#' @param alpha.by.weight show weights in the grid as a function of transparency
+#' @param cutoff.distance what cutoff distance (in km) for the search radius
+#' @param x.lim longitude range of the map
+#' @param y.lim latitude range of the map
+#' @param projection CRS string for map projection (default = "+proj=robin +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs")
+#'
 #' @import ggplot2
 #'
 #' @return plot and plot data
@@ -385,7 +397,7 @@ calculateMultiTestSignificance <- function(events,weights = NA,n.ens = 1000){
 plotSignificance <- function(pval.grid=NULL,
                              sigTestResults,
                              color.breaks = c(.001,.01,.05,.1,.2),
-                             which.test = "pval",
+                             which.test = "pvalNet",
                              restrict.sites = TRUE,
                              alpha.by.weight = TRUE,
                              cutoff.distance = 1500,
@@ -414,7 +426,7 @@ plotSignificance <- function(pval.grid=NULL,
 
   plotData <- data.frame(pval = pvals[good],lat = lat[good],lon = lon[good],weight = weight)
 
-  pvalOptions <- c("pvalPos","pvalNeg","pvalEither","pvalNet")
+#  pvalOptions <- c("pvalPos","pvalNeg","pvalEither","pvalNet")
 
 
   handleNet <- function(positive,negative){

@@ -8,7 +8,7 @@ plotSignificance(
   pval.grid = NULL,
   sigTestResults,
   color.breaks = c(0.001, 0.01, 0.05, 0.1, 0.2),
-  which.test = "pval",
+  which.test = "pvalNet",
   restrict.sites = TRUE,
   alpha.by.weight = TRUE,
   cutoff.distance = 1500,
@@ -24,6 +24,20 @@ plotSignificance(
 \item{sigTestResults}{from excursionTestHighRes()}
 
 \item{color.breaks}{at what significance levels should we put the color breaks?}
+
+\item{which.test}{which test result to map ("pvalNet" default , "pvalPos","pvalNeg","pvalEither")}
+
+\item{restrict.sites}{optionally only plot the most significant}
+
+\item{alpha.by.weight}{show weights in the grid as a function of transparency}
+
+\item{cutoff.distance}{what cutoff distance (in km) for the search radius}
+
+\item{x.lim}{longitude range of the map}
+
+\item{y.lim}{latitude range of the map}
+
+\item{projection}{CRS string for map projection (default = "+proj=robin +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs")}
 }
 \value{
 plot and plot data

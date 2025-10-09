@@ -1,14 +1,29 @@
 Package: actR
 Title: Abrupt Change Toolkit in R (actR) - Detect, Quantify and Visualize Abrupt Changes
-Version: 0.1.11
+Version: 0.2.0
 Authors@R: c(
     person(given = "Nicholas",
            family = "McKay",
            role = c("aut", "cre"),
            email = "nick@nau.edu",
            comment = c(ORCID = "0000-0003-3598-5113")),
+    person(given = "David",
+           family = "Edge",
+           role = c("aut"),
+           email = "david.edge@nau.edu",
+           comment = c(ORCID = "0000-0001-6938-2850")),
+    person(given = "Chris",
+           family = "Hancock",
+           role = c("aut"),
+           email = "clh624@nau.edu",
+           comment = c(ORCID = "0000-0002-7273-202X")),
     person("Julien", "Emile-Geay", role = c("aut"),
-      comment = c(ORCID = "0000-0001-5920-4751")))
+      comment = c(ORCID = "0000-0001-5920-4751")),
+          person(given = "Michael",
+           family = "Erb",
+           role = c("aut"),
+           email = "Michael.Erb@nau.edu",
+           comment = c(ORCID = "0000-0002-1187-952X")))
 Description: actR simplifies the process of objectively detecting abrupt changes in paleogeoscientific timeseries. In addition to detection, actR provides tools to estimate significance, and visualize the results. This package is in active development.
 License: MIT + file LICENSE
 Encoding: UTF-8
@@ -25,8 +40,7 @@ Imports:
     purrr (>= 1.0.0),
     glue,
     tidyr,
-    lipdR (>= 0.2.3),
-    rEDM,
+    rEDM (>= 1.15),
     RColorBrewer,
     changepoint,
     egg,
@@ -34,16 +48,20 @@ Imports:
     crayon,
     fBasics,
     furrr,
-    future,
     ks,
     tidyselect,
-    geosphere
+    geosphere,
+    aggregation,
+    sf
 Suggests:
     testthat,
+    lipdR (>= 0.5.0),
     cowplot,
     devtools,
     knitr,
-    rmarkdown
+    rmarkdown,
+    googlesheets4,
+    future
 Remotes:
     github::nickmckay/geoChronR,
     github::nickmckay/lipdR

@@ -11,9 +11,7 @@ summarizeChangepointMeanChanges <- function(x,alpha = 0.05){
 
   paramTib <- createTibbleFromParameterString(x$parameters[1])
 
-  sig.event <- summarizeShiftSignificance(x$shiftDetection,
-                                          alpha = alpha,
-                                          paramTib = paramTib)
+  sig.event <- summarizeShiftSignificance(x$shiftDetection,alpha = alpha)
 
 time <- apply(x$timeEns,1,median,na.rm = TRUE)
 vals <- apply(x$valEns,1,median,na.rm = TRUE)
@@ -53,6 +51,7 @@ return(tp)
 #' @param max.time  Maximum age of bin.vec to summarize
 #' @param min.time  Minimum age of bin.vec to summarize
 #' @param shift.type Type of excursion to look for. "positive", "negative", "either" or "both" (default = "either")
+#' @param time.dir what way does time go, "retrograde" (default) (backwards, e.g. yr BP units) or "prograde" (forward e.g AD units)
 #'
 #' @return a tibble of event probability for each bin step
 #' @export
@@ -195,7 +194,7 @@ summarizeParams <- function(x){
   }else{
     if(all(is.numeric(x))){
       if(length(unique(x)) > 10){
-        return(glue::glue("{rounder(mean(x))} ± {rounder(sd(x))}"))
+        return(glue::glue("{rounder(mean(x))} \u00B1 {rounder(sd(x))}"))
       }else{
         return(paste(sort(unique(x)),collapse = ", "))
       }

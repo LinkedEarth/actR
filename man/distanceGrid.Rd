@@ -14,9 +14,11 @@ distanceGrid(
 \arguments{
 \item{wts}{a lipd TS object}
 
-\item{grid.resolution}{grid cell size resolution, eg. 1 deg x 1 deg}
+\item{lon.range}{longitude range to grid}
 
-\item{radius.group}{radius of filter for each grid cell in km}
+\item{lat.range}{latitude range to grid}
+
+\item{grid.resolution}{grid cell size resolution, eg. 1 deg x 1 deg}
 }
 \value{
 distances
