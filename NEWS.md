@@ -1,3 +1,5 @@
+# actR 0.2.2
+
 # actR 0.2.1
 
 * Fixed bug in `plotExcursionSliding()`. Thanks Georgy [issue 31](https://github.com/LinkedEarth/actR/issues/31)
