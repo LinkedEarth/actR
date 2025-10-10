@@ -32,7 +32,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">actR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.2</span>
       </span>
     </div>
 
@@ -133,6 +133,7 @@ null.hypothesis.n]. * specifies a minimum segment length of 3000y</p>
 <span><span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span>
 <span><span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span>
 <span><span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span>
+<span><span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span>
 <span><span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span></code></pre></div>
 <p>This lines generates a textual summary of the output:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
@@ -173,7 +174,7 @@ attempt to detect changes in the mean.</p>
 <span>                    vals.variable.name <span class="op">=</span> <span class="st">"trsgi"</span>,</span>
 <span>                    null.hypothesis.n <span class="op">=</span> <span class="fl">50</span>,</span>
 <span>                    summary.bin.step <span class="op">=</span> <span class="fl">10</span>,</span>
-<span>                    minimum.segment.length <span class="op">=</span> <span class="fl">50</span>,</span>
+<span>                    minimum.segment.length <span class="op">=</span> <span class="fl">200</span>,</span>
 <span>                    simulate.time.uncertainty <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>                    method <span class="op">=</span> <span class="st">"AMOC"</span>,</span>
 <span>                    cpt.fun <span class="op">=</span> <span class="fu">changepoint</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/changepoint/man/cpt.mean.html" class="external-link">cpt.mean</a></span>,</span>
@@ -182,15 +183,14 @@ attempt to detect changes in the mean.</p>
 <span><span class="co">#&gt; Selected trsgi</span></span>
 <span><span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span>
 <span><span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span>
-<span><span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span>
 <span><span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span></code></pre></div>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">gbmPlot</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">msGb</span><span class="op">)</span></span></code></pre></div>
 <p><img src="detectShift_files/figure-html/unnamed-chunk-6-1.png" width="700"></p>
-<p>As you can see, the method does not detect any on this dataset.
-However, one might also want to detect shifts in variance. To do so, all
-you have to do is specify <code>cpt.fun = changepoint::cpt.var</code>
-(leveraging the <a href="https://cran.r-project.org/web/packages/changepoint/index.html" class="external-link">changepoint</a>
+<p>As you can see, the method detects one shift near the end of the
+record. However, one might also want to detect shifts in variance. To do
+so, all you have to do is specify
+<code>cpt.fun = changepoint::cpt.var</code> (leveraging the <a href="https://cran.r-project.org/web/packages/changepoint/index.html" class="external-link">changepoint</a>
 package).</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">vsGb</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/detectShift.html">detectShift</a></span><span class="op">(</span><span class="va">great_basin</span>,</span>
@@ -201,11 +201,12 @@ package).</p>
 <span>                    minimum.segment.length <span class="op">=</span> <span class="fl">200</span>,</span>
 <span>                    simulate.time.uncertainty <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>                    paleo.uncertainty <span class="op">=</span> <span class="fl">0.1</span>,</span>
-<span>                    method <span class="op">=</span> <span class="st">"PELT"</span>,</span>
+<span>                    method <span class="op">=</span> <span class="st">"AMOC"</span>,</span>
 <span>                    cpt.fun <span class="op">=</span> <span class="fu">changepoint</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/changepoint/man/cpt.var.html" class="external-link">cpt.var</a></span>,</span>
 <span>                    surrogate.method <span class="op">=</span> <span class="st">"shuffle"</span>,</span>
 <span>                    n.ens <span class="op">=</span> <span class="fl">50</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Selected trsgi</span></span>
+<span><span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span>
 <span><span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span>
 <span><span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span>
 <span><span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span></code></pre></div>
@@ -217,12 +218,13 @@ that to the rEDM “shuffle” method, just specify
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">gbvPlot</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">vsGb</span><span class="op">)</span></span></code></pre></div>
 <p><img src="detectShift_files/figure-html/unnamed-chunk-8-1.png" width="700"></p>
-<p>Now a change in variance is detected at the very end of the record.
-To check its robustness, we should probably inquire more about the
-sample depth of the dataset (number of tree cores used to make the
-composite in each year), as well as the technique used for removing the
-biological component of the signal. This is a reminder that no
-technique, however nifty, is a substitute for knowing your data!</p>
+<p>Now we see an additional changepoint in record associated with a
+shift in variance ca. 1450 AD. To check its robustness, we should
+probably inquire more about the sample depth of the dataset (number of
+tree cores used to make the composite in each year), as well as the
+technique used for removing the biological component of the signal. This
+is a reminder that no technique, however nifty, is a substitute for
+knowing your data!</p>
 </div>
   </div>
 
