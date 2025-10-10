@@ -1,4 +1,6 @@
 # actR 0.2.2
+* Update detectShift() vignette following implementing `gaussianize = TRUE` as the default method.
+* Fix bug in `prepareTimeseries()` Thanks again Georgy: [issue 32](https://github.com/LinkedEarth/actR/issues/32)
 
 # actR 0.2.1
 
