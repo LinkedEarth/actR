@@ -43,10 +43,11 @@ detectExcursion(
 
 \item{output.figure.path}{path pointing to where should the output figure be saved? An NA will not produce a figure (default = NA)}
 
-\item{surrogate.method}{What method to use to generage surrogate data for hypothesis testing? Options include: \itemize{
-\item 'isospectral': (Default) Following Ebisuzaki (1997), generate surrogates by scrambling the phases of the data while preserving their power spectrum. This uses the To generate these "isospectral" surrogates. Uses the rEDM::make_surrogate_data() or rEDM::SurrogateData() function depending on version
-\item 'isopersistent':  Generates surrogates by simulating from an autoregressive process of order 1 (AR(1)), which has been fit to the data. Uses the ens::createSyntheticTimeseries() function
-\item 'shuffle': Randomly shuffles the data to create surrogates. Uses the rEDM::make_surrogate_data() or rEDM::SurrogateData() function depending on version
+\item{surrogate.method}{What method to use to generate surrogate data. Options:
+\itemize{
+\item 'isospectral': (Default) Following Ebisuzaki (1997), generate surrogates by scrambling the phases of the data while preserving their power spectrum. Uses surrogateDataFun() (rEDM::SurrogateData).
+\item 'isopersistent': Generates surrogates by simulating from an AR(1) process fit to the data. Uses createSyntheticTimeseries().
+\item 'shuffle': Randomly shuffles the data. Uses surrogateDataFun().
 }}
 
 \item{null.hypothesis.n}{How many simulations to run for null hypothesis testing (default = 100)}
@@ -56,18 +57,18 @@ detectExcursion(
 \item{pvalue.method}{method for estimating a pvalue. Options are "kde" (the default) which will use a KDE to estimate the pvalue relative to the null, or "ecdf" which will use an empirical cumulative distribution function.}
 
 \item{...}{
-  Arguments passed on to \code{\link[=propagateUncertainty]{propagateUncertainty}}
+  Arguments passed on to \code{\link[ens:propagateUncertainty]{ens::propagateUncertainty}}
   \describe{
-    \item{\code{changeFun}}{the change function to across which to propagate}
+    \item{\code{changeFun}}{the analysis function to propagate across the ensemble. Must accept time and vals as its first two arguments and return a one-row data.frame/tibble.}
     \item{\code{simulate.time.uncertainty}}{TRUE or FALSE. If an ensemble is not included, do you want to simulate time ensembles (default = TRUE)}
     \item{\code{simulate.paleo.uncertainty}}{TRUE or FALSE. If an ensemble is not included, do you want to simulate paleo ensembles (default = TRUE)}
-    \item{\code{bam.model}}{BAM Model parameters to use if simulating time uncertainty (default = list(ns = n.ens, name = "bernoulli", param = 0.05), paleo.uncertainty = sd(vals,na.rm = TRUE)))}
+    \item{\code{bam.model}}{BAM Model parameters to use if simulating time uncertainty (default = list(ns = n.ens, name = "bernoulli", param = 0.05))}
     \item{\code{paleo.uncertainty}}{Uncertainty to use if modelling uncertainty for paleo values. (default = sd(vals,na.rm = TRUE)/2)}
-    \item{\code{paleo.ar1}}{Autocorrelation coefficient to use for modelling uncertainty on paleoData, what fraction of the uncertainties are autocorrelated? (default = sqrt(0.5); or 50\% autocorrelated uncertainty)}
-    \item{\code{paleo.arima.order}}{Order to use for ARIMA model used in modelling uncertainty on paleoDat (default = c(1,0,0))}
-    \item{\code{summarize}}{Boolean. Summarize the output? Or return all the ensembles?}
+    \item{\code{paleo.ar1}}{Autocorrelation coefficient to use for modelling uncertainty on paleoData, what fraction of the uncertainties are autocorrelated? (default = sqrt(0.5); or 50 percent autocorrelated uncertainty)}
+    \item{\code{paleo.arima.order}}{Order to use for ARIMA model used in modelling uncertainty on paleoData (default = c(1,0,0))}
+    \item{\code{summarize}}{How to summarize the per-ensemble results. FALSE (default) returns every ensemble member. Alternatively, supply a function function(propagated) -> data.frame that collapses the propagated tibble into a summary; this replaces the previous hard-coded, analysis-specific summary so the engine stays generic across analyses.}
     \item{\code{seed}}{set a seed for reproducibility}
-    \item{\code{progress}}{show null hypothesis testing progress bar?}
+    \item{\code{progress}}{show a progress bar?}
   }}
 }
 \value{

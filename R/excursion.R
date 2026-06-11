@@ -2,8 +2,8 @@
 #'
 #' @inheritParams detectExcursion
 #' @inheritParams detectExcursionCore
-#' @inheritParams propagateUncertainty
-#' @inheritParams testNullHypothesis
+#' @inheritParams ens::propagateUncertainty
+#' @inheritParams ens::testNullHypothesis
 #' @param event.yr.vec A vector of times at the center of event years to test.
 #' @param event.step If event.yr.vec = NA, then event.step will build one with this spacing.
 #' @param ... pass additional arguments to detectExcursion()
@@ -94,8 +94,8 @@ todfr <- function(...){
 #'
 #' @inheritParams detectExcursion
 #' @inheritParams detectExcursionCore
-#' @inheritParams propagateUncertainty
-#' @inheritParams testNullHypothesis
+#' @inheritParams ens::propagateUncertainty
+#' @inheritParams ens::testNullHypothesis
 #' @param seed Set a seed for reproducibility. By default it will use current time meaning it will not be reproducible.
 #' @author Hannah Kolus
 #' @author Nick McKay
@@ -164,9 +164,9 @@ out <- furrr::future_pmap_dfr(ltt,\(...) detectExcursion(todfr(...),
 #' @references Morrill
 #'
 #' @inheritParams prepareInput
-#' @inheritParams testNullHypothesis
+#' @inheritParams ens::testNullHypothesis
 #' @inheritParams detectShift
-#' @inheritDotParams propagateUncertainty
+#' @inheritDotParams ens::propagateUncertainty
 #' @param output.figure.path path pointing to where should the output figure be saved? An NA will not produce a figure (default = NA)
 #' @param pvalue.method method for estimating a pvalue. Options are "kde" (the default) which will use a KDE to estimate the pvalue relative to the null, or "ecdf" which will use an empirical cumulative distribution function.
 #' @importFrom stats lm predict sd

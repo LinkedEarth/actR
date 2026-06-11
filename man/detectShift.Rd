@@ -40,10 +40,11 @@ detectShift(
 
 \item{dataset.name}{If ltt is not provided, specify the dataset name}
 
-\item{surrogate.method}{What method to use to generage surrogate data for hypothesis testing? Options include: \itemize{
-\item 'isospectral': (Default) Following Ebisuzaki (1997), generate surrogates by scrambling the phases of the data while preserving their power spectrum. This uses the To generate these "isospectral" surrogates. Uses the rEDM::make_surrogate_data() or rEDM::SurrogateData() function depending on version
-\item 'isopersistent':  Generates surrogates by simulating from an autoregressive process of order 1 (AR(1)), which has been fit to the data. Uses the ens::createSyntheticTimeseries() function
-\item 'shuffle': Randomly shuffles the data to create surrogates. Uses the rEDM::make_surrogate_data() or rEDM::SurrogateData() function depending on version
+\item{surrogate.method}{What method to use to generate surrogate data. Options:
+\itemize{
+\item 'isospectral': (Default) Following Ebisuzaki (1997), generate surrogates by scrambling the phases of the data while preserving their power spectrum. Uses surrogateDataFun() (rEDM::SurrogateData).
+\item 'isopersistent': Generates surrogates by simulating from an AR(1) process fit to the data. Uses createSyntheticTimeseries().
+\item 'shuffle': Randomly shuffles the data. Uses surrogateDataFun().
 }}
 
 \item{summary.bin.step}{Time interval over which to summarize the results}
@@ -58,7 +59,7 @@ detectShift(
 
 \item{calc.deltas}{Calculate the difference in means between change point sections. Default FALSE}
 
-\item{...}{arguments to pass to pass to changeFun}
+\item{...}{arguments to pass to changeFun. Vectors longer than 1 are treated as parameter ensembles and sampled across the n.ens members.}
 }
 \value{
 A tibble of output data and metadata. Each row represents a time step of the summary bin

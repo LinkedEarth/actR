@@ -136,7 +136,7 @@ detectShiftCore = function(time,
 #' @param summary.bin.vec Optionally provide a vector over which to create the summary bins, this will supersede summary.bin.step if provided (default = NA)
 #' @param null.hypothesis.n How many simulations to run for null hypothesis testing (default = 100)
 #' @param null.quantiles What quantiles to report as output from null hypothesis testing (default = c(.95, .9))
-#' @inheritParams testNullHypothesis
+#' @inheritParams ens::testNullHypothesis
 #' @inheritParams detectShiftCore
 #'
 #'
