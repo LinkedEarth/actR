@@ -1,18 +1,8 @@
 
-#' Use the write function from rEDM depending on the version
-#'
-#' @param ... Arguments to pass to surrogate
-#'
-#' @return Surrogate output
+# surrogateDataFun now lives in the ens package; re-exported here for
+# backward compatibility.
 #' @export
-surrogateDataFun <- function(...){
-  # if(packageVersion("rEDM") < "1.15"){
-  #   out <- rEDM::make_surrogate_data(...)
-  # }else{
-    out <- rEDM::SurrogateData(...)
-  # }
-  return(out)
-}
+ens::surrogateDataFun
 
 
 #' Explore uncertainty space on abscissa or ordinate and propagate of any of actR's change functions
@@ -69,7 +59,7 @@ propagateUncertainty <- function(time,
   if(nca == 1){#then it's not an ensemble
     #create ensemble?
     if(simulate.time.uncertainty){
-      timeMat <- geoChronR::simulateBam(X = matrix(1,nrow = length(time)),
+      timeMat <- ens::simulateBam(X = matrix(1,nrow = length(time)),
                                        t = as.matrix(time),
                                        model = bam.model,
                                        ageEnsOut = TRUE)$ageEns
@@ -167,7 +157,7 @@ propagateUncertainty <- function(time,
 #' @param mc.ens How many Monte Carlo simulations to use for null hypothesis testing
 #' @param surrogate.method What method to use to generage surrogate data for hypothesis testing? Options include: \itemize{
 #' \item 'isospectral': (Default) Following Ebisuzaki (1997), generate surrogates by scrambling the phases of the data while preserving their power spectrum. This uses the To generate these "isospectral" surrogates. Uses the rEDM::make_surrogate_data() or rEDM::SurrogateData() function depending on version
-#' \item 'isopersistent':  Generates surrogates by simulating from an autoregressive process of order 1 (AR(1)), which has been fit to the data. Uses the geoChronR::createSyntheticTimeseries() function
+#' \item 'isopersistent':  Generates surrogates by simulating from an autoregressive process of order 1 (AR(1)), which has been fit to the data. Uses the ens::createSyntheticTimeseries() function
 #' \item 'shuffle': Randomly shuffles the data to create surrogates. Uses the rEDM::make_surrogate_data() or rEDM::SurrogateData() function depending on version
 #' }
 #' @inheritDotParams propagateUncertainty
@@ -216,11 +206,11 @@ testNullHypothesis <- function(time,
     #surVals <- geoChronR::ar1Surrogates(time = time,vals = vals,detrend = TRUE,method = "redfit",n.ens = n.ens)
     if (ncol(time)==0){
       cstv <- function(x,time=time, ...) {
-        geoChronR::createSyntheticTimeseries(values = x, ...)
+        ens::createSyntheticTimeseries(values = x, ...)
       }
     } else{
       cstv <- function(x,time=time, ...) {
-        geoChronR::createSyntheticTimeseries(values = x, time = time[,sample(seq(1,ncol(time)),1)], ...)
+        ens::createSyntheticTimeseries(values = x, time = time[,sample(seq(1,ncol(time)),1)], ...)
       }
     }
 

@@ -36,7 +36,8 @@ Imports:
     dplyr,
     tibble,
     magrittr,
-    geoChronR (>= 1.0.6),
+    ens (>= 0.2.0),
+    lipdViz,
     purrr (>= 1.0.0),
     glue,
     tidyr,
@@ -63,7 +64,8 @@ Suggests:
     googlesheets4,
     future
 Remotes:
-    github::nickmckay/geoChronR,
+    github::nickmckay/ens,
+    github::nickmckay/lipdViz,
     github::nickmckay/lipdR
 Depends:
     R (>= 3.60)

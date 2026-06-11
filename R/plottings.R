@@ -24,7 +24,7 @@ plot.excursion <- function(x,...){
 #' Plot an excursion with uncertainties
 #' @importFrom glue glue
 #' @importFrom dplyr filter
-#' @importFrom geoChronR plotTimeseriesEnsRibbons
+#' @importFrom lipdViz plotTimeseriesEnsRibbons
 #' @import ggplot2
 #' @param x The output of detectExcursion()
 #' @param alpha What significance level to use?
@@ -87,7 +87,7 @@ plotExcursion <- function(x,
 
   #if time or values are ensemble, plot as ribbons, with single line over top.
   if(hasPaleoEnsemble | hasTimeEnsemble){
-    ribbons <- geoChronR::plotTimeseriesEnsRibbons(X = timeMat,
+    ribbons <- lipdViz::plotTimeseriesEnsRibbons(X = timeMat,
                                                    Y = paleoMat,
                                                    probs = c(.025,.25,.75,.975))
 
@@ -314,7 +314,7 @@ plotShiftCore <- function(x,line.color = "black", mean.color = "red"){
 
 #' Plot mean or variance shifts, with uncertainties and null hypothesis testing
 #'
-#' @importFrom geoChronR plotTimeseriesEnsRibbons
+#' @importFrom lipdViz plotTimeseriesEnsRibbons
 #' @param x Output from actR::detectShift
 #' @param ... more inputs, see (plotShift)
 #'
@@ -327,7 +327,7 @@ plot.shift <- function(x,...){
 
 #' Plot mean or variance shifts, with uncertainties and null hypothesis testing
 #'
-#' @importFrom geoChronR plotTimeseriesEnsRibbons
+#' @importFrom lipdViz plotTimeseriesEnsRibbons
 #' @import ggplot2  RColorBrewer purrr dplyr egg
 #' @importFrom tidyr pivot_longer
 #'
@@ -344,7 +344,7 @@ plot.shift <- function(x,...){
 #' @param shift.direction plot positive, negative or both ("positive/negative" - the default)
 #' @param combine.plots Combine the probability and timeseries plots into a single plot (TRUE)? Or return a list with each plot as a separate object (FALSE)?
 #'
-#' @inheritDotParams geoChronR::plotTimeseriesEnsRibbons
+#' @inheritDotParams lipdViz::plotTimeseriesEnsRibbons
 #' @export
 #' @return a ggplot object
 plotShift <- function(x,
@@ -374,7 +374,7 @@ plotShift <- function(x,
   #paramTib <-  (x$parameters[1])
 
   #plot ensemble ribbons
-  ribbons <- geoChronR::plotTimeseriesEnsRibbons(X = x$time[[1]],Y = x$paleoData_values[[1]],...) + actR_ggtheme()
+  ribbons <- lipdViz::plotTimeseriesEnsRibbons(X = x$time[[1]],Y = x$paleoData_values[[1]],...) + actR_ggtheme()
 
   #get shift type
   if(grepl(pattern = "cpt.mean",x$cpt.fun[[1]],ignore.case = T) & !grepl(pattern = "cpt.meanVar",x$cpt.fun[[1]],ignore.case = T)){

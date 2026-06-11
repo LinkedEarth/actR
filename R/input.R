@@ -269,9 +269,9 @@ prepareInput <- function(ltt = NA,
   for(r in 1:nrow(ltt)){
     if(is.na(ltt$timeUnits[r])){
       if(NCOL(ltt$time[[r]]) == 1){
-        ltt$timeUnits[r] <- geoChronR::heuristicUnits(ltt$time[[r]])
+        ltt$timeUnits[r] <- ens::heuristicUnits(ltt$time[[r]])
       }else{
-        ltt$timeUnits[r] <- geoChronR::heuristicUnits(ltt$time[[r]][,1])
+        ltt$timeUnits[r] <- ens::heuristicUnits(ltt$time[[r]][,1])
       }
     }
   }
