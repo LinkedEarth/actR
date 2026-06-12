@@ -22,18 +22,24 @@ makeSyntheticShift <- function() {
 
 # Some output columns embed values from third-party packages whose results are
 # not reproducible across versions/platforms, so they cannot be compared
-# bit-exactly between the capture environment (R 4.4) and CI (R 4.6):
+# bit-exactly between the capture environment (R 4.4 / macOS) and CI (R 4.6,
+# Linux/Windows/macOS):
 #   - null_probability* / pvalue* / cl*           : rEDM::SurrogateData
 #   - parameters / method / penalty / pen.value /
 #     ncpts.max / cpt.fun                          : changepoint::cpt internals
 #                                                    (e.g. default method AMOC
 #                                                    vs PELT, MBIC penalty value)
+#   - *_hash (e.g. it_hash)                        : digest hashes of
+#                                                    floating-point data; a 1-ulp
+#                                                    difference across CPU
+#                                                    architectures (macOS ARM vs
+#                                                    x86) changes the whole hash
 # Everything else -- time_start/end/mid, event_probability*, deltas, counts,
 # minimum.segment.length, and metadata -- is portable. null.hypothesis.n /
 # unc.prop.n are deterministic counts and remain in the exact-comparison set.
 isStochasticName <- function(nm) {
   grepl(paste0("null_probability|^pvalue|^cl[0-9.]+$|^parameters$|",
-               "^method$|^penalty$|^pen\\.value$|^ncpts|^cpt\\.fun$"),
+               "^method$|^penalty$|^pen\\.value$|^ncpts|^cpt\\.fun$|hash$"),
         nm, ignore.case = TRUE)
 }
 isProbabilityName <- function(nm) grepl("null_probability|^pvalue", nm, ignore.case = TRUE)
