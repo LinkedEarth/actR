@@ -88,3 +88,24 @@ You can install the development version from
 
     # install.packages("remotes")
     remotes::install_github("LinkedEarth/actR")
+
+## Package family
+
+actR is part of a family of interoperable paleogeoscience packages. It builds
+directly on the ensemble engine in **[ens](https://github.com/nickmckay/ens)**
+(`propagateUncertainty()`, `testNullHypothesis()`, `kdePval()`, binning,
+surrogates) and uses **[lipdViz](https://github.com/nickmckay/lipdViz)** for
+ensemble visualization.
+
+| Package | Role |
+|---|---|
+| [ens](https://github.com/nickmckay/ens) | Ensemble methods: uncertainty propagation, null-hypothesis testing, correlation, regression, PCA, spectra, binning |
+| [lipdViz](https://github.com/nickmckay/lipdViz) | Visualization of LiPD data and ensemble analyses |
+| [geoChronR](https://github.com/nickmckay/geoChronR-chronOnly) | Age modeling (Bacon, Bchron, OxCal, BAM) |
+| [compositeR](https://github.com/nickmckay/compositeR) | Paleoclimate record compositing |
+| **actR** | Abrupt-change detection (this package) |
+
+Each abrupt-change detector is just a `changeFun(time, vals, ...)` that returns
+a one-row tibble; the ens engine supplies uncertainty propagation and
+significance testing for free. See the *Extending the ensemble stack* vignette
+in `ens`.
