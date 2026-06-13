@@ -1,12 +1,12 @@
 # CLAUDE.md — actR
 
 `actR` (Abrupt Change Toolkit in R) detects, quantifies, and visualizes abrupt changes in
-paleogeoscientific timeseries. As of June 2026 it is part of a five-package family and builds
+paleogeoscientific timeseries. As of June 2026 it is part of a six-package family and builds
 directly on the **ens** engine (it no longer depends on the monolithic geoChronR).
 
 Repo: **LinkedEarth/actR** (NOT nickmckay — `gh` API 404s on nickmckay/actR). Branch: `refactor`.
 
-## Package family (dependency DAG: ens ← lipdViz ← geoChronR; actR & compositeR on top)
+## Package family (dependency DAG: ens ← lipdViz ← geoChronR; actR, compositeR & fluxcapacitoR on top)
 
 | Repo (`~/GitHub/...`) | GitHub | Branch | Role |
 |---|---|---|---|
@@ -15,6 +15,7 @@ Repo: **LinkedEarth/actR** (NOT nickmckay — `gh` API 404s on nickmckay/actR). 
 | geoChronR-chronOnly | nickmckay/geoChronR-chronOnly | main | Age modeling |
 | **actR** (this repo) | LinkedEarth/actR | refactor | Abrupt-change detection |
 | compositeR | nickmckay/compositeR | refactor | Record compositing |
+| fluxcapacitoR | nickmckay/fluxcapacitoR | main | Flux-focused varve age modeling |
 
 ## Architecture
 
