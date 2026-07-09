@@ -1,3 +1,11 @@
+# actR 0.2.2
+* Update detectShift() vignette following implementing `gaussianize = TRUE` as the default method.
+* Fix bug in `prepareTimeseries()` Thanks again Georgy: [issue 32](https://github.com/LinkedEarth/actR/issues/32)
+
+# actR 0.2.1
+
+* Fixed bug in `plotExcursionSliding()`. Thanks Georgy [issue 31](https://github.com/LinkedEarth/actR/issues/31)
+
 # actR 0.2.0
 
 * Integrated some new features and plotting - most notably multisite and spatial significance testing, as well as mapping.

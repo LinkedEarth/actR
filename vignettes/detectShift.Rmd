@@ -66,7 +66,7 @@ msGb <- detectShift(great_basin,
                     vals.variable.name = "trsgi",
                     null.hypothesis.n = 50,
                     summary.bin.step = 10,
-                    minimum.segment.length = 50,
+                    minimum.segment.length = 200,
                     simulate.time.uncertainty = FALSE,
                     method = "AMOC",
                     cpt.fun = changepoint::cpt.mean,
@@ -79,7 +79,7 @@ msGb <- detectShift(great_basin,
 gbmPlot <- plot(msGb)
 ```
 
-As you can see, the method does not detect any on this dataset. However, one might also want to detect shifts in variance. To do so, all you have to do is specify `cpt.fun = changepoint::cpt.var` (leveraging the [changepoint](https://cran.r-project.org/web/packages/changepoint/index.html) package).
+As you can see, the method detects one shift near the end of the record. However, one might also want to detect shifts in variance. To do so, all you have to do is specify `cpt.fun = changepoint::cpt.var` (leveraging the [changepoint](https://cran.r-project.org/web/packages/changepoint/index.html) package).
 
 
 ```{r, warning=FALSE}
@@ -91,7 +91,7 @@ vsGb <- detectShift(great_basin,
                     minimum.segment.length = 200,
                     simulate.time.uncertainty = FALSE,
                     paleo.uncertainty = 0.1,
-                    method = "PELT",
+                    method = "AMOC",
                     cpt.fun = changepoint::cpt.var,
                     surrogate.method = "shuffle",
                     n.ens = 50)
@@ -103,5 +103,5 @@ Note also that actR offers 3 different methods to generate surrogates, as detail
 gbvPlot <- plot(vsGb)
 ```
 
-Now a change in variance is detected at the very end of the record. To check its robustness, we should probably inquire more about the sample depth of the dataset (number of tree cores used to make the composite in each year), as well as the technique used for removing the biological component of the signal. This is a reminder that no technique, however nifty, is a substitute for knowing your data!
+Now we see an additional changepoint in record associated with a shift in variance ca. 1450 AD. To check its robustness, we should probably inquire more about the sample depth of the dataset (number of tree cores used to make the composite in each year), as well as the technique used for removing the biological component of the signal. This is a reminder that no technique, however nifty, is a substitute for knowing your data!
 

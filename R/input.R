@@ -250,16 +250,16 @@ prepareInput <- function(ltt = NA,
     #truncate the original age data too, to avoid issues
     for(r in 1:nrow(ltt)){
 
-      if("ageEnsemble" %in% names(ltt)){
+      if(length(ltt$ageEnsemble[[r]]) > 0){
         ltt$ageEnsemble[[r]]<- ltt$ageEnsemble[[r]][good.time,]
       }
-      if("yearEnsemble" %in% names(ltt)){
+      if(length(ltt$yearEnsemble[[r]]) > 0){
         ltt$yearEnsemble[[r]] <- ltt$yearEnsemble[[r]][good.time,]
       }
-      if("age" %in% names(ltt)){
+      if(length(ltt$age[[r]]) > 0){
         ltt$age[[r]] <- ltt$age[[r]][good.time]
       }
-      if("year" %in% names(ltt)){
+      if(length(ltt$year[[r]]) > 0){
         ltt$year[[r]] <- ltt$year[[r]][good.time]
       }
     }
