@@ -2,7 +2,7 @@ citHeader("To cite actR in publications use:")
 
 citEntry(
   entry    = "Article",
-  title    = "The Abrupt Change Toolkit in R (v0.2.0)","
+  title    = "The Abrupt Change Toolkit in R (v0.2.0)",
   author   = "McKay, N., Edge, D., Hancock, C., Emile-Geay, J. & Erb, M.",
   journal  = "Zenodo",
   year     = 2024,

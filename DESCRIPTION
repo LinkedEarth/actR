@@ -1,6 +1,6 @@
 Package: actR
 Title: Abrupt Change Toolkit in R (actR) - Detect, Quantify and Visualize Abrupt Changes
-Version: 0.2.2
+Version: 0.3.0
 Authors@R: c(
     person(given = "Nicholas",
            family = "McKay",
@@ -56,7 +56,7 @@ Imports:
     sf
 Suggests:
     testthat,
-    lipdR (>= 0.5.0),
+    lipdR (>= 0.7.0),
     cowplot,
     devtools,
     knitr,

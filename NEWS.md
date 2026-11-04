@@ -1,3 +1,9 @@
+# actR 0.3.0
+
+* actR now builds on ens and lipdViz instead of the geoChronR monolith, so age modeling software is no longer installed with it. Its uncertainty engine now comes from ens.
+* Fixed a syntax error in `inst/CITATION`.
+* Requires lipdR >= 0.7.0.
+
 # actR 0.2.2
 * Update detectShift() vignette following implementing `gaussianize = TRUE` as the default method.
 * Fix bug in `prepareTimeseries()` Thanks again Georgy: [issue 32](https://github.com/LinkedEarth/actR/issues/32)
