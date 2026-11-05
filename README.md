@@ -101,7 +101,7 @@ ensemble visualization.
 |---|---|
 | [ens](https://github.com/nickmckay/ens) | Ensemble methods: uncertainty propagation, null-hypothesis testing, correlation, regression, PCA, spectra, binning |
 | [lipdViz](https://github.com/nickmckay/lipdViz) | Visualization of LiPD data and ensemble analyses |
-| [geoChronR](https://github.com/nickmckay/geoChronR-chronOnly) | Age modeling (Bacon, Bchron, OxCal, BAM) |
+| [agemodelR](https://github.com/nickmckay/agemodelR) | Age modeling (Bacon, Bchron, OxCal, BAM) |
 | [compositeR](https://github.com/nickmckay/compositeR) | Paleoclimate record compositing |
 | **actR** | Abrupt-change detection (this package) |
 
