@@ -15,7 +15,9 @@ permissions: read-all
 
 jobs:
   pkgdown:
-    runs-on: ubuntu-latest
+    # macOS because Linux R can't verify lipdverse.org's certificate chain, and the
+    # vignettes download data from it (lipdverse-updater #30).
+    runs-on: macos-latest
     # Only restrict concurrency for non-PR jobs
     concurrency:
       group: pkgdown-${{ github.event_name != 'pull_request' || github.run_id }}
