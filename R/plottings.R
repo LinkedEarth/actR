@@ -24,7 +24,7 @@ plot.excursion <- function(x,...){
 #' Plot an excursion with uncertainties
 #' @importFrom glue glue
 #' @importFrom dplyr filter
-#' @importFrom geoChronR plotTimeseriesEnsRibbons
+#' @importFrom lipdViz plotTimeseriesEnsRibbons
 #' @import ggplot2
 #' @param x The output of detectExcursion()
 #' @param alpha What significance level to use?
@@ -87,7 +87,7 @@ plotExcursion <- function(x,
 
   #if time or values are ensemble, plot as ribbons, with single line over top.
   if(hasPaleoEnsemble | hasTimeEnsemble){
-    ribbons <- geoChronR::plotTimeseriesEnsRibbons(X = timeMat,
+    ribbons <- lipdViz::plotTimeseriesEnsRibbons(X = timeMat,
                                                    Y = paleoMat,
                                                    probs = c(.025,.25,.75,.975))
 
@@ -314,7 +314,7 @@ plotShiftCore <- function(x,line.color = "black", mean.color = "red"){
 
 #' Plot mean or variance shifts, with uncertainties and null hypothesis testing
 #'
-#' @importFrom geoChronR plotTimeseriesEnsRibbons
+#' @importFrom lipdViz plotTimeseriesEnsRibbons
 #' @param x Output from actR::detectShift
 #' @param ... more inputs, see (plotShift)
 #'
@@ -327,7 +327,7 @@ plot.shift <- function(x,...){
 
 #' Plot mean or variance shifts, with uncertainties and null hypothesis testing
 #'
-#' @importFrom geoChronR plotTimeseriesEnsRibbons
+#' @importFrom lipdViz plotTimeseriesEnsRibbons
 #' @import ggplot2  RColorBrewer purrr dplyr egg
 #' @importFrom tidyr pivot_longer
 #'
@@ -344,7 +344,7 @@ plot.shift <- function(x,...){
 #' @param shift.direction plot positive, negative or both ("positive/negative" - the default)
 #' @param combine.plots Combine the probability and timeseries plots into a single plot (TRUE)? Or return a list with each plot as a separate object (FALSE)?
 #'
-#' @inheritDotParams geoChronR::plotTimeseriesEnsRibbons
+#' @inheritDotParams lipdViz::plotTimeseriesEnsRibbons
 #' @export
 #' @return a ggplot object
 plotShift <- function(x,
@@ -374,7 +374,7 @@ plotShift <- function(x,
   #paramTib <-  (x$parameters[1])
 
   #plot ensemble ribbons
-  ribbons <- geoChronR::plotTimeseriesEnsRibbons(X = x$time[[1]],Y = x$paleoData_values[[1]],...) + actR_ggtheme()
+  ribbons <- lipdViz::plotTimeseriesEnsRibbons(X = x$time[[1]],Y = x$paleoData_values[[1]],...) + actR_ggtheme()
 
   #get shift type
   if(grepl(pattern = "cpt.mean",x$cpt.fun[[1]],ignore.case = T) & !grepl(pattern = "cpt.meanVar",x$cpt.fun[[1]],ignore.case = T)){
@@ -595,73 +595,6 @@ plotNullHistogram <- function(x,pal = "Paired",h = NA){
 
 
 
-#' Use a kde to estimate pvalue
-#'
-#' @param nulls a vector of null hypothesis results
-#' @param real a single value for the real data
-#' @param xmin minimum value for the distribution
-#' @param xmax maximum value for the distribution
-#' @param h smoothing factor
-#'
-#' @importFrom ks kde
-#'
-#' @return a list with pvalues and kde data
-#' @export
-kdePval <- function(nulls,real,h = NA,xmin = NA, xmax = NA){
-  datarange <- range(c(nulls,real),na.rm = TRUE)
-  span <- abs(diff(datarange))
-
-  if(span == 0){
-    if(real == 0){
-      xmin <- 0
-      xmax <- 1
-      span <- 1
-    }else{
-      xmin <- real - 0.5
-      xmax <- real + 0.5
-      span <- 1
-    }
-  }
-
-  if(all(is.na(h))){
-    h <- .03 * span
-  }
-
-  if(all(is.na(xmin))){
-    xmin <- min(datarange,na.rm = TRUE) - span*.05
-  }
-
-  if(all(is.na(xmax))){
-    xmax <- max(datarange,na.rm = TRUE) + span*.05
-  }
-
-  #if xmin is less than 0, make symmetric
-  if(xmin < 0){
-    xmin <- -max(abs(c(xmin,xmax)))
-    xmax <- max(abs(c(xmin,xmax)))
-  }
-
-
-#estimate kde
-kd <- ks::kde(nulls,h = h * span,xmin = xmin,xmax = xmax,density = TRUE,gridsize = 1000)
-if(real == xmax){
-  real <- kd$eval.points[length(kd$eval.points)-1]
-}
-
-if(real == xmin){
-  real <- kd$eval.points[2]
-}
-
-cdf <- cumsum(kd$estimate)/sum(kd$estimate)
-
-pval <- 1-approx(kd$eval.points,y = cdf,xout = real)$y
-
-out <- list(pval = pval,
-            x = kd$eval.points,
-            y = kd$estimate)
-
-return(out)
-}
 
 
 #' Plot a timeseries result of sliding

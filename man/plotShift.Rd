@@ -46,7 +46,7 @@ plotShift(
 \item{shift.direction}{plot positive, negative or both ("positive/negative" - the default)}
 
 \item{...}{
-  Arguments passed on to \code{\link[geoChronR:plotTimeseriesEnsRibbons]{geoChronR::plotTimeseriesEnsRibbons}}
+  Arguments passed on to \code{\link[lipdViz:plotTimeseriesEnsRibbons]{lipdViz::plotTimeseriesEnsRibbons}}
   \describe{
     \item{\code{add.to.plot}}{A ggplot object to add this plot to. Default is ggplot() .}
     \item{\code{X}}{A LiPD variable list to plot, including values, units, names, and more}

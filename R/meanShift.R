@@ -2,7 +2,7 @@
 #'
 #' @importFrom digest digest
 #' @importFrom changepoint cpt.mean cpt.var cpt.meanvar cpts
-#' @importFrom geoChronR gaussianize
+#' @importFrom ens gaussianize
 #' @param time a vector of time data
 #' @param vals a vector paleodata
 #' @param minimum.segment.length the minimum allowed length of a detected segment (in time units)
@@ -32,7 +32,7 @@ detectShiftCore = function(time,
   Y = f(X)
 
   if(gaussianize){
-    Y <- as.numeric(geoChronR::gaussianize(Y))
+    Y <- as.numeric(ens::gaussianize(Y))
   }
 
   # pull out ... parameters
@@ -136,7 +136,7 @@ detectShiftCore = function(time,
 #' @param summary.bin.vec Optionally provide a vector over which to create the summary bins, this will supersede summary.bin.step if provided (default = NA)
 #' @param null.hypothesis.n How many simulations to run for null hypothesis testing (default = 100)
 #' @param null.quantiles What quantiles to report as output from null hypothesis testing (default = c(.95, .9))
-#' @inheritParams testNullHypothesis
+#' @inheritParams ens::testNullHypothesis
 #' @inheritParams detectShiftCore
 #'
 #'
@@ -184,7 +184,7 @@ detectShift <- function(ltt = NA,
   propagated <- propagateUncertainty(time,vals,changeFun = detectShiftCore, calc.deltas = calc.deltas, ...)
 
   if(!is.character(time.units)){
-    time.units <- geoChronR::heuristicUnits(time)
+    time.units <- ens::heuristicUnits(time)
   }
 
   if(time.units %in% c("AD","CE")){
