@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">actR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.0</span>
       </span>
     </div>
 
@@ -104,9 +104,9 @@
 
 
 <dt id="arg-surrogate-method">surrogate.method<a class="anchor" aria-label="anchor" href="#arg-surrogate-method"></a></dt>
-<dd><p>What method to use to generage surrogate data for hypothesis testing? Options include:</p><ul><li><p>'isospectral': (Default) Following Ebisuzaki (1997), generate surrogates by scrambling the phases of the data while preserving their power spectrum. This uses the To generate these "isospectral" surrogates. Uses the rEDM::make_surrogate_data() or rEDM::SurrogateData() function depending on version</p></li>
-<li><p>'isopersistent':  Generates surrogates by simulating from an autoregressive process of order 1 (AR(1)), which has been fit to the data. Uses the geoChronR::createSyntheticTimeseries() function</p></li>
-<li><p>'shuffle': Randomly shuffles the data to create surrogates. Uses the rEDM::make_surrogate_data() or rEDM::SurrogateData() function depending on version</p></li>
+<dd><p>What method to use to generate surrogate data. Options:</p><ul><li><p>'isospectral': (Default) Following Ebisuzaki (1997), generate surrogates by scrambling the phases of the data while preserving their power spectrum. Uses surrogateDataFun() (rEDM::SurrogateData).</p></li>
+<li><p>'isopersistent': Generates surrogates by simulating from an AR(1) process fit to the data. Uses createSyntheticTimeseries().</p></li>
+<li><p>'shuffle': Randomly shuffles the data. Uses surrogateDataFun().</p></li>
 </ul></dd>
 
 
@@ -184,7 +184,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
       </footer></div>

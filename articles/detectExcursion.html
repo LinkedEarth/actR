@@ -32,7 +32,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">actR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.0</span>
       </span>
     </div>
 
@@ -157,7 +157,7 @@ functions will summarize the results.</p>
 especially without uncertainties, as a plot:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">excOutNoUnc</span><span class="op">)</span></span></code></pre></div>
-<p><img src="detectExcursion_files/figure-html/unnamed-chunk-3-1.png" width="700"></p>
+<p><img src="detectExcursion_files/figure-html/unnamed-chunk-3-1.png" class="r-plt" alt="" width="700"></p>
 <p>Here we see the baselines defined as red lines, with the excursions
 and the points that exceed the threshhold as red dots. The method
 requires a minimum number of consecutive points to pass the threshold,
@@ -205,7 +205,6 @@ null hypothesis simulation 50 times.</p>
 <span><span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span>
 <span><span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span>
 <span><span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span>
-<span><span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span>
 <span><span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span></code></pre></div>
 <p>This time, when we summarize the results, we get more interesting
 output, including an empirical p-value, which is the fraction of null
@@ -237,7 +236,7 @@ back, and a representative ensemble member illustrating the
 excursion.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">excOutUncY</span><span class="op">)</span> </span></code></pre></div>
-<p><img src="detectExcursion_files/figure-html/unnamed-chunk-5-1.png" width="700"></p>
+<p><img src="detectExcursion_files/figure-html/unnamed-chunk-5-1.png" class="r-plt" alt="" width="700"></p>
 <p>Including d18O uncertainty muddies the water a bit, but this feature
 is still clearly robust to uncertainties in the paleo data. But what
 about age uncertainty?</p>
@@ -282,6 +281,7 @@ through our robust null hypothesis testing.</p>
 <span><span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span>
 <span><span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span>
 <span><span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span>
+<span><span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span>
 <span><span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span></code></pre></div>
 <p>Let’s examine the result.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
@@ -307,7 +307,7 @@ through our robust null hypothesis testing.</p>
 <p>And plot the output.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">excOutUncXY</span><span class="op">)</span></span></code></pre></div>
-<p><img src="detectExcursion_files/figure-html/unnamed-chunk-7-1.png" width="700"></p>
+<p><img src="detectExcursion_files/figure-html/unnamed-chunk-7-1.png" class="r-plt" alt="" width="700"></p>
 <p>Given these uncertainties, and all of our parametric choices, we rest
 assured that this excursion is robust to our uncertainties.</p>
 </div>
@@ -329,7 +329,7 @@ assured that this excursion is robust to our uncertainties.</p>
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
       </footer>

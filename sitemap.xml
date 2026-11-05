@@ -1,5 +1,6 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>/404.html</loc></url>
+<url><loc>/CLAUDE.html</loc></url>
 <url><loc>/LICENSE-text.html</loc></url>
 <url><loc>/LICENSE.html</loc></url>
 <url><loc>/articles/detectExcursion.html</loc></url>
@@ -32,7 +33,6 @@
 <url><loc>/reference/getNulls.html</loc></url>
 <url><loc>/reference/great_basin.html</loc></url>
 <url><loc>/reference/index.html</loc></url>
-<url><loc>/reference/kdePval.html</loc></url>
 <url><loc>/reference/linearRamp.html</loc></url>
 <url><loc>/reference/makeExcursion.html</loc></url>
 <url><loc>/reference/makeShift.html</loc></url>
@@ -56,8 +56,8 @@
 <url><loc>/reference/prepareInput.html</loc></url>
 <url><loc>/reference/print.excursion.html</loc></url>
 <url><loc>/reference/print.shift.html</loc></url>
-<url><loc>/reference/propagateUncertainty.html</loc></url>
 <url><loc>/reference/pseudoShifts.html</loc></url>
+<url><loc>/reference/reexports.html</loc></url>
 <url><loc>/reference/spatialSigTest.html</loc></url>
 <url><loc>/reference/summarizeChangepointMeanChanges.html</loc></url>
 <url><loc>/reference/summarizeEventProbability.html</loc></url>
@@ -65,8 +65,6 @@
 <url><loc>/reference/summary.shift.html</loc></url>
 <url><loc>/reference/summaryExcursion.html</loc></url>
 <url><loc>/reference/summaryShift.html</loc></url>
-<url><loc>/reference/surrogateDataFun.html</loc></url>
-<url><loc>/reference/testNullHypothesis.html</loc></url>
 <url><loc>/reference/viewSafely.html</loc></url>
 </urlset>
 

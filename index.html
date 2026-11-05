@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">actR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.0</span>
       </span>
     </div>
 
@@ -106,8 +106,8 @@
 </h3>
 <p><img src="https://linked.earth/actR/reference/figures/ChangeDetectionDiagram.png" width="50%"></p>
 <p>actR equips single site, time series based change detection with error propagation and robust null hypothesis testing. Change detection algorithms are often highly parametric, and don’t consider many uncertainties that are relevant to paleogeoscientific data. There are two key processes to achieve this.</p>
-<p>The first is handled by <code><a href="reference/propagateUncertainty.html">propagateUncertainty()</a></code>, which will take age and/or paleo (i.e., y-axis) uncertainties, and propagate through the analysis using an ensemble approach. Age and/or paleo ensembles can be entered directly into actR (this is typically preferred when possible), or generated internally if desired.</p>
-<p>The second, is robust null hypothesis testing, using the function <code><a href="reference/testNullHypothesis.html">testNullHypothesis()</a></code>, which generates surrogate data based on the characteristics of the input data, and the repeats the entire analysis (including error propagation) many times. This lets the user assess how plausible surrogate data perform given the data, algorithm, and parametric choices, and determine whether any detected changes are robust to those sources of uncertainty and bias.</p>
+<p>The first is handled by <code><a href="https://rdrr.io/pkg/ens/man/propagateUncertainty.html" class="external-link">propagateUncertainty()</a></code>, which will take age and/or paleo (i.e., y-axis) uncertainties, and propagate through the analysis using an ensemble approach. Age and/or paleo ensembles can be entered directly into actR (this is typically preferred when possible), or generated internally if desired.</p>
+<p>The second, is robust null hypothesis testing, using the function <code><a href="https://rdrr.io/pkg/ens/man/testNullHypothesis.html" class="external-link">testNullHypothesis()</a></code>, which generates surrogate data based on the characteristics of the input data, and the repeats the entire analysis (including error propagation) many times. This lets the user assess how plausible surrogate data perform given the data, algorithm, and parametric choices, and determine whether any detected changes are robust to those sources of uncertainty and bias.</p>
 <p>For an example of how this proceess works, <a href="articles/detectExcursion.html">check out this example</a>.</p>
 </div>
 <div class="section level3">
@@ -133,6 +133,44 @@
 <p>You can install the development version from <a href="https://github.com/" class="external-link">GitHub</a> with:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># install.packages("remotes")</span></span>
 <span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">"LinkedEarth/actR"</span>)</span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="package-family">Package family<a class="anchor" aria-label="anchor" href="#package-family"></a>
+</h2>
+<p>actR is part of a family of interoperable paleogeoscience packages. It builds directly on the ensemble engine in <strong><a href="https://github.com/nickmckay/ens" class="external-link">ens</a></strong> (<code><a href="https://rdrr.io/pkg/ens/man/propagateUncertainty.html" class="external-link">propagateUncertainty()</a></code>, <code><a href="https://rdrr.io/pkg/ens/man/testNullHypothesis.html" class="external-link">testNullHypothesis()</a></code>, <code><a href="https://rdrr.io/pkg/ens/man/kdePval.html" class="external-link">kdePval()</a></code>, binning, surrogates) and uses <strong><a href="https://github.com/nickmckay/lipdViz" class="external-link">lipdViz</a></strong> for ensemble visualization.</p>
+<table class="table">
+<colgroup>
+<col width="50%">
+<col width="50%">
+</colgroup>
+<thead><tr>
+<th>Package</th>
+<th>Role</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/nickmckay/ens" class="external-link">ens</a></td>
+<td>Ensemble methods: uncertainty propagation, null-hypothesis testing, correlation, regression, PCA, spectra, binning</td>
+</tr>
+<tr>
+<td><a href="https://github.com/nickmckay/lipdViz" class="external-link">lipdViz</a></td>
+<td>Visualization of LiPD data and ensemble analyses</td>
+</tr>
+<tr>
+<td><a href="https://github.com/nickmckay/agemodelR" class="external-link">agemodelR</a></td>
+<td>Age modeling (Bacon, Bchron, OxCal, BAM)</td>
+</tr>
+<tr>
+<td><a href="https://github.com/nickmckay/compositeR" class="external-link">compositeR</a></td>
+<td>Paleoclimate record compositing</td>
+</tr>
+<tr>
+<td><strong>actR</strong></td>
+<td>Abrupt-change detection (this package)</td>
+</tr>
+</tbody>
+</table>
+<p>Each abrupt-change detector is just a <code>changeFun(time, vals, ...)</code> that returns a one-row tibble; the ens engine supplies uncertainty propagation and significance testing for free. See the <em>Extending the ensemble stack</em> vignette in <code>ens</code>.</p>
 </div>
 </div>
   </div>
@@ -187,7 +225,7 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
       </footer>
