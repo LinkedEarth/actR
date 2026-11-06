@@ -47,8 +47,5 @@ jobs:
       - uses: r-lib/actions/check-r-package@v2
         with:
           upload-snapshots: true
-          # Temporary: lipdverse.org sends an incomplete certificate chain, which R can't
-          # verify on Linux, and only sometimes can on macOS, so vignettes that download data
-          # are built only on Windows. Restore them once the chain is fixed (lipdverse-updater #30).
-          build_args: ${{ matrix.config.os != 'windows-latest' && 'c("--no-manual","--no-build-vignettes")' || 'c("--no-manual","--compact-vignettes=gs+qpdf")' }}
-          args: ${{ matrix.config.os != 'windows-latest' && 'c("--no-manual","--as-cran","--ignore-vignettes")' || 'c("--no-manual","--as-cran")' }}
+          build_args: 'c("--no-manual","--compact-vignettes=gs+qpdf")'
+          args: 'c("--no-manual","--as-cran")'
