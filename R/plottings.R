@@ -144,7 +144,7 @@ plotExcursion <- function(x,
     ggtitle(title)
 
 
-  if(grepl(x = x$timeUnits,, pattern = "ky",ignore.case = TRUE) | grepl(x = x$timeUnits, pattern = "bp",ignore.case = TRUE)){
+  if(isTRUE(isRetrogradeUnits(x$timeUnits[[1]]))){
     plotout <- plotout +
       scale_x_reverse()
   }
@@ -515,7 +515,7 @@ plotShift <- function(x,
   sig.event$pvallab <- paste("p =",sig.event$pvalue)
   sig.event$pvallab[sig.event$pvalue == 0] <- glue::glue("p < {minp}")
 
-  if(grepl(x = x$timeUnits[[1]], pattern = "ky",ignore.case = TRUE) | grepl(x = x$timeUnits[[1]], pattern = "bp",ignore.case = TRUE)){
+  if(isTRUE(isRetrogradeUnits(x$timeUnits[[1]]))){
     this_x_scale <- scale_x_reverse
     x.lims <- rev(sort(x.lims))
   }else{
