@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">actR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.0</span>
       </span>
     </div>
 
@@ -66,6 +66,19 @@
 
     </div>
 
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="0.4.0" id="actr-040">actR 0.4.0<a class="anchor" aria-label="anchor" href="#actr-040"></a></h2>
+<ul><li>
+<code><a href="../reference/prepareInput.html">prepareInput()</a></code>, and so <code><a href="../reference/detectShift.html">detectShift()</a></code> and <code><a href="../reference/detectExcursion.html">detectExcursion()</a></code>, use the time metadata that lipdR 0.7 adds in <code><a href="https://rdrr.io/pkg/lipdR/man/extractTs.html" class="external-link">extractTs()</a></code>. The time axis is an age or year ensemble when there is one, then lipdR’s <code>time</code> (the primary time column), then <code>age</code>, then <code>year</code>. <code>timeVariableName</code> is now filled in from the time direction, so lipdR timeseries no longer need one. Requires lipdR &gt;= 0.7.3.</li>
+<li>With a timeseries supplied, <code>time.units</code> now converts its time axis to that scale (e.g. <code>time.units = "yr BP"</code>), using <code><a href="https://rdrr.io/pkg/lipdR/man/getTsTime.html" class="external-link">lipdR::getTsTime()</a></code>. <code>time.variable.name</code> can name the column to use (e.g. <code>"year"</code> or <code>"ageEnsemble"</code>).</li>
+<li>
+<code><a href="../reference/detectMultipleExcursions.html">detectMultipleExcursions()</a></code> gains <code>time.units</code> to put every record on one scale, so <code>event.yr</code> means the same time for all of them. Without it, records in different units now give a warning.</li>
+<li>
+<code><a href="../reference/prepareInput.html">prepareInput()</a></code> and <code><a href="../reference/detectMultipleExcursions.html">detectMultipleExcursions()</a></code> accept a TS list (<code><a href="https://rdrr.io/pkg/lipdR/man/extractTs.html" class="external-link">lipdR::extractTs()</a></code>) and tibbles that have lost their class, as well as timeseries tibbles.</li>
+<li>
+<code><a href="../reference/prepareInput.html">prepareInput()</a></code> no longer errors when a timeseries has no <code>paleoData_units</code> field; it fills in “?” as it does for missing values.</li>
+<li>Plots now reverse ka (and Ma, b2k) time axes, not just yr BP and kyr.</li>
+</ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.3.0" id="actr-030">actR 0.3.0<a class="anchor" aria-label="anchor" href="#actr-030"></a></h2>
 <ul><li>actR now builds on ens and lipdViz instead of the geoChronR monolith, so age modeling software is no longer installed with it. Its uncertainty engine now comes from ens.</li>

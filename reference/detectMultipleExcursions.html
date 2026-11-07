@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">actR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.0</span>
       </span>
     </div>
 
@@ -87,6 +87,7 @@
 <span>  na.rm <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  simulate.time.uncertainty <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  simulate.paleo.uncertainty <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  time.units <span class="op">=</span> <span class="cn">NA</span>,</span>
 <span>  seed <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -96,7 +97,7 @@
 
 
 <dl><dt id="arg-ltt">ltt<a class="anchor" aria-label="anchor" href="#arg-ltt"></a></dt>
-<dd><p>A LiPD-timeseries-tibble, a tibble or data.frame that has the variable(s) of interest, a time variable (age, year or time) along with their metadata, aranged in rows. If ltt = NA, then one in is created from other inputs</p></dd>
+<dd><p>A LiPD-timeseries-tibble (<code><a href="https://rdrr.io/pkg/lipdR/man/ts2tibble.html" class="external-link">lipdR::ts2tibble()</a></code>), a TS list (<code><a href="https://rdrr.io/pkg/lipdR/man/extractTs.html" class="external-link">lipdR::extractTs()</a></code>), or a tibble or data.frame that has the variable(s) of interest, a time variable (age, year or time) along with their metadata, arranged in rows. If ltt = NA, then one in is created from other inputs. The time axis is an age or year ensemble when there is one, then lipdR's <code>time</code> (the primary time column), then <code>age</code>, then <code>year</code>.</p></dd>
 
 
 <dt id="arg-n-ens">n.ens<a class="anchor" aria-label="anchor" href="#arg-n-ens"></a></dt>
@@ -152,6 +153,10 @@
 
 <dt id="arg-simulate-paleo-uncertainty">simulate.paleo.uncertainty<a class="anchor" aria-label="anchor" href="#arg-simulate-paleo-uncertainty"></a></dt>
 <dd><p>TRUE or FALSE. If an ensemble is not included, do you want to simulate paleo ensembles (default = TRUE)</p></dd>
+
+
+<dt id="arg-time-units">time.units<a class="anchor" aria-label="anchor" href="#arg-time-units"></a></dt>
+<dd><p>a time scale (e.g. "yr BP" or "CE") to put every timeseries on before testing, so that <code>event.yr</code> and the windows mean the same thing for all of them. NA (default) uses each record's own units, and warns if they differ.</p></dd>
 
 
 <dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>

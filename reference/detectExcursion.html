@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">actR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.0</span>
       </span>
     </div>
 
@@ -96,7 +96,7 @@
 
 
 <dl><dt id="arg-ltt">ltt<a class="anchor" aria-label="anchor" href="#arg-ltt"></a></dt>
-<dd><p>A LiPD-timeseries-tibble, a tibble or data.frame that has the variable(s) of interest, a time variable (age, year or time) along with their metadata, aranged in rows. If ltt = NA, then one in is created from other inputs</p></dd>
+<dd><p>A LiPD-timeseries-tibble (<code><a href="https://rdrr.io/pkg/lipdR/man/ts2tibble.html" class="external-link">lipdR::ts2tibble()</a></code>), a TS list (<code><a href="https://rdrr.io/pkg/lipdR/man/extractTs.html" class="external-link">lipdR::extractTs()</a></code>), or a tibble or data.frame that has the variable(s) of interest, a time variable (age, year or time) along with their metadata, arranged in rows. If ltt = NA, then one in is created from other inputs. The time axis is an age or year ensemble when there is one, then lipdR's <code>time</code> (the primary time column), then <code>age</code>, then <code>year</code>.</p></dd>
 
 
 <dt id="arg-time">time<a class="anchor" aria-label="anchor" href="#arg-time"></a></dt>
@@ -108,7 +108,7 @@
 
 
 <dt id="arg-time-variable-name">time.variable.name<a class="anchor" aria-label="anchor" href="#arg-time-variable-name"></a></dt>
-<dd><p>If ltt is not provided, specify the name of the time variable (typically 'age' or 'year')</p></dd>
+<dd><p>If ltt is not provided, specify the name of the time variable (typically 'age' or 'year'). If ltt is provided, optionally name the column to use as the time axis (e.g. 'year' or 'ageEnsemble') instead of choosing automatically.</p></dd>
 
 
 <dt id="arg-vals-variable-name">vals.variable.name<a class="anchor" aria-label="anchor" href="#arg-vals-variable-name"></a></dt>
@@ -116,7 +116,7 @@
 
 
 <dt id="arg-time-units">time.units<a class="anchor" aria-label="anchor" href="#arg-time-units"></a></dt>
-<dd><p>If ltt is not provided, specify the units the time variable (typically 'yr BP' or 'CE')</p></dd>
+<dd><p>If ltt is not provided, specify the units the time variable (typically 'yr BP' or 'CE'). If ltt is provided, optionally a time scale (e.g. 'yr BP', 'ka' or 'CE') to convert the time axis to with <code><a href="https://rdrr.io/pkg/lipdR/man/getTsTime.html" class="external-link">lipdR::getTsTime()</a></code>, so that event years and windows are on a known scale whatever the record's own units.</p></dd>
 
 
 <dt id="arg-vals-units">vals.units<a class="anchor" aria-label="anchor" href="#arg-vals-units"></a></dt>
