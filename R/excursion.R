@@ -97,6 +97,7 @@ todfr <- function(...){
 #' @inheritParams ens::propagateUncertainty
 #' @inheritParams ens::testNullHypothesis
 #' @param seed Set a seed for reproducibility. By default it will use current time meaning it will not be reproducible.
+#' @param time.units a time scale (e.g. "yr BP" or "CE") to put every timeseries on before testing, so that `event.yr` and the windows mean the same thing for all of them. NA (default) uses each record's own units, and warns if they differ.
 #' @author Hannah Kolus
 #' @author Nick McKay
 #' @description Determines whether an excursion event has occurred within the specified event window for a lipd-ts-tibble of timeseries. Excursion events are defined as n.consecutive values within the event window that are more extreme than the avg +/- sig.num standard deviations of the reference windows.
@@ -120,16 +121,28 @@ detectMultipleExcursions <- function(ltt = NA,
                                      na.rm = TRUE,
                                      simulate.time.uncertainty = FALSE,
                                      simulate.paleo.uncertainty = FALSE,
+                                     time.units = NA,
                                      seed = as.integer(Sys.time())){
 
 
-  #this requeires a lipd-tibble-ts with multiple timeseries
+  #this requires a lipd-tibble-ts (or TS list) with multiple timeseries
+  if(!is.data.frame(ltt) && is.list(ltt)){
+    ltt <- lipdR::as.lipdTsTibble(ltt)
+  }
   if(all(is.na(ltt)) | !is.data.frame(ltt)){
     stop("detectMultipleExcursions requires lipd-ts-tibble input. See ?prepareInput for help")
   }
 
   if(nrow(ltt) < 2){
     stop("you must enter at least 2 rows in your lipd-ts-tibble to use detectMultipleExcursions")
+  }
+
+  if(is.na(time.units) && "timeUnits" %in% names(ltt)){
+    tu <- unique(stats::na.omit(unlist(ltt$timeUnits)))
+    if(length(tu) > 1){
+      warning("These timeseries are in different time units (", paste(tu, collapse = ", "),
+              "), so event.yr means different times for different records. Set time.units (e.g. time.units = 'yr BP') to put them all on one scale.")
+    }
   }
 
 out <- furrr::future_pmap_dfr(ltt,\(...) detectExcursion(todfr(...),
@@ -147,6 +160,7 @@ out <- furrr::future_pmap_dfr(ltt,\(...) detectExcursion(todfr(...),
                                                      simulate.paleo.uncertainty = simulate.paleo.uncertainty,
                                                      simulate.time.uncertainty = simulate.time.uncertainty,
                                                      seed = seed,
+                                                     time.units = time.units,
                                                      progress = FALSE),
                           .progress = TRUE)
 

@@ -19,11 +19,12 @@ detectMultipleExcursions(
   na.rm = TRUE,
   simulate.time.uncertainty = FALSE,
   simulate.paleo.uncertainty = FALSE,
+  time.units = NA,
   seed = as.integer(Sys.time())
 )
 }
 \arguments{
-\item{ltt}{A LiPD-timeseries-tibble, a tibble or data.frame that has the variable(s) of interest, a time variable (age, year or time) along with their metadata, aranged in rows. If ltt = NA, then one in is created from other inputs}
+\item{ltt}{A LiPD-timeseries-tibble (\code{lipdR::ts2tibble()}), a TS list (\code{lipdR::extractTs()}), or a tibble or data.frame that has the variable(s) of interest, a time variable (age, year or time) along with their metadata, arranged in rows. If ltt = NA, then one in is created from other inputs. The time axis is an age or year ensemble when there is one, then lipdR's \code{time} (the primary time column), then \code{age}, then \code{year}.}
 
 \item{n.ens}{How many ensembles to use for error propagation? (default = 100)}
 
@@ -55,6 +56,8 @@ detectMultipleExcursions(
 \item{simulate.time.uncertainty}{TRUE or FALSE. If an ensemble is not included, do you want to simulate time ensembles (default = TRUE)}
 
 \item{simulate.paleo.uncertainty}{TRUE or FALSE. If an ensemble is not included, do you want to simulate paleo ensembles (default = TRUE)}
+
+\item{time.units}{a time scale (e.g. "yr BP" or "CE") to put every timeseries on before testing, so that \code{event.yr} and the windows mean the same thing for all of them. NA (default) uses each record's own units, and warns if they differ.}
 
 \item{seed}{Set a seed for reproducibility. By default it will use current time meaning it will not be reproducible.}
 }

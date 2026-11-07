@@ -20,17 +20,17 @@ prepareInput(
 )
 }
 \arguments{
-\item{ltt}{A LiPD-timeseries-tibble, a tibble or data.frame that has the variable(s) of interest, a time variable (age, year or time) along with their metadata, aranged in rows. If ltt = NA, then one in is created from other inputs}
+\item{ltt}{A LiPD-timeseries-tibble (\code{lipdR::ts2tibble()}), a TS list (\code{lipdR::extractTs()}), or a tibble or data.frame that has the variable(s) of interest, a time variable (age, year or time) along with their metadata, arranged in rows. If ltt = NA, then one in is created from other inputs. The time axis is an age or year ensemble when there is one, then lipdR's \code{time} (the primary time column), then \code{age}, then \code{year}.}
 
 \item{time}{if ltt is not provided, input a vector or matrix of time (year or age) data. If it's a multicolumn matrix, the columns are time-ensemble members}
 
 \item{vals}{if ltt is not provided, input a vector or matrix of paleoData. If it's a multicolumn matrix, the columns are value-ensemble members}
 
-\item{time.variable.name}{If ltt is not provided, specify the name of the time variable (typically 'age' or 'year')}
+\item{time.variable.name}{If ltt is not provided, specify the name of the time variable (typically 'age' or 'year'). If ltt is provided, optionally name the column to use as the time axis (e.g. 'year' or 'ageEnsemble') instead of choosing automatically.}
 
 \item{vals.variable.name}{If ltt is not provided, specify the name of the paleo variable (e.g., 'd18O' or 'temperature'). Alternatively, if ltt is provided with more rows than expected, this term is used to attempt to select the correct row.}
 
-\item{time.units}{If ltt is not provided, specify the units the time variable (typically 'yr BP' or 'CE')}
+\item{time.units}{If ltt is not provided, specify the units the time variable (typically 'yr BP' or 'CE'). If ltt is provided, optionally a time scale (e.g. 'yr BP', 'ka' or 'CE') to convert the time axis to with \code{lipdR::getTsTime()}, so that event years and windows are on a known scale whatever the record's own units.}
 
 \item{vals.units}{If ltt is not provided, specify the units the paleo variable (e.g. 'permil' or 'degrees C')}
 

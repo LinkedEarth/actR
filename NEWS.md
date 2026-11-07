@@ -1,3 +1,12 @@
+# actR 0.4.0
+
+* `prepareInput()`, and so `detectShift()` and `detectExcursion()`, use the time metadata that lipdR 0.7 adds in `extractTs()`. The time axis is an age or year ensemble when there is one, then lipdR's `time` (the primary time column), then `age`, then `year`. `timeVariableName` is now filled in from the time direction, so lipdR timeseries no longer need one. Requires lipdR >= 0.7.3.
+* With a timeseries supplied, `time.units` now converts its time axis to that scale (e.g. `time.units = "yr BP"`), using `lipdR::getTsTime()`. `time.variable.name` can name the column to use (e.g. `"year"` or `"ageEnsemble"`).
+* `detectMultipleExcursions()` gains `time.units` to put every record on one scale, so `event.yr` means the same time for all of them. Without it, records in different units now give a warning.
+* `prepareInput()` and `detectMultipleExcursions()` accept a TS list (`lipdR::extractTs()`) and tibbles that have lost their class, as well as timeseries tibbles.
+* `prepareInput()` no longer errors when a timeseries has no `paleoData_units` field; it fills in "?" as it does for missing values.
+* Plots now reverse ka (and Ma, b2k) time axes, not just yr BP and kyr.
+
 # actR 0.3.0
 
 * actR now builds on ens and lipdViz instead of the geoChronR monolith, so age modeling software is no longer installed with it. Its uncertainty engine now comes from ens.
