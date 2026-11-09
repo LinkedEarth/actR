@@ -1,3 +1,15 @@
+# actR 0.5.0
+
+actR now works on any time axis, using the time scales from lipdR 0.8.
+
+* New `time.variable` argument (in `prepareInput()`, `detectShift()`, `detectExcursion()`, `detectExcursionSlidingWindow()` and `detectMultipleExcursions()`) picks the time variable, e.g. "age", "year", "ageEnsemble" or any time column lipdR found (`lipdR::tsTimeVariables()`). It replaces `time.variable.name`, which still works with a deprecation warning.
+* `timeVariableName` in prepared input and results now says which column the time axis came from (e.g. "year", "ageEnsemble"); it used to be "age" or "year" guessed from the direction. Axis labels now come from the direction ("Year" for CE, "Age" for BP and ka). Prepared input also carries `timeDatum`, `timeDirection` and `timeExponent`.
+* `detectMultipleExcursions()`: when `time.units` isn't given, records that share a time scale stay on it; records on different scales are put on yr BP, with a message (`lipdR::commonTimeUnits()`). It used to leave them on their own scales with a warning, so `event.yr` meant different times for different records.
+* Fixed: `detectShift()` treated every record as counting back in time unless its units were exactly "AD" or "CE", so for year CE records (units "yr AD") positive and negative shifts were swapped, and so were the signs of `deltas`. Direction now comes from the time scale (`lipdR::isPrograde()`), the null hypothesis is summarized with the same direction, and `deltas` are always the change forward in time.
+* Fixed: `summary.bin.step` in `detectShift()` results was the median of the bin midpoints, not the bin width, so summaries could say "windows of -2652 years". Summaries now give durations in the axis's units (years, kyr) and name the time scale.
+* Records whose time scale was assumed (their units don't say) get one warning per call, listing them, instead of none. `warn.assumed = FALSE` turns it off. Records without units given to `prepareInput(time = )` still have their units guessed from the values, now with a warning.
+* Requires lipdR >= 0.8.1.
+
 # actR 0.4.0
 
 * `prepareInput()`, and so `detectShift()` and `detectExcursion()`, use the time metadata that lipdR 0.7 adds in `extractTs()`. The time axis is an age or year ensemble when there is one, then lipdR's `time` (the primary time column), then `age`, then `year`. `timeVariableName` is now filled in from the time direction, so lipdR timeseries no longer need one. Requires lipdR >= 0.7.3.

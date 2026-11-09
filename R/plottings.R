@@ -43,7 +43,7 @@ plotExcursion <- function(x,
                            lab.mult = 0.02){
 
   if(is.na(x.axis.label)){
-    x.axis.label <- glue::glue("{x$timeVariableName} ({x$timeUnits})")
+    x.axis.label <- glue::glue("{timeAxisName(x$timeUnits[[1]])} ({x$timeUnits[[1]]})")
   }
   if(is.na(y.axis.label)){
     y.axis.label <- glue::glue("Detrended {x$paleoData_variableName} ({x$paleoData_units})")
@@ -144,7 +144,7 @@ plotExcursion <- function(x,
     ggtitle(title)
 
 
-  if(isTRUE(isRetrogradeUnits(x$timeUnits[[1]]))){
+  if(isRetrogradeAxis(x$timeUnits[[1]])){
     plotout <- plotout +
       scale_x_reverse()
   }
@@ -364,7 +364,7 @@ plotShift <- function(x,
 
 
   if(any(is.na(x.axis.label))){
-    x.axis.label <- glue::glue("{unique(x$time_variableName)} ({unique(x$timeUnits)})")
+    x.axis.label <- glue::glue("{timeAxisName(x$timeUnits[[1]])} ({x$timeUnits[[1]]})")
   }
   if(any(is.na(y.axis.label))){
     y.axis.label <- glue::glue("{unique(x$paleoData_variableName)} ({unique(x$paleoData_units)})")
@@ -515,7 +515,7 @@ plotShift <- function(x,
   sig.event$pvallab <- paste("p =",sig.event$pvalue)
   sig.event$pvallab[sig.event$pvalue == 0] <- glue::glue("p < {minp}")
 
-  if(isTRUE(isRetrogradeUnits(x$timeUnits[[1]]))){
+  if(isRetrogradeAxis(x$timeUnits[[1]])){
     this_x_scale <- scale_x_reverse
     x.lims <- rev(sort(x.lims))
   }else{
@@ -613,7 +613,7 @@ plotExcursionSliding <- function(x,xlim = c(12000,0)){
 
 
 # Set labels and title
-xlabel <- paste('Age (',x$timeUnits[[1]],')',sep='')
+xlabel <- paste(timeAxisName(x$timeUnits[[1]]),' (',x$timeUnits[[1]],')',sep='')
 ylabel <- paste(x$paleoData_proxy[[1]],' (',x$paleoData_units[[1]],')',sep='')
 title  <- paste('Time series: ',x$archiveType[[1]],', ',x$dataSetName[[1]],', ',x$paleoData_TSid[[1]],
                 ', lat=',x$geo_latitude[[1]],', lon=',x$geo_longitude[[1]],sep='')

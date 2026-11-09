@@ -20,6 +20,7 @@ detectMultipleExcursions(
   simulate.time.uncertainty = FALSE,
   simulate.paleo.uncertainty = FALSE,
   time.units = NA,
+  time.variable = NA,
   seed = as.integer(Sys.time())
 )
 }
@@ -57,7 +58,9 @@ detectMultipleExcursions(
 
 \item{simulate.paleo.uncertainty}{TRUE or FALSE. If an ensemble is not included, do you want to simulate paleo ensembles (default = TRUE)}
 
-\item{time.units}{a time scale (e.g. "yr BP" or "CE") to put every timeseries on before testing, so that \code{event.yr} and the windows mean the same thing for all of them. NA (default) uses each record's own units, and warns if they differ.}
+\item{time.units}{the time scale (e.g. "yr BP", "ka" or "CE") to put every timeseries on before testing; \code{event.yr}, \code{event.window} and \code{ref.window} are on this scale. NA (default) uses the records' own scale if they all share one, and otherwise yr BP, with a message (see \code{lipdR::commonTimeUnits()}).}
+
+\item{time.variable}{which time variable to use for every timeseries (see prepareInput()). NA (default) uses an age or year ensemble when there is one, then each record's primary time axis.}
 
 \item{seed}{Set a seed for reproducibility. By default it will use current time meaning it will not be reproducible.}
 }

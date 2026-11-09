@@ -31,7 +31,7 @@ The following code does these things:
 
 ```{r, warning=FALSE}
 msGeob <- detectShift(geob7926_2,
-                    time.variable.name = "ageEnsemble",
+                    time.variable = "ageEnsemble",
                     vals.variable.name = "SST_from_uk37_ensemble",
                     method = "PELT",
                     null.hypothesis.n = 50,
@@ -62,7 +62,7 @@ Now we repeat the same steps over the Great Basin tree-ring record of Salzer et 
 
 ```{r, warning=FALSE}
 msGb <- detectShift(great_basin,
-                    time.variable.name = "year",
+                    time.variable = "year",
                     vals.variable.name = "trsgi",
                     null.hypothesis.n = 50,
                     summary.bin.step = 10,
@@ -84,7 +84,7 @@ As you can see, the method detects one shift near the end of the record. However
 
 ```{r, warning=FALSE}
 vsGb <- detectShift(great_basin,
-                     time.variable.name = "year",
+                     time.variable = "year",
                     vals.variable.name = "trsgi",
                     null.hypothesis.n = 50,
                     summary.bin.step = 10,

@@ -113,11 +113,11 @@ exc.prefix <- "positive OR negative"
 }else{
   exc.prefix <- object$exc.type
 }
-  #to do: make "years" terms a variable depending on timeUnits
+dur <- durationUnits(object$timeUnits[1])
 
 #print the summary
 cat(crayon::bold(glue::glue("{title} results\n\n")))
-cat(crayon::silver(glue::glue("Searched for {crayon::bold(exc.prefix)} excursions in a {crayon::bold(object$event.window)} year window around {crayon::bold(object$event.yr)} {object$timeUnits}, with reference windows of {crayon::bold(object$ref.window)} years on either side.\n\n")))
+cat(crayon::silver(glue::glue("Searched for {crayon::bold(exc.prefix)} excursions in a {crayon::bold(object$event.window[1])} {dur} window around {crayon::bold(object$event.yr[1])} {object$timeUnits[1]}, with reference windows of {crayon::bold(object$ref.window[1])} {dur} on either side.\n\n")))
 cat("\n")
 cat(crayon::bold(glue::glue("Overall result: Empirical p-value = {resFun(round(object$pvalue,3))}\n\n")))
 cat(glue::glue("Time uncertainty considered? {hasTimeEnsemble}\n\n"))
@@ -230,11 +230,11 @@ summaryShift <- function(object,
     hasPaleoEnsemble <- crayon::red(hasPaleoEnsemble)
   }
 
-  #to do: make "years" terms a variable depending on timeUnits
+  dur <- durationUnits(object$timeUnits[1])
 
   #print the summary
   cat(crayon::bold(glue::glue("{title} results\n\n")))
-  cat(crayon::silver(glue::glue("Searched for {shift.type} with a minimum segment length of {crayon::bold(object$minimum.segment.length[1])} years, summarizing the results over windows of {object$summary.bin.step[1]} years.\n\n")))
+  cat(crayon::silver(glue::glue("Searched for {shift.type} with a minimum segment length of {crayon::bold(object$minimum.segment.length[1])} {dur}, summarizing the results over windows of {object$summary.bin.step[1]} {dur} ({object$timeUnits[1]}).\n\n")))
   cat("\n")
   cat(crayon::bold(glue::glue("Overall result: {sigMessage}\n\n")))
   if(n.sig > 0 ){

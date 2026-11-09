@@ -26,7 +26,7 @@ syntheticExcursion <- makeExcursion(time = seq(3000,5000,by = 20), #specify the 
                                      start.time = 4100, #when does the excursion start
                                      duration=200, #how long is the excursion
                                      snr = 1, #the signal to noise ratio
-                                    time.variable.name = "Age",
+                                    time.variable = "Age",
                                     time.units = "yr BP") #signal to noise ratio.
                                     
 ```

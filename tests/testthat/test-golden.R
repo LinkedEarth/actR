@@ -109,7 +109,7 @@ test_that("detectExcursion end-to-end matches reference (deterministic cols)", {
   exc <- makeSyntheticExcursion()
   out <- detectExcursion(time = exc$time, vals = exc$vals,
                          time.units = "yr BP", vals.units = "unitless",
-                         time.variable.name = "age",
+                         time.variable = "age",
                          vals.variable.name = "synthetic",
                          dataset.name = "syntheticExcursion",
                          n.ens = 15, null.hypothesis.n = 10,
@@ -124,13 +124,17 @@ test_that("detectShift end-to-end matches reference (deterministic cols)", {
   shf <- makeSyntheticShift()
   out <- detectShift(time = shf$time, vals = shf$vals,
                      time.units = "yr BP", vals.units = "unitless",
-                     time.variable.name = "age",
+                     time.variable = "age",
                      vals.variable.name = "synthetic",
                      dataset.name = "syntheticShift",
                      n.ens = 15, null.hypothesis.n = 10,
                      summary.bin.step = 200,
                      minimum.segment.length = 100)
   expect_s3_class(out, "shift")
+  # summary.bin.step used to be the median of the bin midpoints (a bug, which
+  # printed e.g. "windows of -2652 years"); it is now the bin width
+  expect_equal(unique(out$summary.bin.step), 200)
+  ref$shift$summary.bin.step <- out$summary.bin.step
   expect_equal_deterministic(out, ref$shift)
   expect_valid_probabilities(out)
 })

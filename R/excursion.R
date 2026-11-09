@@ -19,7 +19,7 @@
 detectExcursionSlidingWindow <- function(ltt = NA,
                                          time = NA,
                                          vals = NA,
-                                         time.variable.name = NA,
+                                         time.variable = NA,
                                          vals.variable.name = NA,
                                          time.units = NA,
                                          vals.units = NA,
@@ -27,14 +27,15 @@ detectExcursionSlidingWindow <- function(ltt = NA,
                                          event.yr.vec = NA,
                                          event.step = NA,
                                          ref.window,
+                                         time.variable.name = NA,
                                          ...){
-
+  time.variable <- resolveTimeVariable(time.variable, time.variable.name)
 
   #prep inputs
   prepped <- prepareInput(ltt = ltt,
                           time = time,
                           vals = vals,
-                          time.variable.name = time.variable.name,
+                          time.variable = time.variable,
                           vals.variable.name = vals.variable.name,
                           time.units = time.units,
                           vals.units = vals.units,
@@ -66,6 +67,7 @@ detectExcursionSlidingWindow <- function(ltt = NA,
                                                       event.yr = x,
                                                       ref.window = ref.window,
                                                       progress = FALSE,
+                                                      warn.assumed = FALSE,
                                                       ...),
                             .progress = TRUE)
 
@@ -97,7 +99,8 @@ todfr <- function(...){
 #' @inheritParams ens::propagateUncertainty
 #' @inheritParams ens::testNullHypothesis
 #' @param seed Set a seed for reproducibility. By default it will use current time meaning it will not be reproducible.
-#' @param time.units a time scale (e.g. "yr BP" or "CE") to put every timeseries on before testing, so that `event.yr` and the windows mean the same thing for all of them. NA (default) uses each record's own units, and warns if they differ.
+#' @param time.units the time scale (e.g. "yr BP", "ka" or "CE") to put every timeseries on before testing; `event.yr`, `event.window` and `ref.window` are on this scale. NA (default) uses the records' own scale if they all share one, and otherwise yr BP, with a message (see `lipdR::commonTimeUnits()`).
+#' @param time.variable which time variable to use for every timeseries (see prepareInput()). NA (default) uses an age or year ensemble when there is one, then each record's primary time axis.
 #' @author Hannah Kolus
 #' @author Nick McKay
 #' @description Determines whether an excursion event has occurred within the specified event window for a lipd-ts-tibble of timeseries. Excursion events are defined as n.consecutive values within the event window that are more extreme than the avg +/- sig.num standard deviations of the reference windows.
@@ -122,6 +125,7 @@ detectMultipleExcursions <- function(ltt = NA,
                                      simulate.time.uncertainty = FALSE,
                                      simulate.paleo.uncertainty = FALSE,
                                      time.units = NA,
+                                     time.variable = NA,
                                      seed = as.integer(Sys.time())){
 
 
@@ -137,13 +141,14 @@ detectMultipleExcursions <- function(ltt = NA,
     stop("you must enter at least 2 rows in your lipd-ts-tibble to use detectMultipleExcursions")
   }
 
-  if(is.na(time.units) && "timeUnits" %in% names(ltt)){
-    tu <- unique(stats::na.omit(unlist(ltt$timeUnits)))
-    if(length(tu) > 1){
-      warning("These timeseries are in different time units (", paste(tu, collapse = ", "),
-              "), so event.yr means different times for different records. Set time.units (e.g. time.units = 'yr BP') to put them all on one scale.")
-    }
+  #one time scale for every record, so event.yr and the windows mean the same thing
+  if(is.na(time.units)){
+    time.units <- lipdR::commonTimeUnits(ltt, variable = if(is.na(time.variable)) "time" else time.variable,
+                                         ensemble = is.na(time.variable))
   }
+  #prepare every row once, so the time scale is checked (and warned about) once
+  ltt <- prepareInput(ltt, time.variable = time.variable, time.units = time.units,
+                      expecting.one.row = FALSE)
 
 out <- furrr::future_pmap_dfr(ltt,\(...) detectExcursion(todfr(...),
                                                      n.ens = n.ens,
@@ -161,6 +166,7 @@ out <- furrr::future_pmap_dfr(ltt,\(...) detectExcursion(todfr(...),
                                                      simulate.time.uncertainty = simulate.time.uncertainty,
                                                      seed = seed,
                                                      time.units = time.units,
+                                                     warn.assumed = FALSE,
                                                      progress = FALSE),
                           .progress = TRUE)
 
@@ -192,7 +198,7 @@ out <- furrr::future_pmap_dfr(ltt,\(...) detectExcursion(todfr(...),
 detectExcursion = function(ltt = NA,
                            time = NA,
                            vals = NA,
-                           time.variable.name = NA,
+                           time.variable = NA,
                            vals.variable.name = NA,
                            time.units = NA,
                            vals.units = NA,
@@ -203,20 +209,24 @@ detectExcursion = function(ltt = NA,
                            null.hypothesis.n = 100,
                            null.quantiles = c(.95),
                            pvalue.method = "kde",
+                           warn.assumed = TRUE,
+                           time.variable.name = NA,
                            ...) {
+  time.variable <- resolveTimeVariable(time.variable, time.variable.name)
 
   #prep inputs
   prepped <- prepareInput(ltt = ltt,
                           time = time,
                           vals = vals,
-                          time.variable.name = time.variable.name,
+                          time.variable = time.variable,
                           vals.variable.name = vals.variable.name,
                           time.units = time.units,
                           vals.units = vals.units,
                           dataset.name = dataset.name,
                           expecting.one.row = TRUE,
                           sort.by.time = TRUE,
-                          remove.time.nas = TRUE)
+                          remove.time.nas = TRUE,
+                          warn.assumed = warn.assumed)
 
   time <- prepped$time[[1]]
   vals <- prepped$paleoData_values[[1]]

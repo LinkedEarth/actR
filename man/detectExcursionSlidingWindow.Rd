@@ -8,7 +8,7 @@ detectExcursionSlidingWindow(
   ltt = NA,
   time = NA,
   vals = NA,
-  time.variable.name = NA,
+  time.variable = NA,
   vals.variable.name = NA,
   time.units = NA,
   vals.units = NA,
@@ -16,6 +16,7 @@ detectExcursionSlidingWindow(
   event.yr.vec = NA,
   event.step = NA,
   ref.window,
+  time.variable.name = NA,
   ...
 )
 }
@@ -26,11 +27,11 @@ detectExcursionSlidingWindow(
 
 \item{vals}{if ltt is not provided, input a vector or matrix of paleoData. If it's a multicolumn matrix, the columns are value-ensemble members}
 
-\item{time.variable.name}{If ltt is not provided, specify the name of the time variable (typically 'age' or 'year'). If ltt is provided, optionally name the column to use as the time axis (e.g. 'year' or 'ageEnsemble') instead of choosing automatically.}
+\item{time.variable}{Which time variable to use. If ltt is provided, the name of a time column (e.g. 'age', 'year', 'ageEnsemble', or any column lipdR found to be a time column; see \code{lipdR::tsTimeVariables()}), passed to \code{lipdR::getTsTime(variable =)}. NA (default) uses an age or year ensemble when there is one, then lipdR's \code{time}, the record's primary time axis. If ltt is not provided, a name for the time variable (typically 'age' or 'year').}
 
 \item{vals.variable.name}{If ltt is not provided, specify the name of the paleo variable (e.g., 'd18O' or 'temperature'). Alternatively, if ltt is provided with more rows than expected, this term is used to attempt to select the correct row.}
 
-\item{time.units}{If ltt is not provided, specify the units the time variable (typically 'yr BP' or 'CE'). If ltt is provided, optionally a time scale (e.g. 'yr BP', 'ka' or 'CE') to convert the time axis to with \code{lipdR::getTsTime()}, so that event years and windows are on a known scale whatever the record's own units.}
+\item{time.units}{If ltt is not provided, the units of \code{time} (e.g. 'yr BP' or 'CE'). If ltt is provided, the time scale (e.g. 'yr BP', 'ka' or 'CE') to put the time axis on with \code{lipdR::getTsTime()}, so that event years, windows and bins are on that scale whatever the record's own units. NA (default) keeps the record's own time scale.}
 
 \item{vals.units}{If ltt is not provided, specify the units the paleo variable (e.g. 'permil' or 'degrees C')}
 
@@ -41,6 +42,8 @@ detectExcursionSlidingWindow(
 \item{event.step}{If event.yr.vec = NA, then event.step will build one with this spacing.}
 
 \item{ref.window}{width (in time units) of the reference windows}
+
+\item{time.variable.name}{Deprecated; use \code{time.variable}.}
 
 \item{...}{pass additional arguments to detectExcursion()}
 }

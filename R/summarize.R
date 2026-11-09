@@ -156,7 +156,10 @@ summarizeEventProbability <- function(exc.out,
   }
   deltas <- deltas %>% filter(!is.na(bin))
 
-  out$deltas[deltas$bin] <- deltas$mean_value*-1
+  # deltas are later-index minus earlier-index segments, on increasing time
+  # values. Report the change forward in time (younger minus older): on a
+  # retrograde axis (yr BP) increasing values are older, so flip the sign.
+  out$deltas[deltas$bin] <- if(time.dir == "retrograde") deltas$mean_value*-1 else deltas$mean_value
 
 
   return(out)
