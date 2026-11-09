@@ -28,12 +28,15 @@
 <url><loc>/reference/detectShift.html</loc></url>
 <url><loc>/reference/detectShiftCore.html</loc></url>
 <url><loc>/reference/distanceGrid.html</loc></url>
+<url><loc>/reference/durationUnits.html</loc></url>
 <url><loc>/reference/geob7926_2.html</loc></url>
 <url><loc>/reference/getAllExcursionTimes.html</loc></url>
 <url><loc>/reference/getAllTimes.html</loc></url>
 <url><loc>/reference/getNulls.html</loc></url>
 <url><loc>/reference/great_basin.html</loc></url>
 <url><loc>/reference/index.html</loc></url>
+<url><loc>/reference/isProgradeAxis.html</loc></url>
+<url><loc>/reference/isRetrogradeAxis.html</loc></url>
 <url><loc>/reference/linearRamp.html</loc></url>
 <url><loc>/reference/makeExcursion.html</loc></url>
 <url><loc>/reference/makeShift.html</loc></url>
@@ -59,6 +62,7 @@
 <url><loc>/reference/print.shift.html</loc></url>
 <url><loc>/reference/pseudoShifts.html</loc></url>
 <url><loc>/reference/reexports.html</loc></url>
+<url><loc>/reference/resolveTimeVariable.html</loc></url>
 <url><loc>/reference/spatialSigTest.html</loc></url>
 <url><loc>/reference/summarizeChangepointMeanChanges.html</loc></url>
 <url><loc>/reference/summarizeEventProbability.html</loc></url>
@@ -66,6 +70,7 @@
 <url><loc>/reference/summary.shift.html</loc></url>
 <url><loc>/reference/summaryExcursion.html</loc></url>
 <url><loc>/reference/summaryShift.html</loc></url>
+<url><loc>/reference/timeAxisName.html</loc></url>
 <url><loc>/reference/viewSafely.html</loc></url>
 </urlset>
 
