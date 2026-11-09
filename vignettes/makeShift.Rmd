@@ -34,7 +34,7 @@ we will test the synthetic time series with `detectShift`
 
 ```{r}
 synTrans <- detectShift(syntheticTransition,
-                     time.variable.name = "year",
+                     time.variable = "year",
                      null.hypothesis.n = 50,
                      summary.bin.step = 1,
                      minimum.segment.length = 50,

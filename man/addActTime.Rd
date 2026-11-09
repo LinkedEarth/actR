@@ -4,19 +4,25 @@
 \alias{addActTime}
 \title{Add actR time columns to a timeseries tibble}
 \usage{
-addActTime(ltt, time.variable.name = NA, time.units = NA)
+addActTime(ltt, time.variable = NA, time.units = NA, warn.assumed = TRUE)
 }
 \arguments{
 \item{ltt}{a timeseries tibble}
 
-\item{time.variable.name}{optional column to use as the time axis}
+\item{time.variable}{optional time variable to use (see prepareInput())}
 
-\item{time.units}{optional time scale to convert to (NA keeps each record's own units)}
+\item{time.units}{optional time scale to convert to (NA keeps each record's own scale)}
+
+\item{warn.assumed}{give one warning for records whose time scale was assumed?}
 }
 \value{
-ltt with time, timeUnits and timeVariableName columns
+ltt with time, timeUnits, timeDatum, timeDirection, timeExponent,
+timeVariableName (the source of the time axis) and timeActR columns
 }
 \description{
-Add actR time columns to a timeseries tibble
+Uses \code{lipdR::getTsTime()} on each row, so the time axis is read from the
+record's time columns and their time scales, converted to \code{time.units}. Rows
+that actR has already prepared (column \code{timeActR}) keep their \code{time}, which
+is only converted, because it has been sorted and trimmed with the values.
 }
 \keyword{internal}

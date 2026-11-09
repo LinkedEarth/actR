@@ -145,7 +145,7 @@ detectShiftCore = function(time,
 detectShift <- function(ltt = NA,
                         time = NA,
                         vals = NA,
-                        time.variable.name = NA,
+                        time.variable = NA,
                         vals.variable.name = NA,
                         time.units = NA,
                         vals.units = NA,
@@ -157,14 +157,16 @@ detectShift <- function(ltt = NA,
                         null.quantiles = c(.95,.9),
                         time.range = NA,
                         calc.deltas = TRUE,
+                        warn.assumed = TRUE,
+                        time.variable.name = NA,
                         ...){
-
+  time.variable <- resolveTimeVariable(time.variable, time.variable.name)
 
   #prep inputs
   prepped <- prepareInput(ltt = ltt,
                           time = time,
                           vals = vals,
-                          time.variable.name = time.variable.name,
+                          time.variable = time.variable,
                           vals.variable.name = vals.variable.name,
                           time.units = time.units,
                           vals.units = vals.units,
@@ -172,7 +174,8 @@ detectShift <- function(ltt = NA,
                           expecting.one.row = TRUE,
                           sort.by.time = TRUE,
                           remove.time.nas = TRUE,
-                          time.range = time.range)
+                          time.range = time.range,
+                          warn.assumed = warn.assumed)
 
   time <- prepped$time[[1]]
   vals <- prepped$paleoData_values[[1]]
@@ -183,16 +186,9 @@ detectShift <- function(ltt = NA,
   #ensemble with uncertainties
   propagated <- propagateUncertainty(time,vals,changeFun = detectShiftCore, calc.deltas = calc.deltas, ...)
 
-  if(!is.character(time.units)){
-    time.units <- ens::heuristicUnits(time)
-  }
-
-  if(time.units %in% c("AD","CE")){
-    time.dir <- "prograde"
-  }else{
-    time.dir <- "retrograde"
-  }
-
+  #which way does time run? prepareInput() put the record on a known scale
+  time.units <- prepped$timeUnits[1]
+  time.dir <- if(isProgradeAxis(time.units)) "prograde" else "retrograde"
 
   propSummary <- summarizeEventProbability(propagated,
                                            bin.step = summary.bin.step,
@@ -229,7 +225,8 @@ detectShift <- function(ltt = NA,
                         bin.step = summary.bin.step,
                         bin.vec = summary.bin.vec,
                         min.time = min(time, na.rm = T),
-                        max.time = max(time, na.rm = T)) %>%
+                        max.time = max(time, na.rm = T),
+                        time.dir = time.dir) %>%
       setNames(paste0("nh",seq_along(nh))) %>%
       purrr::map_dfc(purrr::pluck,paste0("event_probability",direction)) %>%
       as.matrix()
@@ -277,7 +274,9 @@ detectShift <- function(ltt = NA,
   eventSummary$time.ens.supplied.n <- time.ens.supplied.n
   eventSummary$vals.ens.supplied.n <- vals.ens.supplied.n
   eventSummary$surrogate.method <- surrogate.method
-  eventSummary$summary.bin.step <- median(propSummary$time_mid)
+  eventSummary$summary.bin.step <- stats::median(abs(diff(propSummary$time_mid)), na.rm = TRUE)
+  eventSummary$timeUnits <- time.units
+  eventSummary$time_direction <- time.dir
 
   out <- eventSummary |>
     new_shift()

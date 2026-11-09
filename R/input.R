@@ -3,22 +3,24 @@
 #' @param ltt A LiPD-timeseries-tibble (`lipdR::ts2tibble()`), a TS list (`lipdR::extractTs()`), or a tibble or data.frame that has the variable(s) of interest, a time variable (age, year or time) along with their metadata, arranged in rows. If ltt = NA, then one in is created from other inputs. The time axis is an age or year ensemble when there is one, then lipdR's `time` (the primary time column), then `age`, then `year`.
 #' @param time if ltt is not provided, input a vector or matrix of time (year or age) data. If it's a multicolumn matrix, the columns are time-ensemble members
 #' @param vals if ltt is not provided, input a vector or matrix of paleoData. If it's a multicolumn matrix, the columns are value-ensemble members
-#' @param time.variable.name If ltt is not provided, specify the name of the time variable (typically 'age' or 'year'). If ltt is provided, optionally name the column to use as the time axis (e.g. 'year' or 'ageEnsemble') instead of choosing automatically.
+#' @param time.variable Which time variable to use. If ltt is provided, the name of a time column (e.g. 'age', 'year', 'ageEnsemble', or any column lipdR found to be a time column; see `lipdR::tsTimeVariables()`), passed to `lipdR::getTsTime(variable =)`. NA (default) uses an age or year ensemble when there is one, then lipdR's `time`, the record's primary time axis. If ltt is not provided, a name for the time variable (typically 'age' or 'year').
+#' @param time.variable.name Deprecated; use `time.variable`.
 #' @param vals.variable.name If ltt is not provided, specify the name of the paleo variable (e.g., 'd18O' or 'temperature'). Alternatively, if ltt is provided with more rows than expected, this term is used to attempt to select the correct row.
-#' @param time.units If ltt is not provided, specify the units the time variable (typically 'yr BP' or 'CE'). If ltt is provided, optionally a time scale (e.g. 'yr BP', 'ka' or 'CE') to convert the time axis to with `lipdR::getTsTime()`, so that event years and windows are on a known scale whatever the record's own units.
+#' @param time.units If ltt is not provided, the units of `time` (e.g. 'yr BP' or 'CE'). If ltt is provided, the time scale (e.g. 'yr BP', 'ka' or 'CE') to put the time axis on with `lipdR::getTsTime()`, so that event years, windows and bins are on that scale whatever the record's own units. NA (default) keeps the record's own time scale.
 #' @param vals.units If ltt is not provided, specify the units the paleo variable (e.g. 'permil' or 'degrees C')
 #' @param dataset.name If ltt is not provided, specify the dataset name
 #' @param expecting.one.row Are you expecting a one-row tibble? That is, one variable of interest? (default = TRUE)
 #' @param sort.by.time Do you want to arrange the output so that the time variable is increasing, while preserving the time-value relationship? (default = TRUE)
 #' @param remove.time.nas Do you want to remove observations that are NA, or otherwise not finite, in the time variable (default = TRUE)
 #' @param time.range Optionally enter a time range (as minimum and maximum) that you'd like to restrict the analysis to. (default = NA)
+#' @param warn.assumed Warn when a record's time scale was assumed, because its units don't say? (default = TRUE)
 #'
 #' @return a lipd-ts-tibble ready for analysis in actR
 #' @export
 prepareInput <- function(ltt = NA,
                          time = NA,
                          vals = NA,
-                         time.variable.name = NA,
+                         time.variable = NA,
                          vals.variable.name = NA,
                          time.units = NA,
                          vals.units = NA,
@@ -26,7 +28,10 @@ prepareInput <- function(ltt = NA,
                          expecting.one.row = TRUE,
                          sort.by.time = TRUE,
                          remove.time.nas = TRUE,
-                         time.range = NA){
+                         time.range = NA,
+                         warn.assumed = TRUE,
+                         time.variable.name = NA){
+  time.variable <- resolveTimeVariable(time.variable, time.variable.name)
   if(!is.data.frame(ltt) && is.list(ltt)){#a TS list (lipdR::extractTs()), so make it a tibble
     ltt <- lipdR::as.lipdTsTibble(ltt)
   }
@@ -63,11 +68,10 @@ prepareInput <- function(ltt = NA,
 
     #check the contents of the lipd tibble row
 
-    #create time variables if needed, from lipdR's time metadata (or age/year),
+    #create the time axis from lipdR's time metadata (or age/year),
     #converting to time.units if given
-    if(!all(c("time", "timeUnits","timeVariableName") %in% names(ltt)) || !is.na(time.units)){
-      ltt <- addActTime(ltt, time.variable.name = time.variable.name, time.units = time.units)
-    }
+    ltt <- addActTime(ltt, time.variable = time.variable, time.units = time.units,
+                      warn.assumed = warn.assumed)
 
     if(!"paleoData_values" %in% names(ltt)){
       stop("The LiPD tibble row your provided is missing a 'paleoData_values' variable. This must be included (as a list-column)")
@@ -76,7 +80,8 @@ prepareInput <- function(ltt = NA,
     ltt <- tibble::tibble(
       time = list(time),
       timeUnits = time.units,
-      timeVariableName = time.variable.name,
+      timeVariableName = time.variable,
+      timeActR = TRUE,
       paleoData_values = list(vals),
       paleoData_variableName = vals.variable.name,
       paleoData_units = vals.units,
@@ -209,10 +214,11 @@ prepareInput <- function(ltt = NA,
   #check for missing metadata
   for(r in 1:nrow(ltt)){
     if(is.na(ltt$timeUnits[r])){
-      if(NCOL(ltt$time[[r]]) == 1){
-        ltt$timeUnits[r] <- ens::heuristicUnits(ltt$time[[r]])
-      }else{
-        ltt$timeUnits[r] <- ens::heuristicUnits(ltt$time[[r]][,1])
+      tm <- if(NCOL(ltt$time[[r]]) == 1) ltt$time[[r]] else ltt$time[[r]][,1]
+      ltt$timeUnits[r] <- ens::heuristicUnits(as.numeric(tm))
+      if(warn.assumed){
+        warning("No time units were given, so ", ltt$timeUnits[r],
+                " was guessed from the values. Set time.units to say.", call. = FALSE)
       }
     }
   }
@@ -239,63 +245,142 @@ prepareInput <- function(ltt = NA,
 
 #' Add actR time columns to a timeseries tibble
 #'
+#' Uses `lipdR::getTsTime()` on each row, so the time axis is read from the
+#' record's time columns and their time scales, converted to `time.units`. Rows
+#' that actR has already prepared (column `timeActR`) keep their `time`, which
+#' is only converted, because it has been sorted and trimmed with the values.
+#'
 #' @param ltt a timeseries tibble
-#' @param time.variable.name optional column to use as the time axis
-#' @param time.units optional time scale to convert to (NA keeps each record's own units)
-#' @return ltt with time, timeUnits and timeVariableName columns
+#' @param time.variable optional time variable to use (see prepareInput())
+#' @param time.units optional time scale to convert to (NA keeps each record's own scale)
+#' @param warn.assumed give one warning for records whose time scale was assumed?
+#' @return ltt with time, timeUnits, timeDatum, timeDirection, timeExponent,
+#'   timeVariableName (the source of the time axis) and timeActR columns
 #' @keywords internal
-addActTime <- function(ltt, time.variable.name = NA, time.units = NA){
+addActTime <- function(ltt, time.variable = NA, time.units = NA, warn.assumed = TRUE){
   rows <- purrr::transpose(as.list(ltt))
-  tvn <- if(is.na(time.variable.name)) NA_character_ else as.character(time.variable.name)
-  prepared <- all(c("time", "timeUnits", "timeVariableName") %in% names(ltt))
-  useEnsemble <- is.na(tvn) || grepl("ensemble$", tvn, ignore.case = TRUE)
+  tv <- if(is.na(time.variable)) NA_character_ else as.character(time.variable)
+  prepared <- "timeActR" %in% names(ltt)
+  assumed <- character(0)
   one <- function(r){
-    if(prepared){
-      #already an actR input: keep its time axis, only converting units
-      r <- list(time = r$time, timeUnits = r$timeUnits, dataSetName = r$dataSetName)
-    }else if(!is.na(tvn) && tvn != "time" && !is.null(r[[tvn]])){
-      #the user named a column, so use just that one
-      base <- sub("Ensemble$", "", tvn, ignore.case = TRUE)
-      entry <- list(r[[tvn]])
-      names(entry) <- if(grepl("ensemble$", tvn, ignore.case = TRUE)) paste0(tolower(base), "Ensemble") else tvn
-      entry[[paste0(names(entry), "Units")]] <- r[[paste0(tvn, "Units")]] %||% r[[paste0(base, "Units")]]
-      if(!names(entry)[1] %in% c("age", "year", "ageEnsemble", "yearEnsemble")){
-        #an arbitrary column: treat it as the time column, with its units
-        entry <- list(time = r[[tvn]], timeUnits = r[[paste0(tvn, "Units")]] %||% time.units)
+    label <- paste(stats::na.omit(c(unlist(r$dataSetName)[1], unlist(r$paleoData_variableName)[1])), collapse = " ")
+    if(prepared && isTRUE(r$timeActR)){
+      #already an actR input: keep its time axis (no pointer), only converting
+      r <- r[intersect(names(r), c("time", "timeUnits", "timeDatum", "timeDirection", "timeExponent", "timeSource", "timeVariableName"))]
+      src <- r$timeVariableName
+      r$timeVariableName <- NULL
+      if(is.null(r$timeUnits) || is.na(r$timeUnits)){
+        if(!is.na(time.units)){
+          stop("The time units of ", if(nzchar(label)) label else "this timeseries",
+               " are unknown, so it can't be put on ", time.units, ".", call. = FALSE)
+        }
+        tm <- r$time
+        attr(tm, "timeUnits") <- NA_character_
+        attr(tm, "timeVariableName") <- src %||% "time"
+        return(tm)
       }
-      r <- entry
+      tm <- lipdR::getTsTime(r, units = time.units, ensemble = FALSE, warn.assumed = FALSE)
+      attr(tm, "timeVariableName") <- src %||% "time"
+      return(tm)
     }
-    tm <- tryCatch(lipdR::getTsTime(r, units = time.units, ensemble = useEnsemble),
-                   error = function(e){
-                     stop("Can't find the time axis of ", r$dataSetName %||% "this timeseries", ": ", conditionMessage(e),
-                          " ('time', 'ageEnsemble', 'yearEnsemble', 'age' or 'year' must be present.)", call. = FALSE)
-                   })
-    units <- attr(tm, "timeUnits")
-    attr(tm, "timeUnits") <- NULL
-    if(NCOL(tm) == 1){tm <- as.numeric(tm)}
-    list(time = tm, timeUnits = units)
+    tm <- tryCatch({
+      if(is.na(tv)){
+        lipdR::getTsTime(r, units = time.units, ensemble = TRUE, warn.assumed = FALSE)
+      }else{
+        lipdR::getTsTime(r, units = time.units, ensemble = FALSE, variable = tv, warn.assumed = FALSE)
+      }
+    }, error = function(e){
+      if(!is.na(tv) && grepl("not a time variable", conditionMessage(e)) && !is.null(r[[tv]])){
+        #a column lipdR doesn't know as time: use it with its units, or time.units
+        out <- lipdR::getTsTime(list(time = r[[tv]], timeUnits = r[[paste0(tv, "Units")]] %||% time.units),
+                                units = time.units, ensemble = FALSE, warn.assumed = FALSE)
+        attr(out, "timeVariableName") <- tv
+        return(out)
+      }
+      stop("Can't find the time axis of ", if(nzchar(label)) label else "this timeseries", ": ", conditionMessage(e),
+           " ('time', 'ageEnsemble', 'yearEnsemble', 'age' or 'year' must be present.)", call. = FALSE)
+    })
+    if(identical(attr(tm, "timeSource"), "assumed")){
+      assumed <<- c(assumed, if(nzchar(label)) label else "a timeseries")
+    }
+    tm
   }
   out <- purrr::map(rows, one)
-  ltt$time <- purrr::map(out, "time")
-  ltt$timeUnits <- purrr::map_chr(out, \(x) x$timeUnits %||% NA_character_)
-  ltt$timeVariableName <- ifelse(is.na(ltt$timeUnits), "time",
-                                 ifelse(isProgradeUnits(ltt$timeUnits), "year", "age"))
+  if(warn.assumed && length(assumed) > 0){
+    warning("The time scale of ", length(assumed), " timeseries was assumed, because their units don't say: ",
+            paste(unique(assumed), collapse = "; "),
+            ". Set their units (or timeDatum, timeDirection and timeExponent) to say.", call. = FALSE)
+  }
+  units <- purrr::map_chr(out, \(x) attr(x, "timeUnits") %||% NA_character_)
+  ltt$timeVariableName <- purrr::map_chr(out, \(x) attr(x, "timeVariableName") %||% "time")
+  ltt$time <- purrr::map(out, \(x){
+    attributes(x) <- attributes(x)[intersect(names(attributes(x)), "dim")]
+    if(NCOL(x) == 1) as.numeric(x) else x
+  })
+  ltt$timeUnits <- units
+  scales <- purrr::map(units, \(u) if(is.na(u)) NULL else lipdR::timeScale(u))
+  ltt$timeDatum <- purrr::map_dbl(scales, \(x) x$timeDatum %||% NA_real_)
+  ltt$timeDirection <- purrr::map_chr(scales, \(x) x$timeDirection %||% NA_character_)
+  ltt$timeExponent <- purrr::map_dbl(scales, \(x) x$timeExponent %||% NA_real_)
+  ltt$timeActR <- TRUE
   ltt
+}
+
+#' Resolve time.variable and its deprecated alias time.variable.name
+#' @param time.variable the time.variable argument
+#' @param time.variable.name the deprecated time.variable.name argument
+#' @return the time variable to use
+#' @keywords internal
+resolveTimeVariable <- function(time.variable, time.variable.name){
+  if(!all(is.na(time.variable.name))){
+    warning("time.variable.name is deprecated; use time.variable.", call. = FALSE)
+    if(all(is.na(time.variable))){
+      time.variable <- time.variable.name
+    }
+  }
+  time.variable
 }
 
 `%||%` <- function(x, y){
   if(is.null(x)) y else x
 }
 
-# Does a time scale count forward (year CE) rather than back (yr BP, ka)?
-isProgradeUnits <- function(units){
-  !is.na(units) &
-    grepl("\\b(AD|CE)\\b", units, ignore.case = TRUE) &
-    !grepl("\\bBC", units, ignore.case = TRUE)
+#' Is a time axis retrograde (counting back, like yr BP or ka), so plots run right to left?
+#' @param units a time units string
+#' @return logical; FALSE for missing or unknown ("?") units
+#' @keywords internal
+isRetrogradeAxis <- function(units){
+  u <- unlist(units)[1]
+  if(is.null(u) || is.na(u) || !nzchar(u) || u == "?"){
+    return(FALSE)
+  }
+  !lipdR::isPrograde(u)
 }
 
-# Does a time scale count back in time (yr BP, ka, b2k), so plots should be reversed?
-isRetrogradeUnits <- function(units){
-  !is.na(units) & !isProgradeUnits(units) &
-    grepl("bp|ky|b2k|before|\\bka\\b|\\bma\\b|\\bga\\b|^yr$|^years?$", units, ignore.case = TRUE)
+#' Is a time axis prograde (counting forward, like year CE)?
+#' @inheritParams isRetrogradeAxis
+#' @return logical; FALSE for missing or unknown units
+#' @keywords internal
+isProgradeAxis <- function(units){
+  u <- unlist(units)[1]
+  if(is.null(u) || is.na(u) || !nzchar(u) || u == "?"){
+    return(FALSE)
+  }
+  lipdR::isPrograde(u)
+}
+
+#' Name of the time axis, from its direction: "Year" counts forward, "Age" back
+#' @inheritParams isRetrogradeAxis
+#' @keywords internal
+timeAxisName <- function(units){
+  if(isProgradeAxis(units)) "Year" else if(isRetrogradeAxis(units)) "Age" else "Time"
+}
+
+#' Units of a duration on a time axis (years, kyr, Myr)
+#' @inheritParams isRetrogradeAxis
+#' @keywords internal
+durationUnits <- function(units){
+  u <- unlist(units)[1]
+  e <- if(is.null(u) || is.na(u) || u == "?") 0 else tryCatch(lipdR::timeScale(u)$timeExponent, error = function(e) 0)
+  switch(as.character(e), "3" = "kyr", "6" = "Myr", "9" = "Gyr", "years")
 }

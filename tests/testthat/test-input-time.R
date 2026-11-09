@@ -15,28 +15,32 @@ ceRow <- function(ens = FALSE) {
   r
 }
 
-test_that("lipdR time is used, with a timeVariableName from its direction", {
+test_that("lipdR time is used, and timeVariableName says where it came from", {
   p <- prepareInput(ceRow())
   expect_equal(p$time[[1]], seq(1000, 1990, by = 10))
   expect_equal(p$timeUnits, "yr AD")
-  expect_equal(p$timeVariableName, "year")
+  expect_equal(p$timeDirection, "prograde")
+  # a hand-built row without lipdR's timeVariableName: time itself is the source
+  expect_equal(p$timeVariableName, "time")
 })
 
 test_that("time.units converts the time axis", {
   p <- prepareInput(ceRow(), time.units = "yr BP")
   expect_equal(p$time[[1]], sort(1950 - seq(1000, 1990, by = 10)))
   expect_equal(p$timeUnits, "yr BP")
-  expect_equal(p$timeVariableName, "age")
+  expect_equal(p$timeDirection, "retrograde")
 })
 
 test_that("an age ensemble is preferred, unless a column is named", {
   p <- prepareInput(ceRow(ens = TRUE))
   expect_equal(NCOL(p$time[[1]]), 4)
   expect_equal(p$timeUnits, "yr BP")
-  p2 <- prepareInput(ceRow(ens = TRUE), time.variable.name = "year")
+  expect_equal(p$timeVariableName, "ageEnsemble")
+  p2 <- prepareInput(ceRow(ens = TRUE), time.variable = "year")
   expect_equal(NCOL(p2$time[[1]]), 1)
   expect_equal(p2$timeUnits, "yr AD")
-  p3 <- prepareInput(ceRow(ens = TRUE), time.variable.name = "time")
+  expect_equal(p2$timeVariableName, "year")
+  p3 <- prepareInput(ceRow(ens = TRUE), time.variable = "time")
   expect_equal(NCOL(p3$time[[1]]), 1)
 })
 
@@ -46,7 +50,7 @@ test_that("a TS list and an unclassed data frame are accepted", {
   p <- prepareInput(ts)
   expect_equal(p$time[[1]], seq(1000, 1990, by = 10))
   p2 <- prepareInput(as.data.frame(r))
-  expect_equal(p2$timeVariableName, "year")
+  expect_equal(p2$timeUnits, "yr AD")
 })
 
 test_that("old-style input without time metadata still works", {
@@ -60,11 +64,17 @@ test_that("old-style input without time metadata still works", {
   expect_error(prepareInput(r), "time axis")
 })
 
-test_that("ka axes are reversed in plots", {
-  expect_true(isRetrogradeUnits("ka"))
-  expect_true(isRetrogradeUnits("yr BP"))
-  expect_false(isRetrogradeUnits("yr AD"))
-  expect_false(isRetrogradeUnits("CE"))
+test_that("ka axes are reversed in plots, CE axes are not", {
+  expect_true(isRetrogradeAxis("ka"))
+  expect_true(isRetrogradeAxis("yr BP"))
+  expect_false(isRetrogradeAxis("yr AD"))
+  expect_false(isRetrogradeAxis("CE"))
+  expect_false(isRetrogradeAxis(NA))
+  expect_false(isRetrogradeAxis("?"))
+  expect_equal(timeAxisName("yr AD"), "Year")
+  expect_equal(timeAxisName("ka"), "Age")
+  expect_equal(durationUnits("ka"), "kyr")
+  expect_equal(durationUnits("yr BP"), "years")
 })
 
 test_that("a missing paleoData_units column is filled in rather than an error", {
