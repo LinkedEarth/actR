@@ -1,3 +1,9 @@
+# actR 0.5.1
+
+* Re-rendered the vignettes against actR 0.5.0. The detectShift vignette now describes the Great Basin results as they come out with the corrected direction for year CE records, and sets a seed so its numbers are reproducible.
+* The makeShift vignette states the synthetic series' time units (`time.units = "yr BP"`) and describes the series it actually builds.
+* Fixed the warning `prepareInput()` gives when time units can't be guessed from the values: it read "so cant make a reasonable guess was guessed from the values".
+
 # actR 0.5.0
 
 actR now works on any time axis, using the time scales from lipdR 0.8.

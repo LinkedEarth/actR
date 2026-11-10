@@ -20,12 +20,11 @@ library(actR)
 
 ### Build a synthetic time series with a shift in mean
 
-The time series will have 100 time steps, with a shift in mean at time 20
-
-The mean shift will have a magnitude of 0.5
+The time series will have 300 time steps, on a yr BP axis from 0 to 299 yr BP. `makeShift()` puts the shift 65 steps from the start of the series, and since the series runs forward in time (from old to young), the mean rises by 0.5 at about 235 yr BP.
 
 ```{r}
-syntheticTransition <- makeShift(length = 300, amp=0.5, start = 65)
+syntheticTransition <- makeShift(length = 300, amp=0.5, start = 65,
+                                 time.units = "yr BP")
 ```
 
 ### Detect Shift
@@ -34,7 +33,6 @@ we will test the synthetic time series with `detectShift`
 
 ```{r}
 synTrans <- detectShift(syntheticTransition,
-                     time.variable = "year",
                      null.hypothesis.n = 50,
                      summary.bin.step = 1,
                      minimum.segment.length = 50,

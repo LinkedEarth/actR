@@ -1,5 +1,5 @@
 ---
-title: "Synthetic Data in  detectExcursion"
+title: "Synthetic Data in detectExcursion"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Synthetic Data in detectExcursion}
