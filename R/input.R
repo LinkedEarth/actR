@@ -217,8 +217,13 @@ prepareInput <- function(ltt = NA,
       tm <- if(NCOL(ltt$time[[r]]) == 1) ltt$time[[r]] else ltt$time[[r]][,1]
       ltt$timeUnits[r] <- ens::heuristicUnits(as.numeric(tm))
       if(warn.assumed){
-        warning("No time units were given, so ", ltt$timeUnits[r],
-                " was guessed from the values. Set time.units to say.", call. = FALSE)
+        if(isTRUE(grepl("guess", ltt$timeUnits[r]))){
+          warning("No time units were given, and they couldn't be guessed from the values. Set time.units to say.",
+                  call. = FALSE)
+        }else{
+          warning("No time units were given, so ", ltt$timeUnits[r],
+                  " was guessed from the values. Set time.units to say.", call. = FALSE)
+        }
       }
     }
   }

@@ -16,6 +16,7 @@ knitr::opts_chunk$set(
 
 ```{r setup}
 library(actR)
+set.seed(1) # the uncertainty and null hypothesis ensembles are random
 ```
 
 ## Shift detection in actR
@@ -25,8 +26,8 @@ This vignette shows how actR detects shift (and their statistical significance) 
 The following code does these things:
 * loads the data from the provided LiPD file "geob7926_2" (available as a tibble for easier load-in).
 * extracts the pre-existing age ensemble (generated using [Bacon](https://cran.r-project.org/web/packages/rbacon/index.html) within [GeoChronR](https://nickmckay.github.io/GeoChronR/)) and the akenone-reconstructed SST. 
-* tests significance against 50 surrogate timeseries [need to clarify difference between n.ens and null.hypothesis.n].
-* specifies a minimum segment length of 3000y 
+* propagates the age and SST uncertainty with 50 ensemble members (`n.ens`), and tests significance against 50 surrogate timeseries (`null.hypothesis.n`), each of which goes through the same 50-member uncertainty propagation.
+* specifies a minimum segment length of 1000 years, and summarizes the results in 1000-year bins from 10 to 40 ka.
 
 
 ```{r, warning=FALSE}
@@ -55,6 +56,8 @@ geoBplot <- plot(msGeob)
 
 ```
 
+The record is on a yr BP axis, so time runs from right to left. actR reports shifts forward in time, from older to younger: a positive shift is an increase in SST toward the present, and `deltas` is the younger segment's mean minus the older one's. Here the significant shift is at 30 to 31 ka, a cooling of about 1.2 °C.
+
 Note that, as usual with actR, the plot is a [ggplot2](https://ggplot2.tidyverse.org) object, which is infinitely customizable (e.g. for a talk, a poster, a paper, etc).
 
 
@@ -79,7 +82,7 @@ msGb <- detectShift(great_basin,
 gbmPlot <- plot(msGb)
 ```
 
-As you can see, the method detects one shift near the end of the record. However, one might also want to detect shifts in variance. To do so, all you have to do is specify `cpt.fun = changepoint::cpt.var` (leveraging the [changepoint](https://cran.r-project.org/web/packages/changepoint/index.html) package).
+The method detects one significant shift in the mean, around 1780 CE, where ring width (trsgi) rises by about 0.17. Because the axis is in years CE, time runs left to right, and the shift is positive (red bars, positive `deltas`): growth is higher after 1780 than before. Growth of these upper treeline bristlecone pines is limited mainly by temperature, so this fits the rise in growth (and in reconstructed temperature) from the late 18th century into the 20th century that Salzer et al. describe. Versions of actR before 0.5.0 reported this shift as negative, because they treated year CE records as counting back in time. However, one might also want to detect shifts in variance. To do so, all you have to do is specify `cpt.fun = changepoint::cpt.var` (leveraging the [changepoint](https://cran.r-project.org/web/packages/changepoint/index.html) package).
 
 
 ```{r, warning=FALSE}
@@ -103,5 +106,5 @@ Note also that actR offers 3 different methods to generate surrogates, as detail
 gbvPlot <- plot(vsGb)
 ```
 
-Now we see an additional changepoint in record associated with a shift in variance ca. 1450 AD. To check its robustness, we should probably inquire more about the sample depth of the dataset (number of tree cores used to make the composite in each year), as well as the technique used for removing the biological component of the signal. This is a reminder that no technique, however nifty, is a substitute for knowing your data!
+Now the most likely changepoint is a shift in variance ca. 1450 CE, where the record becomes more variable (a positive shift: the standard deviation increases forward in time). The summary also lists changepoints near 500 and 1330 CE, but only a few ensemble members put a changepoint there. To check the robustness of these shifts, we should probably inquire more about the sample depth of the dataset (number of tree cores used to make the composite in each year), as well as the technique used for removing the biological component of the signal. This is a reminder that no technique, however nifty, is a substitute for knowing your data!
 
