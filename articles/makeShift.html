@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">actR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.1</span>
       </span>
     </div>
 
@@ -57,7 +57,7 @@
       <a href="../articles/detectShift.html">detectShift</a>
     </li>
     <li>
-      <a href="../articles/makeExcursion.html">Synthetic Data in  detectExcursion</a>
+      <a href="../articles/makeExcursion.html">Synthetic Data in detectExcursion</a>
     </li>
     <li>
       <a href="../articles/makeShift.html">makeShift</a>
@@ -99,18 +99,17 @@
 <div class="section level3">
 <h3 id="build-a-synthetic-time-series-with-a-shift-in-mean">Build a synthetic time series with a shift in mean<a class="anchor" aria-label="anchor" href="#build-a-synthetic-time-series-with-a-shift-in-mean"></a>
 </h3>
-<p>The time series will have 100 time steps, with a shift in mean at
-time 20</p>
-<p>The mean shift will have a magnitude of 0.5</p>
+<p>The time series will have 300 time steps, on a yr BP axis from 0 to
+299 yr BP. <code><a href="../reference/makeShift.html">makeShift()</a></code> puts the shift 65 steps from the
+start of the series, and since the series runs forward in time (from old
+to young), the mean rises by 0.5 at about 235 yr BP.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">syntheticTransition</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/makeShift.html">makeShift</a></span><span class="op">(</span>length <span class="op">=</span> <span class="fl">300</span>, amp<span class="op">=</span><span class="fl">0.5</span>, start <span class="op">=</span> <span class="fl">65</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #BB00BB;">timeUnits is at least partially absent in the input data</span></span></span>
-<span><span class="co"><span style="color: #BB00BB;">#&gt; timeVariableName is at least partially absent in the input data</span></span></span>
+<code class="sourceCode R"><span><span class="va">syntheticTransition</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/makeShift.html">makeShift</a></span><span class="op">(</span>length <span class="op">=</span> <span class="fl">300</span>, amp<span class="op">=</span><span class="fl">0.5</span>, start <span class="op">=</span> <span class="fl">65</span>,</span>
+<span>                                 time.units <span class="op">=</span> <span class="st">"yr BP"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #BB00BB;">timeVariableName is at least partially absent in the input data</span></span></span>
 <span><span class="co"><span style="color: #BB00BB;">#&gt; paleoData_units is at least partially absent in the input data</span></span></span>
 <span><span class="co"><span style="color: #BB00BB;">#&gt; paleoData_variableName is at least partially absent in the input data</span></span></span>
-<span><span class="co"><span style="color: #BB00BB;">#&gt; </span></span></span>
-<span><span class="co">#&gt; Warning: No time units were given, so cant make a reasonable guess was guessed</span></span>
-<span><span class="co">#&gt; from the values. Set time.units to say.</span></span></code></pre></div>
+<span><span class="co"><span style="color: #BB00BB;">#&gt; </span></span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="detect-shift">Detect Shift<a class="anchor" aria-label="anchor" href="#detect-shift"></a>
@@ -119,7 +118,6 @@ time 20</p>
 <code>detectShift</code></p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">synTrans</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/detectShift.html">detectShift</a></span><span class="op">(</span><span class="va">syntheticTransition</span>,</span>
-<span>                     time.variable <span class="op">=</span> <span class="st">"year"</span>,</span>
 <span>                     null.hypothesis.n <span class="op">=</span> <span class="fl">50</span>,</span>
 <span>                     summary.bin.step <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>                     minimum.segment.length <span class="op">=</span> <span class="fl">50</span>,</span>
@@ -128,7 +126,6 @@ time 20</p>
 <span>                     cpt.fun <span class="op">=</span> <span class="fu">changepoint</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/changepoint/man/cpt.mean.html" class="external-link">cpt.mean</a></span>,</span>
 <span>                     paleo.uncertainty <span class="op">=</span> <span class="fl">0.1</span>,</span>
 <span>                     n.ens <span class="op">=</span> <span class="fl">50</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span>
 <span><span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span>
 <span><span class="co">#&gt; Testing null hypothesis with 50 simulations, each with 50 ensemble members. <span style="color: #00BB00;">■■■</span>…</span></span></code></pre></div>
 <p>###Plot shift</p>

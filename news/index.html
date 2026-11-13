@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">actR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.1</span>
       </span>
     </div>
 
@@ -41,7 +41,7 @@
       <a href="../articles/detectShift.html">detectShift</a>
     </li>
     <li>
-      <a href="../articles/makeExcursion.html">Synthetic Data in  detectExcursion</a>
+      <a href="../articles/makeExcursion.html">Synthetic Data in detectExcursion</a>
     </li>
     <li>
       <a href="../articles/makeShift.html">makeShift</a>
@@ -66,6 +66,12 @@
 
     </div>
 
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="0.5.1" id="actr-051">actR 0.5.1<a class="anchor" aria-label="anchor" href="#actr-051"></a></h2>
+<ul><li>Re-rendered the vignettes against actR 0.5.0. The detectShift vignette now describes the Great Basin results as they come out with the corrected direction for year CE records, and sets a seed so its numbers are reproducible.</li>
+<li>The makeShift vignette states the synthetic series’ time units (<code>time.units = "yr BP"</code>) and describes the series it actually builds.</li>
+<li>Fixed the warning <code><a href="../reference/prepareInput.html">prepareInput()</a></code> gives when time units can’t be guessed from the values: it read “so cant make a reasonable guess was guessed from the values”.</li>
+</ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.5.0" id="actr-050">actR 0.5.0<a class="anchor" aria-label="anchor" href="#actr-050"></a></h2>
 <p>actR now works on any time axis, using the time scales from lipdR 0.8.</p>
