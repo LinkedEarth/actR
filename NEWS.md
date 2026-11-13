@@ -1,3 +1,7 @@
+# actR 0.5.2
+
+* Requires lipdR 0.8.4 or later, which includes the `pullTsVariable()` fix from 0.8.3 and `filterByInterpretation()`.
+
 # actR 0.5.1
 
 * Re-rendered the vignettes against actR 0.5.0. The detectShift vignette now describes the Great Basin results as they come out with the corrected direction for year CE records, and sets a seed so its numbers are reproducible.
